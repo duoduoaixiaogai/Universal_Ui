@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 根元素 -->
+<Config>
+  <!-- 通用模块 -->
+  <Universal_Module>
+    <Root_Dir_Path></Root_Dir_Path>
+    <Translations_Dir_Path></Translations_Dir_Path>
+  </Universal_Module>
+  <!-- 语言模块 -->
+  <Language>
+    <Select>Chinese</Select>
+    <Prefix>translation</Prefix>
+    <Filename></Filename>
+    <Suffix>.qm</Suffix>
+  </Language>
+</Config>
