@@ -2,6 +2,8 @@
 #define PROTOCOL_H
 
 #include <QString>
+#include <QHash>
+#include <QVector>
 
 namespace Jinhui {
 
@@ -26,18 +28,19 @@ namespace Jinhui {
   /*
    * 协议 高铁线路缺陷识别系统
    */
-  struct Menu {
-    // 顶级菜单
-    QString picNameMenu;
-    QString picWidthMenu;
-    QString picHeightMenu;
-    // 子菜单
-    QString picNameSub;
-    QString picWidthSub;
-    QString picHeightSub;
-  };
-
   typedef struct GTXLQX_Protocol : public Protocol {
+    // 菜单
+    struct Menu {
+      // 顶级菜单
+      QString picNameMenu;
+      QString picWidthMenu;
+      QString picHeightMenu;
+      // 子菜单
+      QString picNameSub;
+      QString picWidthSub;
+      QString picHeightSub;
+    };
+
     // 通用
     QString rootDirPath;
     QString picDirPath;
@@ -49,24 +52,28 @@ namespace Jinhui {
     QString picNameDoor;
     QString picWidthDoor;
     QString picHeightDoor;
-    // 菜单
-    Menu menus;
+    // 所有的菜单
+    QVector<Menu> menus;
   } GTXLQXPro;
 
   /*
    * 协议 配置文件
    */
   typedef struct Config_Protocol : public Protocol {
+    //语言
+    typedef struct Language {
+      QString prefix;
+      QString filename;
+      QString suffix;
+    } Lan;
+
     // 通用
     QString rootDirPath;
     QString traDirPath;
-    // 语言
-    // 选择哪种语言
-    QString select;
-    QString prefix;
-    QString filename;
-    QString suffix;
+    // 所有的语言
+    QHash<QString, Lan> languages;
   } ConfigPro;
+
 }
 
 #endif // PROTOCOL_H

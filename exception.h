@@ -72,6 +72,16 @@ namespace Jinhui {
     const QString what() const Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 基类 语言异常类
+   */
+  class LanguageException : public Exception {
+  public:
+    LanguageException() = default;
+    ~LanguageException() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -174,6 +184,36 @@ namespace Jinhui {
   public:
     DowncastProtocolConversion() = default;
     ~DowncastProtocolConversion() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 加载翻译文件异常类
+   */
+  class LoadTranslationFile : public LanguageException {
+  public:
+    LoadTranslationFile() = default;
+    ~LoadTranslationFile() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 删除翻译文件异常类
+   */
+  class delTranslationFile : public LanguageException {
+  public:
+    delTranslationFile() = default;
+    ~delTranslationFile() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 添加翻译文件异常类
+   */
+  class addTranslationFile : public LanguageException {
+  public:
+    addTranslationFile() = default;
+    ~addTranslationFile() = default;
     const QString what() const Q_DECL_OVERRIDE;
   };
 }

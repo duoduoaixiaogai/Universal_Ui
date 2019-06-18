@@ -39,7 +39,8 @@ HEADERS += \
     product.h \
     protocol.h \
     log.h \
-    exception.h
+    exception.h \
+    common.h
 
 FORMS += \
         mainwindow.ui

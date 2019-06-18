@@ -7,6 +7,8 @@
 #ifndef PRODUCT_H
 #define PRODUCT_H
 
+#include "protocol.h"
+
 #include <QObject>
 #include <QSharedPointer>
 #include <QTranslator>
@@ -18,7 +20,7 @@ QT_END_NAMESPACE
 
 namespace Jinhui {
   // Forward declaration
-  struct Protocol;
+  // do nothing
 
   /*******************************************************************************
    * 基类
@@ -51,15 +53,34 @@ namespace Jinhui {
    * 基类 语言类
    */
   class Language : public QObject {
+  protected:
+    // 语言的枚举类型
+    enum LanTypes {
+      INVALID = 0x50,
+      CHINESE,
+    };
   public:
     Language(QObject* parent = nullptr);
     ~Language() = default;
   protected:
     // 加载翻译文件
-    void loadTranslationFile();
+    void loadTranslationFiles();
+    // 转换函数 语言的名称字符串转换为语言的枚举类型
+    LanTypes lanNameStrToLanNameEnum(const QString& name);
+    // 转换函数 语言的枚举类型转换为语言的名称字符串
+    const QString lanNameEnumToLanNameStr(LanTypes lanType) const;
   protected:
     // variable
     QTranslator mTranslator;
+    // 所有的语言
+    QHash<QString, ConfigPro::Lan> mLanguages;
+    // 当前语言
+    LanTypes mCurrentLan;
+    const QLatin1String mChinese;
+    // 根目录路径
+    QString mRootDirPath;
+    // 翻译文件目录路径
+    QString mTraDirPath;
   };
 
   /*
@@ -153,7 +174,7 @@ namespace Jinhui {
     typedef enum Label_Type {
       INVALID = 0x40,
       UNIVERSAL,
-      LANGUAGE,
+      LANGUAGES,
     } Label_Type;
   public:
     ConfigParser(QObject* parent = nullptr);
@@ -166,13 +187,16 @@ namespace Jinhui {
   private:
     // 读取模块中元素的内容
     void readUniversalModule(const QXmlStreamReader& reader);
-    void readLanguageModule(const QXmlStreamReader& reader);
+    void readLanguagesModule(const QXmlStreamReader& reader);
     // 转换函数 元素标签的名称转换为元素标签的枚举类型
     Label_Type labelNameTolabelType(const QString& name);
 
+
   private:
     // 模块的名称
-    const QLatin1String mUniversalModule, mLanguageModule;
+    const QLatin1String mUniversalModule, mLanguagesModule;
+    // 语言的数量
+    const int mLansCount;
   };
 
 }

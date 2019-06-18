@@ -96,6 +96,13 @@ namespace Jinhui {
   }
 
   /*
+   * LanguageException
+   */
+  const QString LanguageException::what() const {
+    return QObject::tr("Language error!");
+  }
+
+  /*
    * ParserExceptionXml
    */
   const QString ParserExceptionXml::what() const {
@@ -149,6 +156,27 @@ namespace Jinhui {
    */
   const QString DowncastProtocolConversion::what() const {
     return QObject::tr("Parent protocol failed to convert to sub-protocol!");
+  }
+
+  /*
+   * LoadTranslationFile
+   */
+  const QString LoadTranslationFile::what() const {
+    return QObject::tr("failed load translation file!");
+  }
+
+  /*
+   * delTranslationFile
+   */
+  const QString delTranslationFile::what() const {
+    return QObject::tr("failed delete translation file!");
+  }
+
+  /*
+   * addTranslationFile
+   */
+  const QString addTranslationFile::what() const {
+    return QObject::tr("failed add translation file!");
   }
 
 }

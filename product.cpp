@@ -1,4 +1,3 @@
-#include "protocol.h"
 #include "product.h"
 #include "exception.h"
 
@@ -43,7 +42,9 @@ namespace Jinhui {
   /*
    * XMLParser
    */
-  XMLParser::XMLParser(QObject *parent) : Parser(parent) {}
+  XMLParser::XMLParser(QObject* parent) : Parser(parent) {
+    mProtocol = QSharedPointer<Protocol>(new Protocol);
+  }
 
   QSharedPointer<const Protocol> XMLParser::getProtocol() const {
     return mProtocol;
@@ -287,7 +288,6 @@ namespace Jinhui {
     Q_ASSERT(reader.isStartElement() && mUniversalModule == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
-    mProtocol->proType = GTXLQX;
     // qSharedPointerDynamicCast必须保证基类为多态类型,协议类暂时不打算写成多态类型。
     // qSharedPointerCast 也可以进行向下转型,并且避免运行时检查的开销,但必须保证转换为子类时才是安全的。
     QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
@@ -302,6 +302,7 @@ namespace Jinhui {
       return;
     }
 
+    protocol->proType = GTXLQX;
     while (xml.readNextStartElement()) {
       if (QLatin1String("Root_Dir_Path") == reader.name()) {
         protocol->rootDirPath = xml.readElementText();
@@ -317,7 +318,6 @@ namespace Jinhui {
     Q_ASSERT(reader.isStartElement() && mTitleModule == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
-    mProtocol->proType = GTXLQX;
     QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
     try {
       if (!protocol) {
@@ -330,6 +330,7 @@ namespace Jinhui {
       return;
     }
 
+    protocol->proType = GTXLQX;
     while (xml.readNextStartElement()) {
       if (QLatin1String("Picture_name") == reader.name()) {
         protocol->picNameTitle = xml.readElementText();
@@ -347,7 +348,6 @@ namespace Jinhui {
     Q_ASSERT(reader.isStartElement() && mDoorfaceModule == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
-    mProtocol->proType = GTXLQX;
     QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
     try {
       if (!protocol) {
@@ -360,6 +360,7 @@ namespace Jinhui {
       return;
     }
 
+    protocol->proType = GTXLQX;
     while (xml.readNextStartElement()) {
       if (QLatin1String("Picture_name") == reader.name()) {
         protocol->picNameDoor = xml.readElementText();
@@ -377,7 +378,6 @@ namespace Jinhui {
     Q_ASSERT(reader.isStartElement() && mMenusModule == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
-    mProtocol->proType = GTXLQX;
     QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
     try {
       if (!protocol) {
@@ -390,18 +390,18 @@ namespace Jinhui {
       return;
     }
 
+    protocol->proType = GTXLQX;
     // 菜单
     for (int i = 0; i < mMenusCount; ++i) {
+      GTXLQXPro::Menu menu;
       // 父菜单
       while (xml.readNextStartElement()) {
-        Q_ASSERT(reader.isStartElement() && QLatin1String("Menu") == reader.name());
-
         if (QLatin1String("Picture_name") == reader.name()) {
-          protocol->menus.picNameMenu = xml.readElementText();
+          menu.picNameMenu = xml.readElementText();
         } else if (QLatin1String("Picture_Width") == reader.name()) {
-          protocol->menus.picWidthMenu = xml.readElementText();
+          menu.picWidthMenu = xml.readElementText();
         } else if (QLatin1String("Picture_Height") == reader.name()) {
-          protocol->menus.picHeightMenu = xml.readElementText();
+          menu.picHeightMenu = xml.readElementText();
           // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
           break;
         }
@@ -409,18 +409,17 @@ namespace Jinhui {
 
       // 子菜单
       while (xml.readNextStartElement()) {
-        Q_ASSERT(reader.isStartElement() && QLatin1String("Submenu") == reader.name());
-
         if (QLatin1String("Picture_name") == reader.name()) {
-          protocol->menus.picNameSub = xml.readElementText();
+          menu.picNameSub = xml.readElementText();
         } else if (QLatin1String("Picture_Width") == reader.name()) {
-          protocol->menus.picWidthSub = xml.readElementText();
+          menu.picWidthSub = xml.readElementText();
         } else if (QLatin1String("Picture_Height") == reader.name()) {
-          protocol->menus.picHeightSub = xml.readElementText();
+          menu.picHeightSub = xml.readElementText();
           // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
           break;
         }
       } // 子菜单
+      protocol->menus.append(menu);
     } // 菜单
   }
 
@@ -451,7 +450,8 @@ namespace Jinhui {
   ConfigParser::ConfigParser(QObject* parent)
     :XMLParser(parent)
     ,mUniversalModule("Universal_Module")
-    ,mLanguageModule("Language") {}
+    ,mLanguagesModule("Languages")
+    ,mLansCount(1) {}
 
   // protected
   // handle token type function
@@ -466,8 +466,8 @@ namespace Jinhui {
       case UNIVERSAL:
         readUniversalModule(reader);
         break;
-      case LANGUAGE:
-        readLanguageModule(reader);
+      case LANGUAGES:
+        readLanguagesModule(reader);
         break;
     }
   }
@@ -478,7 +478,6 @@ namespace Jinhui {
     Q_ASSERT(reader.isStartElement() && mUniversalModule == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
-    mProtocol->proType = CONFIG;
     QSharedPointer<ConfigPro> protocol = qSharedPointerCast<ConfigPro, Protocol>(mProtocol);
     try {
       if (!protocol) {
@@ -491,6 +490,7 @@ namespace Jinhui {
       return;
     }
 
+    protocol->proType = CONFIG;
     while (xml.readNextStartElement()) {
       if (QLatin1String("Root_Dir_Path") == reader.name()) {
         protocol->rootDirPath = xml.readElementText();
@@ -503,11 +503,10 @@ namespace Jinhui {
   }
 
   // read the contents of the language module
-  void ConfigParser::readLanguageModule(const QXmlStreamReader& reader) {
-    Q_ASSERT(reader.isStartElement() && mLanguageModule == reader.name());
+  void ConfigParser::readLanguagesModule(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mLanguagesModule == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
-    mProtocol->proType = CONFIG;
     QSharedPointer<ConfigPro> protocol = qSharedPointerCast<ConfigPro, Protocol>(mProtocol);
     try {
       if (!protocol) {
@@ -520,17 +519,25 @@ namespace Jinhui {
       return;
     }
 
-    while (xml.readNextStartElement()) {
-      if (QLatin1String("Select") == reader.name()) {
-        protocol->select = xml.readElementText();
-      } else if (QLatin1String("Prefix") == reader.name()) {
-        protocol->prefix = xml.readElementText();
-      } else if (QLatin1String("Filename") == reader.name()) {
-        protocol->filename = xml.readElementText();
-      } else if (QLatin1String("Suffix") == reader.name()) {
-        protocol->suffix = xml.readElementText();
-        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
-        break;
+    protocol->proType = CONFIG;
+    // 循环获取子项信息
+    for (int i = 0; i < mLansCount; ++i) {
+      ConfigPro::Lan lan;
+      QString selectLan;
+      // 子项 语言信息
+      while (xml.readNextStartElement()) {
+        if (QLatin1String("Select") == reader.name()) {
+          selectLan = xml.readElementText();
+          protocol->languages.insert(selectLan, lan);
+        } else if (QLatin1String("Prefix") == reader.name()) {
+          protocol->languages[selectLan].prefix = xml.readElementText();
+        } else if (QLatin1String("Filename") == reader.name()) {
+          protocol->languages[selectLan].filename = xml.readElementText();
+        } else if (QLatin1String("Suffix") == reader.name()) {
+          protocol->languages[selectLan].suffix = xml.readElementText();
+          // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+          break;
+        }
       }
     }
   }
@@ -539,10 +546,11 @@ namespace Jinhui {
   ConfigParser::Label_Type ConfigParser::labelNameTolabelType(const QString& name) {
     Label_Type labelType = INVALID;
 
-    if (mLanguageModule == name) {
-      labelType = LANGUAGE;
+    if (mLanguagesModule == name) {
+      labelType = LANGUAGES;
     }
 
     return labelType;
   }
+
 }
