@@ -4,14 +4,15 @@
   <!-- 通用模块 -->
   <Universal_Module>
     <Root_Dir_Path></Root_Dir_Path>
-    <Translations_Dir_Path></Translations_Dir_Path>
+    <Translations_Dir_Path>translations</Translations_Dir_Path>
   </Universal_Module>
   <!-- 语言模块 -->
   <Languages_Module>
     <Language>
       <Select>Chinese</Select>
-      <Prefix>translation</Prefix>
-      <Filename></Filename>
+      <!-- 如果有前缀则调用有前缀的加载函数，否则调用包含绝对完整文件名的函数 -->
+      <Prefix></Prefix>
+      <Filename>translation.cn</Filename>
       <Suffix>.qm</Suffix>
     </Language>
   </Languages_Module>

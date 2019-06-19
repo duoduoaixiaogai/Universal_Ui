@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     Factory<XMLParserGTXLQX> factory;
     QSharedPointer<XMLParserGTXLQX> parser = qSharedPointerDynamicCast<XMLParserGTXLQX, Product>(factory.createProduct());
     parser->parse(getUiFilePath());
-    QSharedPointer<const Protocol> protocol = parser->getProtocol();
+    QSharedPointer<const GTXLQXPro> protocol = qSharedPointerCast<const GTXLQXPro, const Protocol>(parser->getProtocol());
   }
 
   return a.exec();

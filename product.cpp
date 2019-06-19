@@ -216,7 +216,11 @@ namespace Jinhui {
     ,mTitleModule("Title_Module")
     ,mDoorfaceModule("Doorface_Module")
     ,mMenusModule("Menus_Module")
-    ,mMenusCount(3) {}
+    ,mMenu("Menu")
+    ,mSubmenu("Submenu")
+    ,mMenusCount(3) {
+    mProtocol = QSharedPointer<Protocol>(new GTXLQXPro);
+  }
 
   // protected
   // handle token type function
@@ -255,6 +259,12 @@ namespace Jinhui {
         break;
       case MENUS:
         readMenusModule(reader);
+        break;
+      case MENU:
+        readMenu(reader);
+        break;
+      case SUBMENU:
+        readSubmenu(reader);
         break;
     }
   }
@@ -304,9 +314,10 @@ namespace Jinhui {
 
     protocol->proType = GTXLQX;
     while (xml.readNextStartElement()) {
-      if (QLatin1String("Root_Dir_Path") == reader.name()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Root_Dir_Path") == name) {
         protocol->rootDirPath = xml.readElementText();
-      } else if (QLatin1String("Pictures_Dir_Path") == reader.name()) {
+      } else if (QLatin1String("Pictures_Dir_Path") == name) {
         protocol->picDirPath = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
@@ -332,11 +343,12 @@ namespace Jinhui {
 
     protocol->proType = GTXLQX;
     while (xml.readNextStartElement()) {
-      if (QLatin1String("Picture_name") == reader.name()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Picture_name") == name) {
         protocol->picNameTitle = xml.readElementText();
-      } else if (QLatin1String("Picture_Width") == reader.name()) {
+      } else if (QLatin1String("Picture_Width") == name) {
         protocol->picWidthTitle = xml.readElementText();
-      } else if (QLatin1String("Picture_Height") == reader.name()) {
+      } else if (QLatin1String("Picture_Height") == name) {
         protocol->picHeightTitle = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
@@ -362,11 +374,12 @@ namespace Jinhui {
 
     protocol->proType = GTXLQX;
     while (xml.readNextStartElement()) {
-      if (QLatin1String("Picture_name") == reader.name()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Picture_name") == name) {
         protocol->picNameDoor = xml.readElementText();
-      } else if (QLatin1String("Picture_Width") == reader.name()) {
+      } else if (QLatin1String("Picture_Width") == name) {
         protocol->picWidthDoor = xml.readElementText();
-      } else if (QLatin1String("Picture_Height") == reader.name()) {
+      } else if (QLatin1String("Picture_Height") == name) {
         protocol->picHeightDoor = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
@@ -375,7 +388,59 @@ namespace Jinhui {
   }
 
   void XMLParserGTXLQX::readMenusModule(const QXmlStreamReader& reader) {
-    Q_ASSERT(reader.isStartElement() && mMenusModule == reader.name());
+    Q_UNUSED(reader);
+    //Q_ASSERT(reader.isStartElement() && mMenusModule == reader.name());
+
+    //QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
+    //QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
+    //try {
+    //  if (!protocol) {
+    //    throw DowncastProtocolConversion();
+    //  }
+    //} catch (ProtocolException& ex) {
+    //  const QString msg = ex.what();
+    //  ex.writeLogError(msg);
+    //  ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+    //  return;
+    //}
+
+    //protocol->proType = GTXLQX;
+    //// 菜单
+    //for (int i = 0; i < mMenusCount; ++i) {
+    //  GTXLQXPro::Menu menu;
+    //  // 父菜单
+    //  while (xml.readNextStartElement()) {
+    //    QStringRef name = reader.name();
+    //    if (QLatin1String("Picture_name") == name) {
+    //      menu.picNameMenu = xml.readElementText();
+    //    } else if (QLatin1String("Picture_Width") == name) {
+    //      menu.picWidthMenu = xml.readElementText();
+    //    } else if (QLatin1String("Picture_Height") == name) {
+    //      menu.picHeightMenu = xml.readElementText();
+    //      // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+    //      break;
+    //    }
+    //  } // 父菜单
+
+    //  // 子菜单
+    //  while (xml.readNextStartElement()) {
+    //    QStringRef name = reader.name();
+    //    if (QLatin1String("Picture_name") == name) {
+    //      menu.picNameSub = xml.readElementText();
+    //    } else if (QLatin1String("Picture_Width") == name) {
+    //      menu.picWidthSub = xml.readElementText();
+    //    } else if (QLatin1String("Picture_Height") == name) {
+    //      menu.picHeightSub = xml.readElementText();
+    //      // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+    //      break;
+    //    }
+    //  } // 子菜单
+    //  protocol->menus.append(menu);
+    //} // 菜单
+  }
+
+  void XMLParserGTXLQX::readMenu(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mMenu == reader.name());
 
     QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
     QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
@@ -391,36 +456,52 @@ namespace Jinhui {
     }
 
     protocol->proType = GTXLQX;
-    // 菜单
-    for (int i = 0; i < mMenusCount; ++i) {
-      GTXLQXPro::Menu menu;
-      // 父菜单
-      while (xml.readNextStartElement()) {
-        if (QLatin1String("Picture_name") == reader.name()) {
-          menu.picNameMenu = xml.readElementText();
-        } else if (QLatin1String("Picture_Width") == reader.name()) {
-          menu.picWidthMenu = xml.readElementText();
-        } else if (QLatin1String("Picture_Height") == reader.name()) {
-          menu.picHeightMenu = xml.readElementText();
-          // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
-          break;
-        }
-      } // 父菜单
+    GTXLQXPro::Menu menu;
+    while (xml.readNextStartElement()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Picture_name") == name) {
+        menu.picNameMenu = xml.readElementText();
+      } else if (QLatin1String("Picture_Width") == name) {
+        menu.picWidthMenu = xml.readElementText();
+      } else if (QLatin1String("Picture_Height") == name) {
+        menu.picHeightMenu = xml.readElementText();
+        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+        break;
+      }
+    }
+    protocol->menus.append(menu);
+  }
 
-      // 子菜单
-      while (xml.readNextStartElement()) {
-        if (QLatin1String("Picture_name") == reader.name()) {
-          menu.picNameSub = xml.readElementText();
-        } else if (QLatin1String("Picture_Width") == reader.name()) {
-          menu.picWidthSub = xml.readElementText();
-        } else if (QLatin1String("Picture_Height") == reader.name()) {
-          menu.picHeightSub = xml.readElementText();
-          // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
-          break;
-        }
-      } // 子菜单
-      protocol->menus.append(menu);
-    } // 菜单
+  void XMLParserGTXLQX::readSubmenu(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mSubmenu == reader.name());
+
+    QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
+    QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
+    try {
+      if (!protocol) {
+        throw DowncastProtocolConversion();
+      }
+    } catch (ProtocolException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogError(msg);
+      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      return;
+    }
+
+    protocol->proType = GTXLQX;
+    GTXLQXPro::Menu& menu = protocol->menus.last();
+    while (xml.readNextStartElement()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Picture_name") == name) {
+        menu.picNameSub = xml.readElementText();
+      } else if (QLatin1String("Picture_Width") == name) {
+        menu.picWidthSub = xml.readElementText();
+      } else if (QLatin1String("Picture_Height") == name) {
+        menu.picHeightSub = xml.readElementText();
+        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+        break;
+      }
+    }
   }
 
   // private
@@ -436,6 +517,10 @@ namespace Jinhui {
       labelType = DOORFACE;
     } else if (mMenusModule == name) {
       labelType = MENUS;
+    } else if (mMenu == name) {
+      labelType = MENU;
+    } else if (mSubmenu == name) {
+      labelType = SUBMENU;
     } else {
       labelType = INVALID;
     }
@@ -450,8 +535,10 @@ namespace Jinhui {
   ConfigParser::ConfigParser(QObject* parent)
     :XMLParser(parent)
     ,mUniversalModule("Universal_Module")
-    ,mLanguagesModule("Languages")
-    ,mLansCount(1) {}
+    ,mLanguagesModule("Languages_Module")
+    ,mLansCount(1) {
+    mProtocol = QSharedPointer<Protocol>(new ConfigPro);
+  }
 
   // protected
   // handle token type function
@@ -546,7 +633,9 @@ namespace Jinhui {
   ConfigParser::Label_Type ConfigParser::labelNameTolabelType(const QString& name) {
     Label_Type labelType = INVALID;
 
-    if (mLanguagesModule == name) {
+    if (mUniversalModule == name) {
+      labelType = UNIVERSAL;
+    } else if (mLanguagesModule == name) {
       labelType = LANGUAGES;
     }
 

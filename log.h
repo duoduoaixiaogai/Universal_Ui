@@ -30,7 +30,7 @@ namespace Jinhui {
     static void logMessageHandler(QtMsgType msgType, const QMessageLogContext& msgLogContext, const QString& msg);
     // Create log file folder
     static const QString createFileFolder(const QString& fileFolder =
-        QString("%1%2%3%4")
+        QString("%1%2%3")
         .arg(qApp->applicationDirPath())
         .arg("/log/")
         .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd")));

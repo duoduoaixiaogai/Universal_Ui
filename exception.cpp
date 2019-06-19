@@ -10,9 +10,9 @@ namespace Jinhui {
   // ctor
   Exception::Exception()
   /*:QObject(parent)*/
-    :mInfo("INFO")
-    ,mWarn("WARN")
-    ,mError("ERROR"){}
+    :mInfo(QObject::tr("INFO"))
+    ,mWarn(QObject::tr("WARN"))
+    ,mError(QObject::tr("ERROR")) {}
 
   const QString Exception::what() const {
     return QObject::tr("Something went wrong here!");

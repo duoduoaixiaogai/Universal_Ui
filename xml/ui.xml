@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 根元素 -->
+<Universal_UI>
+    <!-- 通用模块 -->
+    <Universal_Module>
+        <Root_Dir_Path></Root_Dir_Path>
+        <Pictures_Dir_Path>pictures</Pictures_Dir_Path>
+    </Universal_Module>
+    <!-- 标题模块 -->
+    <Title_Module>
+        <Picture_name>title.jpg</Picture_name>
+        <Picture_Width>100</Picture_Width>
+        <Picture_Height>200</Picture_Height>
+    </Title_Module>
+    <!-- 门脸模块（标题栏下方展示图片的区域）-->
+    <Doorface_Module>
+        <Picture_name>doorface.jpg</Picture_name>
+        <Picture_Width>300</Picture_Width>
+        <Picture_Height>400</Picture_Height>
+    </Doorface_Module>
+    <!-- 菜单模块 -->
+    <Menus_Module>
+        <!-- 菜单一 -->
+        <Menu>
+            <Picture_name>menu1</Picture_name>
+            <Picture_Width>10</Picture_Width>
+            <Picture_Height>20</Picture_Height>
+            <Submenu>
+                <Picture_name>submenu1</Picture_name>
+                <Picture_Width>30</Picture_Width>
+                <Picture_Height>40</Picture_Height>
+            </Submenu>
+        </Menu>
+        <!-- 菜单二 -->
+        <Menu>
+            <Picture_name>menu2</Picture_name>
+            <Picture_Width>50</Picture_Width>
+            <Picture_Height>60</Picture_Height>
+            <Submenu>
+                <Picture_name>submenu2</Picture_name>
+                <Picture_Width>70</Picture_Width>
+                <Picture_Height>80</Picture_Height>
+            </Submenu>
+        </Menu>
+        <!-- 菜单三 -->
+        <Menu>
+            <Picture_name>menu3</Picture_name>
+            <Picture_Width>90</Picture_Width>
+            <Picture_Height>95.8</Picture_Height>
+            <Submenu>
+                <Picture_name>submenu3</Picture_name>
+                <Picture_Width>20.8</Picture_Width>
+                <Picture_Height>2.89</Picture_Height>
+            </Submenu>
+        </Menu>
+    </Menus_Module>
+    <!-- 展示模块 -->
+    <Display_Module>
+        <Width>800</Width>
+        <Height>900</Height>
+    </Display_Module>
+</Universal_UI>

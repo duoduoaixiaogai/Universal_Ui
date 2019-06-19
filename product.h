@@ -81,6 +81,8 @@ namespace Jinhui {
     QString mRootDirPath;
     // 翻译文件目录路径
     QString mTraDirPath;
+    // 每种语言的计数器(加载语言加1，卸载语言减1)
+    static char mCnCount;
   };
 
   /*
@@ -100,29 +102,29 @@ namespace Jinhui {
    */
   class XMLParser : public Parser {
   public:
-    XMLParser(QObject *parent = nullptr);
+    XMLParser(QObject* parent = nullptr);
     ~XMLParser() = default;
     QSharedPointer<const Protocol> getProtocol() const Q_DECL_OVERRIDE;
     void parse(const QString& filePath) Q_DECL_OVERRIDE;
   protected:
     // QXmlStreamReader 令牌类型处理函数
-    void noToken(const QXmlStreamReader& reader);
-    void invalid(const QXmlStreamReader& reader);
-    void startDocument(const QXmlStreamReader& reader);
-    void endDocument(const QXmlStreamReader& reader);
-    void startElement(const QXmlStreamReader& reader);
-    void endElement(const QXmlStreamReader& reader);
-    void characters(const QXmlStreamReader& reader);
-    void comment(const QXmlStreamReader& reader);
-    void dtd(const QXmlStreamReader& reader);
-    void entityReference(const QXmlStreamReader& reader);
-    void processingInstruction(const QXmlStreamReader& reader);
+    virtual void noToken(const QXmlStreamReader& reader);
+    virtual void invalid(const QXmlStreamReader& reader);
+    virtual void startDocument(const QXmlStreamReader& reader);
+    virtual void endDocument(const QXmlStreamReader& reader);
+    virtual void startElement(const QXmlStreamReader& reader);
+    virtual void endElement(const QXmlStreamReader& reader);
+    virtual void characters(const QXmlStreamReader& reader);
+    virtual void comment(const QXmlStreamReader& reader);
+    virtual void dtd(const QXmlStreamReader& reader);
+    virtual void entityReference(const QXmlStreamReader& reader);
+    virtual void processingInstruction(const QXmlStreamReader& reader);
     // QXmlStreamReader 错误处理函数
-    void noError(const QXmlStreamReader& reader);
-    void customError(const QXmlStreamReader& reader);
-    void notWellFormedError(const QXmlStreamReader& reader);
-    void prematureEndofDocumentError(const QXmlStreamReader& reader);
-    void unexpectedElementError(const QXmlStreamReader& reader);
+    virtual void noError(const QXmlStreamReader& reader);
+    virtual void customError(const QXmlStreamReader& reader);
+    virtual void notWellFormedError(const QXmlStreamReader& reader);
+    virtual void prematureEndofDocumentError(const QXmlStreamReader& reader);
+    virtual void unexpectedElementError(const QXmlStreamReader& reader);
   protected:
     QSharedPointer<Protocol> mProtocol;
   };
@@ -138,6 +140,8 @@ namespace Jinhui {
       TITLE,
       DOORFACE,
       MENUS,
+      MENU,
+      SUBMENU,
     } Label_Type;
   public:
     XMLParserGTXLQX(QObject *parent = nullptr);
@@ -146,7 +150,7 @@ namespace Jinhui {
     // 函数的覆盖
     // 令牌类型处理函数
     //void startDocument(const QXmlStreamReader& reader);
-    void startElement(const QXmlStreamReader& reader);
+    void startElement(const QXmlStreamReader& reader) Q_DECL_OVERRIDE;
 
     // 错误处理函数
     //void notWellFormedError(const QXmlStreamReader& reader);
@@ -157,11 +161,14 @@ namespace Jinhui {
     void readTitleModule(const QXmlStreamReader& reader);
     void readDoorfaceModule(const QXmlStreamReader& reader);
     void readMenusModule(const QXmlStreamReader& reader);
+    void readMenu(const QXmlStreamReader& reader);
+    void readSubmenu(const QXmlStreamReader& reader);
     // 转换函数 元素标签的名称转换为元素标签的枚举类型
     Label_Type labelNameTolabelType(const QString& name);
   private:
     // 模块的名称
-    const QLatin1String mUniversalModule, mTitleModule, mDoorfaceModule, mMenusModule;
+    const QLatin1String mUniversalModule, mTitleModule, mDoorfaceModule, mMenusModule
+    ,mMenu, mSubmenu;
     // 菜单的数量
     const int mMenusCount;
   };

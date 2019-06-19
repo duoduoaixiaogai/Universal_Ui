@@ -9,6 +9,9 @@ namespace Jinhui {
   /*
    * Language
    */
+  // Static variable initalize out of class
+  char Language::mCnCount = 0;
+
   // ctor
   Language::Language(QObject* parent)
     :QObject(parent)
@@ -81,19 +84,34 @@ namespace Jinhui {
 
     ConfigPro::Lan lan = mLanguages[lanNameEnumToLanNameStr(mCurrentLan)];
     try {
-      if (!mTranslator.load(QLocale(), lan.filename, lan.prefix, mTraDirPath, lan.suffix)) {
-        throw LoadTranslationFile();
+      QString relativeDir = getExeInDirPath()
+                            .append('/')
+                            .append(mTraDirPath);
+      // 不包含前缀 调用包含绝对文件名的加载函数
+      if (lan.prefix.isNull()) {
+        if (!mTranslator.load(lan.filename, relativeDir)) {
+          throw LoadTranslationFile();
+        }
+      } else {
+        // 包含前缀 调用包含前缀的加载函数
+        if (!mTranslator.load(QLocale(), lan.filename, lan.prefix, relativeDir, lan.suffix)) {
+          throw LoadTranslationFile();
+        }
       }
-      if (qApp->removeTranslator(&mTranslator)) {
-        throw delTranslationFile();
+      // 语言计数大于1证明翻译文件已经被加载到了翻译文件列表中
+      if (mCnCount) {
+        if (!qApp->removeTranslator(&mTranslator)) {
+          throw delTranslationFile();
+        }
       }
-      if (qApp->installTranslator(&mTranslator)) {
+      if (!qApp->installTranslator(&mTranslator)) {
         throw addTranslationFile();
       }
+      mCnCount++;
     } catch (LanguageException& ex) {
       const QString msg = ex.what();
       ex.writeLogError(msg);
-      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      //ex.showMessage(nullptr, MessageLevel::ERROR, msg);
     }
   }
 

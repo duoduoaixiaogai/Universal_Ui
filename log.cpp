@@ -8,19 +8,16 @@
 
 namespace Jinhui {
   // Static variable initalize out of class
-  const QString Log::mInfo = QLatin1String("INFO");
-  const QString Log::mWarn = QLatin1String("WARN");
-  const QString Log::mFatal = QLatin1String("FATAL");
+  const QString Log::mInfo = tr("INFO");
+  const QString Log::mWarn = tr("WARN");
+  const QString Log::mFatal = tr("FATAL");
   QMutex Log::mMutex;
 
   /*
    * Log
    */
   Log::Log(QObject *parent)
-    :QObject(parent)
-    /*,mInfo("INFO")
-    ,mWarn("WARN")
-    ,mFatal("FATAL")*/ {
+    :QObject(parent) {
     qInstallMessageHandler(Log::logMessageHandler);
   }
 
@@ -73,17 +70,17 @@ namespace Jinhui {
 
     switch (logLve) {
       case INFO:
-        filePath = QString("%1_%2.log")
+        filePath = QString("%1/%2.log")
                    .arg(fileFolder)
                    .arg(mInfo);
         break;
       case WARN:
-        filePath = QString("%1_%2.log")
+        filePath = QString("%1/%2.log")
                    .arg(fileFolder)
                    .arg(mWarn);
         break;
       case FATAL:
-        filePath = QString("%1_%2.log")
+        filePath = QString("%1/%2.log")
                    .arg(fileFolder)
                    .arg(mFatal);
         break;

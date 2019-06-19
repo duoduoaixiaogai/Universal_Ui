@@ -53,6 +53,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    translation_cn.ts \
     ui.xml \
-    config.xml
+    xml/config.xml \
+    xml/ui.xml \
+    translation.cn.ts
