@@ -213,6 +213,7 @@ namespace Jinhui {
   XMLParserGTXLQX::XMLParserGTXLQX(QObject* parent)
     :XMLParser(parent)
     ,mUniversalModule("Universal_Module")
+    ,mMainWindowModule("MainWindow_Module")
     ,mTitleModule("Title_Module")
     ,mDoorfaceModule("Doorface_Module")
     ,mMenusModule("Menus_Module")
@@ -250,6 +251,9 @@ namespace Jinhui {
         break;
       case UNIVERSAL:
         readUniversalModule(reader);
+        break;
+      case MAINWINDOW:
+        readMainWindowModule(reader);
         break;
       case TITLE:
         readTitleModule(reader);
@@ -319,6 +323,41 @@ namespace Jinhui {
         protocol->rootDirPath = xml.readElementText();
       } else if (QLatin1String("Pictures_Dir_Path") == name) {
         protocol->picDirPath = xml.readElementText();
+        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+        break;
+      }
+    }
+  }
+
+  void XMLParserGTXLQX::readMainWindowModule(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mMainWindowModule == reader.name());
+
+    QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
+    QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
+    try {
+      if (!protocol) {
+        throw DowncastProtocolConversion();
+      }
+    } catch (ProtocolException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogError(msg);
+      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      return;
+    }
+
+    protocol->proType = GTXLQX;
+    while (xml.readNextStartElement()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Rimless") == name) {
+        protocol->rimless = xml.readElementText();
+      } else if (QLatin1String("Menubar") == name) {
+        protocol->menubar = xml.readElementText();
+      } else if (QLatin1String("Statusbar") == name) {
+        protocol->statusbar = xml.readElementText();
+      } else if (QLatin1String("MinWidth") == name) {
+        protocol->mainMinWidth = xml.readElementText();
+      } else if (QLatin1String("MinHeight") == name) {
+        protocol->mainMinHeight = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
       }
@@ -511,6 +550,8 @@ namespace Jinhui {
 
     if (mUniversalModule == name) {
       labelType = UNIVERSAL;
+    } else if (mMainWindowModule == name) {
+      labelType = MAINWINDOW;
     } else if (mTitleModule == name) {
       labelType = TITLE;
     } else if (mDoorfaceModule == name) {

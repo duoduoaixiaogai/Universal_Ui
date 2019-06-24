@@ -33,6 +33,22 @@ namespace Jinhui {
         .append("ui.xml");
   }
 
+  // 字符串转布尔类型(字符串为: yes no; true false;)
+  static bool strToBool(const QString& str) {
+    if (0 == str.compare(QLatin1String("yes"), Qt::CaseInsensitive)) {
+      return true;
+    } else if (0 == str.compare(QLatin1String("true"), Qt::CaseInsensitive)) {
+      return true;
+    } else if (0 == str.compare(QLatin1String("no"), Qt::CaseInsensitive)) {
+      return false;
+    } else if (0 == str.compare(QLatin1String("false"), Qt::CaseInsensitive)) {
+      return false;
+    }
+
+    // 默认值为 true
+    return true;
+  }
+
 }
 
 #endif // COMMON_H

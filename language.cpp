@@ -14,7 +14,7 @@ namespace Jinhui {
 
   // ctor
   Language::Language(QObject* parent)
-    :QObject(parent)
+    :Product(parent)
     ,mCurrentLan(INVALID)
     ,mChinese("Chinese") {
     loadTranslationFiles();

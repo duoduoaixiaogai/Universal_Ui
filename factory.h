@@ -18,7 +18,8 @@ namespace Jinhui {
     Factory(QObject* parent = nullptr);
     ~Factory() = default;
     // 工厂方法
-    virtual QSharedPointer<Product> createProduct();
+    template<class... Args>
+    QSharedPointer<Product> createProduct(Args&&... args);
   };
 
   // ctor
@@ -27,8 +28,9 @@ namespace Jinhui {
     :QObject(parent) {}
 
   template<class theProduct>
-  QSharedPointer<Product> Factory<theProduct>::createProduct() {
-    return qSharedPointerDynamicCast<Product, theProduct>(QSharedPointer<theProduct>(new theProduct));
+  template<class... Args>
+  QSharedPointer<Product> Factory<theProduct>::createProduct(Args&&... args) {
+    return qSharedPointerDynamicCast<Product, theProduct>(QSharedPointer<theProduct>(new theProduct(std::forward<Args>(args)...)));
   }
 
 }

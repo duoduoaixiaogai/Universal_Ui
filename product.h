@@ -2,12 +2,14 @@
 * Description: 产品类(工厂方法模式)
 * Author: Niu yi qun
 * Creation date: 2019/6/11
+* Last modified person: Niu yi qun
 * Last modified date: 2019/6/17
 ******************************************************************************/
 #ifndef PRODUCT_H
 #define PRODUCT_H
 
 #include "protocol.h"
+#include "ui_mainwindow.h"
 
 #include <QObject>
 #include <QSharedPointer>
@@ -52,7 +54,7 @@ namespace Jinhui {
   /*
    * 基类 语言类
    */
-  class Language : public QObject {
+  class Language : public Product{
   protected:
     // 语言的枚举类型
     enum LanTypes {
@@ -83,6 +85,21 @@ namespace Jinhui {
     QString mTraDirPath;
     // 每种语言的计数器(加载语言加1，卸载语言减1)
     static char mCnCount;
+  };
+
+  /*
+   * 基类 主窗口类
+   */
+  class MainWindow : public Product {
+  public:
+    MainWindow(QWidget* parent = nullptr);
+    ~MainWindow() = default;
+  public:
+    QSharedPointer<QMainWindow> mMainWindow;
+  protected:
+    QSharedPointer<Ui::MainWindow> mUi;
+    // 主窗口中央小部件(此处不能用智能指针，因为QMainWindow获取小部件指针的所有权并在适当的时候删除它)
+    QWidget* mCentralWidget;
   };
 
   /*
@@ -137,6 +154,7 @@ namespace Jinhui {
     typedef enum Label_Type {
       INVALID = 0x30,
       UNIVERSAL,
+      MAINWINDOW,
       TITLE,
       DOORFACE,
       MENUS,
@@ -158,6 +176,7 @@ namespace Jinhui {
   private:
     // 读取模块中元素的内容
     void readUniversalModule(const QXmlStreamReader& reader);
+    void readMainWindowModule(const QXmlStreamReader& reader);
     void readTitleModule(const QXmlStreamReader& reader);
     void readDoorfaceModule(const QXmlStreamReader& reader);
     void readMenusModule(const QXmlStreamReader& reader);
@@ -167,7 +186,7 @@ namespace Jinhui {
     Label_Type labelNameTolabelType(const QString& name);
   private:
     // 模块的名称
-    const QLatin1String mUniversalModule, mTitleModule, mDoorfaceModule, mMenusModule
+    const QLatin1String mUniversalModule, mMainWindowModule, mTitleModule, mDoorfaceModule, mMenusModule
     ,mMenu, mSubmenu;
     // 菜单的数量
     const int mMenusCount;
@@ -204,6 +223,30 @@ namespace Jinhui {
     const QLatin1String mUniversalModule, mLanguagesModule;
     // 语言的数量
     const int mLansCount;
+  };
+
+  /*
+   * 子类 高铁线路缺陷主窗口类
+   */
+  class MainWindow_GTXLQX : public MainWindow {
+  public:
+    MainWindow_GTXLQX(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    ~MainWindow_GTXLQX();
+  protected:
+    // 自动创建主窗口
+    void autoCreateMainWindow();
+    // 设置主窗口标志
+    void setMainWindowFlags();
+    // 设置菜单栏
+    void setMenubar();
+    // 设置状态栏
+    void setStatusbar();
+    // 设置主窗口最小尺寸
+    void setMainWinMinSize();
+    // 设置中央小部件
+    void setCentralWidget();
+  protected:
+    QSharedPointer<const Protocol> mProtocol;
   };
 
 }

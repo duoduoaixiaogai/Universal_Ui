@@ -44,6 +44,12 @@ namespace Jinhui {
     // 通用
     QString rootDirPath;
     QString picDirPath;
+    // 主窗口
+    QString rimless;
+    QString menubar;
+    QString statusbar;
+    QString mainMinWidth;
+    QString mainMinHeight;
     // 标题
     QString picNameTitle;
     QString picWidthTitle;

@@ -14,21 +14,29 @@ int main(int argc, char *argv[])
   Log log;
 
   QApplication a(argc, argv);
-  //MainWindow w;
-  //w.show();
 
   // 加载语言模块
+  QSharedPointer<SimplifiedChinese> lanChinese;
   {
     Factory<SimplifiedChinese> factory;
-    factory.createProduct();
+    lanChinese = qSharedPointerDynamicCast<SimplifiedChinese, Product>(factory.createProduct());
   }
 
   // 加载高铁线路缺陷解析模块
+  QSharedPointer<const GTXLQXPro> proGTXLQX;
   {
     Factory<XMLParserGTXLQX> factory;
-    QSharedPointer<XMLParserGTXLQX> parser = qSharedPointerDynamicCast<XMLParserGTXLQX, Product>(factory.createProduct());
-    parser->parse(getUiFilePath());
-    QSharedPointer<const GTXLQXPro> protocol = qSharedPointerCast<const GTXLQXPro, const Protocol>(parser->getProtocol());
+    QSharedPointer<XMLParserGTXLQX> parserGTXLQX = qSharedPointerDynamicCast<XMLParserGTXLQX, Product>(factory.createProduct());
+    parserGTXLQX->parse(getUiFilePath());
+    proGTXLQX = qSharedPointerCast<const GTXLQXPro, const Protocol>(parserGTXLQX->getProtocol());
+  }
+
+  // 加载主窗口
+  QSharedPointer<MainWindow_GTXLQX> mainWinGTXLQX;
+  {
+    Factory<MainWindow_GTXLQX> factory;
+    mainWinGTXLQX = qSharedPointerDynamicCast<MainWindow_GTXLQX, Product>(factory.createProduct(proGTXLQX));
+    mainWinGTXLQX->mMainWindow->show();
   }
 
   return a.exec();
