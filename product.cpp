@@ -390,10 +390,10 @@ namespace Jinhui {
       QStringRef name = reader.name();
       if (QLatin1String("Picture_name") == name) {
         protocol->titlePicName = xml.readElementText();
-      } else if (QLatin1String("Picture_Width") == name) {
-        protocol->titlePicWidth = xml.readElementText();
-      } else if (QLatin1String("Picture_Height") == name) {
-        protocol->titlePicHeight = xml.readElementText();
+      } else if (QLatin1String("Min_WidgetWidth") == name) {
+        protocol->titleMinWidgetWidth = xml.readElementText();
+      } else if (QLatin1String("Min_WidgetHeight") == name) {
+        protocol->titleMinWidgetHeight = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
       }

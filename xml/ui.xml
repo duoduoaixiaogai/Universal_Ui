@@ -21,9 +21,9 @@
   </MainWindow_Module>
   <!-- 标题模块 -->
   <Title_Module>
-    <Picture_name>title.png</Picture_name>
-    <Picture_Width>100</Picture_Width>
-    <Picture_Height>200</Picture_Height>
+    <Picture_name>title</Picture_name>
+    <Min_WidgetWidth>900</Min_WidgetWidth>
+    <Min_WidgetHeight>40</Min_WidgetHeight>
     <Title_Text>High-speed rail picture detection system</Title_Text>
   </Title_Module>
   <!-- 标题栏最小化、最大化、关闭标签模块 -->
@@ -31,14 +31,14 @@
     <!-- 鼠标跟踪(是否为窗口小部件启用了鼠标跟踪) -->
     <MouseTracking>yes</MouseTracking>
     <!-- 最小化 -->
-    <Min_PictureDefault>mindefault.png</Min_PictureDefault>
-    <Min_PictureMoved>minmoved.png</Min_PictureMoved>
+    <Min_PictureDefault>mindefault</Min_PictureDefault>
+    <Min_PictureMoved>minmoved</Min_PictureMoved>
     <Min_WidgetMinWidth>100</Min_WidgetMinWidth>
     <Min_WidgetMinHeight>40</Min_WidgetMinHeight>
     <!-- 最大化 -->
     <!-- 窗口正常显示时 -->
-    <Normal_PictureDefault>normaldefault.png</Normal_PictureDefault>
-    <Normal_PictureMoved>normalmoved.png</Normal_PictureMoved>
+    <Normal_PictureDefault>normaldefault</Normal_PictureDefault>
+    <Normal_PictureMoved>normalmoved</Normal_PictureMoved>
     <Normal_WidgetMinWidth>100</Normal_WidgetMinWidth>
     <Normal_WidgetMinHeight>40</Normal_WidgetMinHeight>
     <!-- 窗口最大化显示时 -->

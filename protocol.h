@@ -60,8 +60,8 @@ namespace Jinhui {
      * 标题
      */
     QString titlePicName;
-    QString titlePicWidth;
-    QString titlePicHeight;
+    QString titleMinWidgetWidth;
+    QString titleMinWidgetHeight;
     /*
      * 标题标签
      */

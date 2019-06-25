@@ -366,6 +366,8 @@ namespace Jinhui {
   public:
     Titlebar_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~Titlebar_Label() = default;
+    void setMinSizeWidget() Q_DECL_OVERRIDE;
+    void setDefPictureWidget() Q_DECL_OVERRIDE;
   protected:
     void mouseMoveEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
 

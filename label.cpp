@@ -260,6 +260,26 @@ namespace Jinhui {
   Titlebar_Label::Titlebar_Label(QSharedPointer<const Protocol> protocol, QWidget* parent)
     :Label(parent) {
     mProtocol = protocol;
+
+    setMinSizeWidget();
+    setDefPictureWidget();
+  }
+
+  void Titlebar_Label::setMinSizeWidget() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    int minWidth = pro->titleMinWidgetWidth.toInt();
+    int minHeight = pro->titleMinWidgetHeight.toInt();
+    setMinimumSize(minWidth, minHeight);
+  }
+
+  void Titlebar_Label::setDefPictureWidget() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    int minWidth = pro->titleMinWidgetWidth.toInt();
+    int minHeight = pro->titleMinWidgetHeight.toInt();
+    QString pictureDefault = getAbsoluteFilename(pro->picDirPath, pro->titlePicName);
+    setPicture(minWidth, minHeight, pictureDefault);
   }
 
   // protected
