@@ -21,7 +21,7 @@
   </MainWindow_Module>
   <!-- 标题模块 -->
   <Title_Module>
-    <Picture_name>title.jpg</Picture_name>
+    <Picture_name>title.png</Picture_name>
     <Picture_Width>100</Picture_Width>
     <Picture_Height>200</Picture_Height>
     <Title_Text>High-speed rail picture detection system</Title_Text>
@@ -31,26 +31,26 @@
     <!-- 鼠标跟踪(是否为窗口小部件启用了鼠标跟踪) -->
     <MouseTracking>yes</MouseTracking>
     <!-- 最小化 -->
-    <Min_PictureDefault></Min_PictureDefault>
-    <Min_PictureMoved></Min_PictureMoved>
-    <Min_WidgetMinWidth></Min_WidgetMinWidth>
-    <Min_WidgetMinHeight></Min_WidgetMinHeight>
+    <Min_PictureDefault>mindefault.png</Min_PictureDefault>
+    <Min_PictureMoved>minmoved.png</Min_PictureMoved>
+    <Min_WidgetMinWidth>100</Min_WidgetMinWidth>
+    <Min_WidgetMinHeight>40</Min_WidgetMinHeight>
     <!-- 最大化 -->
     <!-- 窗口正常显示时 -->
-    <Normal_PictureDefault></Normal_PictureDefault>
-    <Normal_PictureMoved></Normal_PictureMoved>
-    <Normal_WidgetMinWidth></Normal_WidgetMinWidth>
-    <Normal_WidgetMinHeight></Normal_WidgetMinHeight>
+    <Normal_PictureDefault>normaldefault.png</Normal_PictureDefault>
+    <Normal_PictureMoved>normalmoved.png</Normal_PictureMoved>
+    <Normal_WidgetMinWidth>100</Normal_WidgetMinWidth>
+    <Normal_WidgetMinHeight>40</Normal_WidgetMinHeight>
     <!-- 窗口最大化显示时 -->
-    <Max_PictureDefault></Max_PictureDefault>
-    <Max_PictureMoved></Max_PictureMoved>
-    <Max_WidgetMinWidth></Max_WidgetMinWidth>
-    <Max_WidgetMinHeight></Max_WidgetMinHeight>
+    <Max_PictureDefault>maxdefault</Max_PictureDefault>
+    <Max_PictureMoved>maxmoved</Max_PictureMoved>
+    <Max_WidgetMinWidth>100</Max_WidgetMinWidth>
+    <Max_WidgetMinHeight>40</Max_WidgetMinHeight>
     <!-- 关闭 -->
-    <Shut_PictureDefault></Shut_PictureDefault>
-    <Shut_PictureMoved></Shut_PictureMoved>
-    <Shut_WidgetMinWidth></Shut_WidgetMinWidth>
-    <Shut_WidgetMinHeight></Shut_WidgetMinHeight>
+    <Shut_PictureDefault>shutdefault</Shut_PictureDefault>
+    <Shut_PictureMoved>shutmoved</Shut_PictureMoved>
+    <Shut_WidgetMinWidth>100</Shut_WidgetMinWidth>
+    <Shut_WidgetMinHeight>40</Shut_WidgetMinHeight>
   </TitleLabel_Module>
   <!-- 门脸模块（标题栏下方展示图片的区域）-->
   <Doorface_Module>

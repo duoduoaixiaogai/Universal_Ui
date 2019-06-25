@@ -49,6 +49,15 @@ namespace Jinhui {
     return true;
   }
 
+  // 拼接指定目录与文件名，返回可执行文件目录下拼接后的文件的绝对路径
+  static QString getAbsoluteFilename(const QString& dir, const QString& filename) {
+    return getExeInDirPath()
+        .append('/')
+        .append(dir)
+        .append('/')
+        .append(filename);
+  }
+
 }
 
 #endif // COMMON_H

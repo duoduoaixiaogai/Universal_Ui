@@ -3,6 +3,8 @@
 //#include "mainwindow.h"
 //#include "ui_mainwindow.h"
 
+#include <QHBoxLayout>
+
 namespace Jinhui {
   /*
    * MainWindow
@@ -81,14 +83,22 @@ namespace Jinhui {
   }
 
   void GTXLQX_MainWindow::setCentralWidget() {
+    setLayoutCentralWidget();
     addTitlebar();
     addDoorface();
     addMenubar();
     addContentWindow();
   }
 
-  void GTXLQX_MainWindow::addTitlebar() {
+  void GTXLQX_MainWindow::setLayoutCentralWidget() {
+    QHBoxLayout* hLayout = new QHBoxLayout;
+    mCentralWidget->setLayout(hLayout);
+  }
 
+  void GTXLQX_MainWindow::addTitlebar() {
+    Titlebar* titlebar = new Titlebar;
+    titlebar->setupUi(mProtocol);
+    mCentralWidget->layout()->addWidget(titlebar);
   }
 
   void GTXLQX_MainWindow::addDoorface() {

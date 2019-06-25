@@ -135,6 +135,8 @@ namespace Jinhui {
   public:
     Widget(QWidget* parent = nullptr);
     ~Widget() = default;
+    // 设置自定义界面
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
   };
 
   /*
@@ -283,6 +285,8 @@ namespace Jinhui {
     void setMainWinMinSize();
     // 设置中央小部件
     void setCentralWidget();
+    // 设置中央小部件布局
+    void setLayoutCentralWidget();
     // 添加标题栏
     void addTitlebar();
     // 添加门脸
@@ -374,6 +378,7 @@ namespace Jinhui {
   public:
     Titlebar(QWidget* parent = nullptr);
     ~Titlebar() = default;
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
   };
 
 }

@@ -32,7 +32,8 @@ SOURCES += \
     log.cpp \
     exception.cpp \
     language.cpp \
-    label.cpp
+    label.cpp \
+    widget.cpp
 
 HEADERS += \
         mainwindow.h \
