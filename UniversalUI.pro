@@ -31,7 +31,8 @@ SOURCES += \
     product.cpp \
     log.cpp \
     exception.cpp \
-    language.cpp
+    language.cpp \
+    label.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -56,4 +57,5 @@ DISTFILES += \
     ui.xml \
     xml/config.xml \
     xml/ui.xml \
-    translation.cn.ts
+    translation.cn.ts \
+    readme.txt

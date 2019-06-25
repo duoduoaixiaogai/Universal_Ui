@@ -13,8 +13,8 @@ namespace Jinhui {
   char Language::mCnCount = 0;
 
   // ctor
-  Language::Language(QObject* parent)
-    :Product(parent)
+  Language::Language()
+    :Product()
     ,mCurrentLan(INVALID)
     ,mChinese("Chinese") {
     loadTranslationFiles();
@@ -77,8 +77,8 @@ namespace Jinhui {
    * SimplifiedChinese
    */
   // ctor
-  SimplifiedChinese::SimplifiedChinese(QObject* parent)
-    :Language(parent) {
+  SimplifiedChinese::SimplifiedChinese()
+    :Language() {
     // ? 下面这句话为何不能放到成员初始化列表中 难道基类受保护的成员变量不能在子类的成员初始化列表中初始化吗
     mCurrentLan = CHINESE;
 

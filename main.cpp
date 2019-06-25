@@ -25,17 +25,17 @@ int main(int argc, char *argv[])
   // 加载高铁线路缺陷解析模块
   QSharedPointer<const GTXLQXPro> proGTXLQX;
   {
-    Factory<XMLParserGTXLQX> factory;
-    QSharedPointer<XMLParserGTXLQX> parserGTXLQX = qSharedPointerDynamicCast<XMLParserGTXLQX, Product>(factory.createProduct());
+    Factory<GTXLQX_XMLParser> factory;
+    QSharedPointer<GTXLQX_XMLParser> parserGTXLQX = qSharedPointerDynamicCast<GTXLQX_XMLParser, Product>(factory.createProduct());
     parserGTXLQX->parse(getUiFilePath());
     proGTXLQX = qSharedPointerCast<const GTXLQXPro, const Protocol>(parserGTXLQX->getProtocol());
   }
 
   // 加载主窗口
-  QSharedPointer<MainWindow_GTXLQX> mainWinGTXLQX;
+  QSharedPointer<GTXLQX_MainWindow> mainWinGTXLQX;
   {
-    Factory<MainWindow_GTXLQX> factory;
-    mainWinGTXLQX = qSharedPointerDynamicCast<MainWindow_GTXLQX, Product>(factory.createProduct(proGTXLQX));
+    Factory<GTXLQX_MainWindow> factory;
+    mainWinGTXLQX = qSharedPointerDynamicCast<GTXLQX_MainWindow, Product>(factory.createProduct(proGTXLQX));
     mainWinGTXLQX->mMainWindow->show();
   }
 

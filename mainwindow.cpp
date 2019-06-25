@@ -9,7 +9,7 @@ namespace Jinhui {
    */
   // cotr
   MainWindow::MainWindow(QWidget *parent)
-    :Product(parent)
+    :Product()
     ,mMainWindow(QSharedPointer<QMainWindow>(new QMainWindow(parent)))
     ,mUi(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow))
     ,mCentralWidget(new QWidget)
@@ -25,19 +25,19 @@ namespace Jinhui {
   //}
 
   /*
-   * MainWindow_GTXLQX
+   * GTXLQX_MainWindow
    */
   // cotr
-  MainWindow_GTXLQX::MainWindow_GTXLQX(QSharedPointer<const Protocol> protocol, QWidget* parent)
+  GTXLQX_MainWindow::GTXLQX_MainWindow(QSharedPointer<const Protocol> protocol, QWidget* parent)
     :MainWindow(parent)
     ,mProtocol(protocol){
     autoCreateMainWindow();
   }
 
-  MainWindow_GTXLQX::~MainWindow_GTXLQX() {}
+  GTXLQX_MainWindow::~GTXLQX_MainWindow() {}
 
   // automatically create the main window
-  void MainWindow_GTXLQX::autoCreateMainWindow() {
+  void GTXLQX_MainWindow::autoCreateMainWindow() {
     setMainWindowFlags();
     setMenubar();
     setStatusbar();
@@ -45,7 +45,7 @@ namespace Jinhui {
     setCentralWidget();
   }
 
-  void MainWindow_GTXLQX::setMainWindowFlags() {
+  void GTXLQX_MainWindow::setMainWindowFlags() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
     bool rimless = strToBool(pro->rimless);
@@ -54,7 +54,7 @@ namespace Jinhui {
     }
   }
 
-  void MainWindow_GTXLQX::setMenubar() {
+  void GTXLQX_MainWindow::setMenubar() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
     bool menubar = strToBool(pro->menubar);
@@ -63,7 +63,7 @@ namespace Jinhui {
     }
   }
 
-  void MainWindow_GTXLQX::setStatusbar() {
+  void GTXLQX_MainWindow::setStatusbar() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
     bool statusbar = strToBool(pro->statusbar);
@@ -72,7 +72,7 @@ namespace Jinhui {
     }
   }
 
-  void MainWindow_GTXLQX::setMainWinMinSize() {
+  void GTXLQX_MainWindow::setMainWinMinSize() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
     int minWidth = pro->mainMinWidth.toInt();
@@ -80,7 +80,26 @@ namespace Jinhui {
     mMainWindow->setMinimumSize(minWidth, minHeight);
   }
 
-  void MainWindow_GTXLQX::setCentralWidget() {
+  void GTXLQX_MainWindow::setCentralWidget() {
+    addTitlebar();
+    addDoorface();
+    addMenubar();
+    addContentWindow();
+  }
+
+  void GTXLQX_MainWindow::addTitlebar() {
+
+  }
+
+  void GTXLQX_MainWindow::addDoorface() {
+
+  }
+
+  void GTXLQX_MainWindow::addMenubar() {
+
+  }
+
+  void GTXLQX_MainWindow::addContentWindow() {
 
   }
 }
