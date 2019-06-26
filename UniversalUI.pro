@@ -33,7 +33,8 @@ SOURCES += \
     exception.cpp \
     language.cpp \
     label.cpp \
-    widget.cpp
+    widget.cpp \
+    pushbutton.cpp
 
 HEADERS += \
         mainwindow.h \

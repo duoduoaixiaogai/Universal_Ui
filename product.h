@@ -15,10 +15,13 @@
 #include <QSharedPointer>
 #include <QTranslator>
 #include <QLabel>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 class QFile;
 class QXmlStreamReader;
+class QHBoxLayout;
+class QVBoxLayout;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -135,8 +138,23 @@ namespace Jinhui {
   public:
     Widget(QWidget* parent = nullptr);
     ~Widget() = default;
+    // 设置主窗口
+    virtual void setMainWindow(QSharedPointer<MainWindow> mainWindow);
     // 设置自定义界面
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
+  protected:
+    QSharedPointer<MainWindow> mMainWindow;
+  };
+
+  /*
+   * 基类 按钮类
+   */
+  class PushButton : public Product, public QPushButton {
+  public:
+    PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    ~PushButton() = default;
+  protected:
+    QSharedPointer<const Protocol> mProtocol;
   };
 
   /*
@@ -285,8 +303,8 @@ namespace Jinhui {
     void setMainWinMinSize();
     // 设置中央小部件
     void setCentralWidget();
-    // 设置中央小部件布局
-    void setLayoutCentralWidget();
+    // 设置布局
+    void setLayout();
     // 添加标题栏
     void addTitlebar();
     // 添加门脸
@@ -297,6 +315,8 @@ namespace Jinhui {
     void addContentWindow();
   protected:
     QSharedPointer<const Protocol> mProtocol;
+    QVBoxLayout* mVLayout;
+    QHBoxLayout* mTitleLayout, *mDoorfaceLayout, *mMenu_Content;
   };
 
   /*
@@ -374,6 +394,18 @@ namespace Jinhui {
   };
 
   /*
+   * 子类 门脸标签类
+   */
+  class Doorface_Label : public Label {
+  public:
+    Doorface_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    ~Doorface_Label() = default;
+  protected:
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+
+  };
+
+  /*
    * 子类 标题栏类
    */
   class Titlebar : public Widget {
@@ -381,6 +413,62 @@ namespace Jinhui {
     Titlebar(QWidget* parent = nullptr);
     ~Titlebar() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
+    ShutdownWindow_Label* shutdownWindowLabel;
+  };
+
+  /*
+   * 子类 菜单栏类
+   */
+  class Menubar : public Widget {
+  public:
+    Menubar(QWidget* parent = nullptr);
+    ~Menubar() = default;
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 子菜单栏类
+   */
+  class SubMenu : public Widget {
+  public:
+    SubMenu(QWidget* parent = nullptr);
+    ~SubMenu() = default;
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 内容区类
+   */
+  class ContentArea :public Widget {
+  public:
+    ContentArea(QWidget* parent = nullptr);
+    ~ContentArea() = default;
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  };
+
+ /*
+  * 子类 主菜单按钮类
+  */
+  class Menu_PushButton : public PushButton {
+  public:
+    Menu_PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    ~Menu_PushButton() = default;
+  protected:
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 子菜单按钮类
+   */
+  class SubMenu_PushButton : public PushButton {
+  public:
+    SubMenu_PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    ~SubMenu_PushButton() = default;
+  protected:
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
   };
 
 }

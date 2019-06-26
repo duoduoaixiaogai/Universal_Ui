@@ -38,9 +38,12 @@ namespace Jinhui {
       QString menuPicWidth;
       QString menuPicHeight;
       // 子菜单
+      /*
       QString subPicName;
       QString subPicWidth;
       QString subPicHeight;
+      */
+      QStringList itemsName;
     };
 
     /*

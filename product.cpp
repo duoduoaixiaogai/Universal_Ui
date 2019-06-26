@@ -595,6 +595,7 @@ namespace Jinhui {
     GTXLQXPro::Menu& menu = protocol->menus.last();
     while (xml.readNextStartElement()) {
       QStringRef name = reader.name();
+      /*
       if (QLatin1String("Picture_name") == name) {
         menu.subPicName = xml.readElementText();
       } else if (QLatin1String("Picture_Width") == name) {
@@ -604,6 +605,12 @@ namespace Jinhui {
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
       }
+      */
+      if (QLatin1String("End") == name) {
+        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+        break;
+      }
+      menu.itemsName.append(xml.readElementText());
     }
   }
 

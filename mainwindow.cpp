@@ -3,6 +3,7 @@
 //#include "mainwindow.h"
 //#include "ui_mainwindow.h"
 
+#include <QVBoxLayout>
 #include <QHBoxLayout>
 
 namespace Jinhui {
@@ -32,7 +33,12 @@ namespace Jinhui {
   // cotr
   GTXLQX_MainWindow::GTXLQX_MainWindow(QSharedPointer<const Protocol> protocol, QWidget* parent)
     :MainWindow(parent)
-    ,mProtocol(protocol){
+    ,mProtocol(protocol)
+    ,mVLayout(new QVBoxLayout)
+  ,mTitleLayout(new QHBoxLayout)
+  ,mDoorfaceLayout(new QHBoxLayout)
+  ,mMenu_Content(new QHBoxLayout){
+    setLayout();
     autoCreateMainWindow();
   }
 
@@ -83,33 +89,39 @@ namespace Jinhui {
   }
 
   void GTXLQX_MainWindow::setCentralWidget() {
-    setLayoutCentralWidget();
     addTitlebar();
     addDoorface();
     addMenubar();
     addContentWindow();
   }
 
-  void GTXLQX_MainWindow::setLayoutCentralWidget() {
-    QHBoxLayout* hLayout = new QHBoxLayout;
-    mCentralWidget->setLayout(hLayout);
+  void GTXLQX_MainWindow::setLayout() {
+    mCentralWidget->setLayout(mVLayout);
+    mVLayout->addLayout(mTitleLayout, 1);
+    mVLayout->addLayout(mDoorfaceLayout, 4);
+    mVLayout->addLayout(mMenu_Content, 50);
+    //mLayout->setContentsMargins(8, 8, 8, 8);
   }
 
   void GTXLQX_MainWindow::addTitlebar() {
     Titlebar* titlebar = new Titlebar;
-    titlebar->setupUi(mProtocol);
-    mCentralWidget->layout()->addWidget(titlebar);
+    titlebar->setMainWindow(QSharedPointer<GTXLQX_MainWindow>(this));
+    mTitleLayout->addWidget(titlebar);
   }
 
   void GTXLQX_MainWindow::addDoorface() {
-
+    Doorface_Label* doorfaceLabel = new Doorface_Label(mProtocol);
+    mDoorfaceLayout->addWidget(doorfaceLabel);
   }
 
   void GTXLQX_MainWindow::addMenubar() {
-
+    Menubar* menubar = new Menubar;
+    menubar->setupUi(mProtocol);
+    mMenu_Content->addWidget(menubar, 1);
   }
 
   void GTXLQX_MainWindow::addContentWindow() {
-
+    ContentArea* contentArea = new ContentArea;
+    mMenu_Content->addWidget(contentArea, 5);
   }
 }

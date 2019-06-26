@@ -9,6 +9,7 @@
 #include "common.h"
 
 #include <QMouseEvent>
+#include <QPainter>
 
 namespace Jinhui {
   /*
@@ -68,8 +69,8 @@ namespace Jinhui {
   void MinWindow_Label::setDefPictureWidget() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->minWidgetMinWidth.toInt();
-    int minHeight = pro->minWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureDefault = getAbsoluteFilename(pro->picDirPath, pro->minPicDefault);
     setPicture(minWidth, minHeight, pictureDefault);
   }
@@ -77,8 +78,8 @@ namespace Jinhui {
   void MinWindow_Label::setMouseInWidgetPicture() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->minWidgetMinWidth.toInt();
-    int minHeight = pro->minWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureMoved = getAbsoluteFilename(pro->picDirPath, pro->minPicMoved);
     setPicture(minWidth, minHeight, pictureMoved);
   }
@@ -163,8 +164,8 @@ namespace Jinhui {
   void MaxWindow_Label::setNormalWindowDefPicture() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->normalWidgetMinWidth.toInt();
-    int minHeight = pro->normalWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureDefault = getAbsoluteFilename(pro->picDirPath, pro->normalPicDefault);
     setPicture(minWidth, minHeight, pictureDefault);
   }
@@ -172,8 +173,8 @@ namespace Jinhui {
   void MaxWindow_Label::setNormalWindowMouseInWidgetPicture() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->normalWidgetMinWidth.toInt();
-    int minHeight = pro->normalWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureMoved = getAbsoluteFilename(pro->picDirPath, pro->normalPicMoved);
     setPicture(minWidth, minHeight, pictureMoved);
   }
@@ -181,8 +182,8 @@ namespace Jinhui {
   void MaxWindow_Label::setMaxWindowDefPicture() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->maxWidgetMinWidth.toInt();
-    int minHeight = pro->maxWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureDefault = getAbsoluteFilename(pro->picDirPath, pro->maxPicDefault);
     setPicture(minWidth, minHeight, pictureDefault);
   }
@@ -190,8 +191,8 @@ namespace Jinhui {
   void MaxWindow_Label::setMaxWindowMouseInWidgetPicture() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->maxWidgetMinWidth.toInt();
-    int minHeight = pro->maxWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureMoved = getAbsoluteFilename(pro->picDirPath, pro->maxPicMoved);
     setPicture(minWidth, minHeight, pictureMoved);
   }
@@ -227,8 +228,8 @@ namespace Jinhui {
   void ShutdownWindow_Label::setDefPictureWidget() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->shutWidgetMinWidth.toInt();
-    int minHeight = pro->shutWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureDefault = getAbsoluteFilename(pro->picDirPath, pro->shutPicDefault);
     setPicture(minWidth, minHeight, pictureDefault);
   }
@@ -236,8 +237,8 @@ namespace Jinhui {
   void ShutdownWindow_Label::setMouseInWidgetPicture() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->shutWidgetMinWidth.toInt();
-    int minHeight = pro->shutWidgetMinHeight.toInt();
+    int minWidth = width();
+    int minHeight = width();
     QString pictureMoved = getAbsoluteFilename(pro->picDirPath, pro->shutPicMoved);
     setPicture(minWidth, minHeight, pictureMoved);
   }
@@ -246,11 +247,13 @@ namespace Jinhui {
   void ShutdownWindow_Label::mouseMoveEvent(QMouseEvent *ev) {
     setMouseInWidgetPicture();
 
-    ev->accept();
+    //ev->accept();
   }
 
   void ShutdownWindow_Label::mouseReleaseEvent(QMouseEvent *ev) {
     mMainWindow->mMainWindow->close();
+
+    ev->accept();
   }
 
   /*
@@ -261,8 +264,8 @@ namespace Jinhui {
     :Label(parent) {
     mProtocol = protocol;
 
-    setMinSizeWidget();
-    setDefPictureWidget();
+    //setMinSizeWidget();
+    //setDefPictureWidget();
   }
 
   void Titlebar_Label::setMinSizeWidget() {
@@ -276,15 +279,34 @@ namespace Jinhui {
   void Titlebar_Label::setDefPictureWidget() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
-    int minWidth = pro->titleMinWidgetWidth.toInt();
-    int minHeight = pro->titleMinWidgetHeight.toInt();
+    int minWidth = width();
+    int minHeight = height();
     QString pictureDefault = getAbsoluteFilename(pro->picDirPath, pro->titlePicName);
+    setPixmap(pictureDefault);
     setPicture(minWidth, minHeight, pictureDefault);
   }
 
   // protected
   void Titlebar_Label::mouseMoveEvent(QMouseEvent *ev) {
     mMainWindow->mMainWindow->move(ev->globalPos());
+  }
+
+  /*
+   * Doorface_Label
+   */
+  // cotr
+  Doorface_Label::Doorface_Label(QSharedPointer<const Protocol> protocol, QWidget* parent)
+    :Label(parent) {
+    mProtocol = protocol;
+  }
+
+  void Doorface_Label::paintEvent(QPaintEvent* ev) {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    QPainter painter(this);
+    QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, pro->doorPicName));
+    QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
+    painter.drawPixmap(rect(), scaPixmap);
   }
 
 }
