@@ -34,7 +34,9 @@ SOURCES += \
     language.cpp \
     label.cpp \
     widget.cpp \
-    pushbutton.cpp
+    pushbutton.cpp \
+    frame.cpp \
+    signalrelay.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,7 +45,8 @@ HEADERS += \
     protocol.h \
     log.h \
     exception.h \
-    common.h
+    common.h \
+    signalrelay.h
 
 FORMS += \
         mainwindow.ui

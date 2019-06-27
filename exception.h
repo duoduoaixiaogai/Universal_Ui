@@ -82,6 +82,16 @@ namespace Jinhui {
     const QString what() const Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 基类 参数异常类
+   */
+  class ParameterException : public Exception {
+  public:
+    ParameterException() = default;
+    ~ParameterException() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -214,6 +224,16 @@ namespace Jinhui {
   public:
     addTranslationFile() = default;
     ~addTranslationFile() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 参数数量不正确
+   */
+  class IncorrectNumberParameters : public ParameterException {
+  public:
+    IncorrectNumberParameters() = default;
+    ~IncorrectNumberParameters() = default;
     const QString what() const Q_DECL_OVERRIDE;
   };
 }

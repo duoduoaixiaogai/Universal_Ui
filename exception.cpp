@@ -103,6 +103,13 @@ namespace Jinhui {
   }
 
   /*
+   * ParameterException
+   */
+  const QString ParameterException::what() const {
+    return QObject::tr("Parameter error!");
+  }
+
+  /*
    * ParserExceptionXml
    */
   const QString ParserExceptionXml::what() const {
@@ -177,6 +184,13 @@ namespace Jinhui {
    */
   const QString addTranslationFile::what() const {
     return QObject::tr("failed add translation file!");
+  }
+
+  /*
+   * IncorrectNumberParameters
+   */
+  const QString IncorrectNumberParameters::what() const {
+    return QObject::tr("Incorrect number of parameters!");
   }
 
 }

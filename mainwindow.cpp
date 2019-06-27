@@ -1,5 +1,6 @@
 #include "product.h"
 #include "common.h"
+#include "exception.h"
 //#include "mainwindow.h"
 //#include "ui_mainwindow.h"
 
@@ -22,6 +23,8 @@ namespace Jinhui {
     //autoCreateMainWindow();
   }
 
+  void MainWindow::setBackgroundColor() {}
+
   //MainWindow::~MainWindow()
   //{
   //  delete ui;
@@ -35,11 +38,18 @@ namespace Jinhui {
     :MainWindow(parent)
     ,mProtocol(protocol)
     ,mVLayout(new QVBoxLayout)
-  ,mTitleLayout(new QHBoxLayout)
-  ,mDoorfaceLayout(new QHBoxLayout)
-  ,mMenu_Content(new QHBoxLayout){
+    ,mTitleLayout(new QHBoxLayout)
+    ,mDoorfaceLayout(new QHBoxLayout)
+    ,mMenu_Content(new QHBoxLayout){
+    setBackgroundColor();
     setLayout();
     autoCreateMainWindow();
+  }
+
+  void GTXLQX_MainWindow::setBackgroundColor() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    mMainWindow->setStyleSheet(pro->mainBackgroundCol);
   }
 
   GTXLQX_MainWindow::~GTXLQX_MainWindow() {}
@@ -96,16 +106,61 @@ namespace Jinhui {
   }
 
   void GTXLQX_MainWindow::setLayout() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
     mCentralWidget->setLayout(mVLayout);
-    mVLayout->addLayout(mTitleLayout, 1);
-    mVLayout->addLayout(mDoorfaceLayout, 4);
-    mVLayout->addLayout(mMenu_Content, 50);
+    mVLayout->addLayout(mTitleLayout, pro->titlebarStretch.toInt());
+    mVLayout->addLayout(mDoorfaceLayout, pro->doorfaceStretch.toInt());
+    mVLayout->addLayout(mMenu_Content, pro->menuContentStretch.toInt());
+    mVLayout->setSpacing(pro->mainwindowSpacing.toInt());
+    QString separator = pro->separator;
+    try {
+      QStringList contentsMargins = pro->mainwindowContentsMargins.split(separator);
+      if (4 != contentsMargins.count()) {
+        throw IncorrectNumberParameters();
+      }
+      mVLayout->setContentsMargins(contentsMargins.at(0).toInt()
+                                   ,contentsMargins.at(1).toInt()
+                                   ,contentsMargins.at(2).toInt()
+                                   ,contentsMargins.at(3).toInt());
+      contentsMargins = pro->titlebarContentsMargins.split(separator);
+      if (4 != contentsMargins.count()) {
+        throw IncorrectNumberParameters();
+      }
+      mTitleLayout->setContentsMargins(contentsMargins.at(0).toInt()
+                                       ,contentsMargins.at(1).toInt()
+                                       ,contentsMargins.at(2).toInt()
+                                       ,contentsMargins.at(3).toInt());
+      contentsMargins = pro->doorfaceContentsMargins.split(separator);
+      if (4 != contentsMargins.count()) {
+        throw IncorrectNumberParameters();
+      }
+      mDoorfaceLayout->setContentsMargins(contentsMargins.at(0).toInt()
+                                          ,contentsMargins.at(1).toInt()
+                                          ,contentsMargins.at(2).toInt()
+                                          ,contentsMargins.at(3).toInt());
+      contentsMargins = pro->menuContentsMargins.split(separator);
+      if (4 != contentsMargins.count()) {
+        throw IncorrectNumberParameters();
+      }
+      mMenu_Content->setContentsMargins(contentsMargins.at(0).toInt()
+                                        ,contentsMargins.at(1).toInt()
+                                        ,contentsMargins.at(2).toInt()
+                                        ,contentsMargins.at(3).toInt());
+
+    } catch (ParameterException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogError(msg);
+      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      return;
+    }
     //mLayout->setContentsMargins(8, 8, 8, 8);
   }
 
   void GTXLQX_MainWindow::addTitlebar() {
     Titlebar* titlebar = new Titlebar;
     titlebar->setMainWindow(QSharedPointer<GTXLQX_MainWindow>(this));
+    titlebar->setupUi(mProtocol);
     mTitleLayout->addWidget(titlebar);
   }
 
@@ -122,6 +177,7 @@ namespace Jinhui {
 
   void GTXLQX_MainWindow::addContentWindow() {
     ContentArea* contentArea = new ContentArea;
+    contentArea->setupUi(mProtocol);
     mMenu_Content->addWidget(contentArea, 5);
   }
 }

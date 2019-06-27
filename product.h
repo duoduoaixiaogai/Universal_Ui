@@ -22,6 +22,7 @@ class QFile;
 class QXmlStreamReader;
 class QHBoxLayout;
 class QVBoxLayout;
+class QStackedWidget;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -98,6 +99,8 @@ namespace Jinhui {
   public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow() = default;
+    // 设置主窗口中央小部件的背景色
+    virtual void setBackgroundColor();
   public:
     QSharedPointer<QMainWindow> mMainWindow;
   protected:
@@ -158,6 +161,20 @@ namespace Jinhui {
   };
 
   /*
+   * 基类 框架类
+   */
+  class Frame : public Product, public QFrame {
+  public:
+    Frame(QWidget* parent = nullptr);
+    ~Frame() = default;
+    // 设置自定义界面
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+  };
+
+  /*******************************************************************************
+   * 子类
+   ******************************************************************************/
+  /*
    * 子类 中文(简体)
    */
   class SimplifiedChinese : public Language {
@@ -166,9 +183,6 @@ namespace Jinhui {
     ~SimplifiedChinese() = default;
   };
 
-  /*******************************************************************************
-   * 子类
-   ******************************************************************************/
   /*
    * 子类 XML解析器类
    */
@@ -216,6 +230,7 @@ namespace Jinhui {
       MENUS,
       MENU,
       SUBMENU,
+      LAYOUT,
     } Label_Type;
   public:
     GTXLQX_XMLParser();
@@ -239,13 +254,14 @@ namespace Jinhui {
     void readMenusModule(const QXmlStreamReader& reader);
     void readMenu(const QXmlStreamReader& reader);
     void readSubmenu(const QXmlStreamReader& reader);
+    void readLayout(const QXmlStreamReader& reader);
     // 转换函数 元素标签的名称转换为元素标签的枚举类型
     Label_Type labelNameTolabelType(const QString& name);
   private:
     // 模块的名称
     const QLatin1String mUniversalModule, mMainWindowModule, mTitleModule
     ,mTitleLabelModule, mDoorfaceModule, mMenusModule
-    ,mMenu, mSubmenu;
+    ,mMenu, mSubmenu, mLayout;
     // 菜单的数量
     const int mMenusCount;
   };
@@ -290,6 +306,8 @@ namespace Jinhui {
   public:
     GTXLQX_MainWindow(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~GTXLQX_MainWindow();
+    void setBackgroundColor() Q_DECL_OVERRIDE;
+  public:
   protected:
     // 自动创建主窗口
     void autoCreateMainWindow();
@@ -394,6 +412,48 @@ namespace Jinhui {
   };
 
   /*
+   * 子类 标题栏标签类(包含最小化、最大化、关闭按钮)
+   */
+  class TitlebarMinMaxShut_Label : public Label {
+  protected:
+    enum TitleButton {
+      INVALID = 0x60,
+      MIN,
+      MAX,
+      SHUT,
+    };
+  public:
+    TitlebarMinMaxShut_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    ~TitlebarMinMaxShut_Label() = default;
+    void setMousetrackingWidget() Q_DECL_OVERRIDE;
+  protected:
+    void mouseMoveEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    // 获取最小化按钮的区域
+    QRect getMinButtonRegion();
+    // 获取最大化按钮的区域
+    QRect getMaxButtonRegion();
+    // 获取关闭按钮的区域
+    QRect getShutButtonRegion();
+  protected:
+    QPoint mOldCursorPoint;
+    // 按钮宽度、高度
+    int mButtonWidth;
+    int mButtonHeight;
+    // 填充的空白区域大小
+    int mSpacing;
+    // 当前鼠标点击或移动到的按钮类型
+    TitleButton mCurrentTitleButton;
+    // 鼠标左键是否按下
+    bool mLeftButtonPressed;
+    // 主窗口当前是否为最大化显示
+    bool mMainWinMaxDisplayCurrent;
+  };
+
+  /*
    * 子类 门脸标签类
    */
   class Doorface_Label : public Label {
@@ -413,10 +473,6 @@ namespace Jinhui {
     Titlebar(QWidget* parent = nullptr);
     ~Titlebar() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
-  protected:
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-
-    ShutdownWindow_Label* shutdownWindowLabel;
   };
 
   /*
@@ -434,9 +490,12 @@ namespace Jinhui {
    */
   class SubMenu : public Widget {
   public:
-    SubMenu(QWidget* parent = nullptr);
+    SubMenu(const QStringList& items, QWidget* parent = nullptr);
     ~SubMenu() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    // 菜单项
+    const QStringList mItems;
   };
 
   /*
@@ -447,6 +506,15 @@ namespace Jinhui {
     ContentArea(QWidget* parent = nullptr);
     ~ContentArea() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    // 向容器中添加小部件
+    void addWidgetInContentArea(Widget* widget);
+    // 从容器中删除小部件
+    void removeWidgetInContentArea(const QString& name);
+  protected:
+    // 内容区中所有小部件的容器(容器中存储的每一个小部件是一个整体，这个整体中添加自定义的界面)
+    QStackedWidget* mWidgets;
+    // 存储所有小部件的名称与小部件
+    QHash<const QString, Widget*> mWidgetsIndex;
   };
 
  /*
@@ -454,21 +522,35 @@ namespace Jinhui {
   */
   class Menu_PushButton : public PushButton {
   public:
-    Menu_PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    Menu_PushButton(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
     ~Menu_PushButton() = default;
   protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+  protected:
+    const QString mFileName;
   };
 
   /*
-   * 子类 子菜单按钮类
+   * 子类 菜单项按钮类
    */
-  class SubMenu_PushButton : public PushButton {
+  class MenuItem_PushButton : public PushButton {
   public:
-    SubMenu_PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
-    ~SubMenu_PushButton() = default;
+    MenuItem_PushButton(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
+    ~MenuItem_PushButton() = default;
   protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+  protected:
+    const QString mFileName;
+  };
+
+  /*
+   * 四分屏类
+   */
+  class QuadScreen : public Widget {
+  public:
+    QuadScreen(QWidget* parent = nullptr);
+    ~QuadScreen() = default;
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
   };
 
 }

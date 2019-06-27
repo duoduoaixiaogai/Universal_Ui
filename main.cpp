@@ -39,5 +39,6 @@ int main(int argc, char *argv[])
     mainWinGTXLQX->mMainWindow->show();
   }
 
+
   return a.exec();
 }

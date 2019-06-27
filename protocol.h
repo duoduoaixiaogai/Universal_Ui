@@ -59,6 +59,7 @@ namespace Jinhui {
     QString statusbar;
     QString mainMinWidth;
     QString mainMinHeight;
+    QString mainBackgroundCol;
     /*
      * 标题
      */
@@ -101,6 +102,27 @@ namespace Jinhui {
      * 所有的菜单
      */
     QVector<Menu> menus;
+
+    /*
+     * 布局
+     */
+    QString separator;
+    // 主窗口
+    QString mainwindowContentsMargins;
+    QString mainwindowSpacing;
+    // 标题栏
+    QString titlebarContentsMargins;
+    QString titlebarSpacing;
+    QString titlebarStretch;
+    // 门脸
+    QString doorfaceContentsMargins;
+    QString doorfaceSpacing;
+    QString doorfaceStretch;
+    // 菜单和内容区
+    QString menuContentsMargins;
+    QString menuContentSpacing;
+    QString menuContentStretch;
+
   } GTXLQXPro;
 
   /*

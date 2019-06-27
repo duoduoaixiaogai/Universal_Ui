@@ -221,6 +221,7 @@ namespace Jinhui {
     ,mMenusModule("Menus_Module")
     ,mMenu("Menu")
     ,mSubmenu("Submenu")
+    ,mLayout("Layout")
     ,mMenusCount(3) {
     mProtocol = QSharedPointer<Protocol>(new GTXLQXPro);
   }
@@ -274,6 +275,9 @@ namespace Jinhui {
         break;
       case SUBMENU:
         readSubmenu(reader);
+        break;
+      case LAYOUT:
+        readLayout(reader);
         break;
     }
   }
@@ -363,6 +367,8 @@ namespace Jinhui {
         protocol->mainMinWidth = xml.readElementText();
       } else if (QLatin1String("MinHeight") == name) {
         protocol->mainMinHeight = xml.readElementText();
+      } else if (QLatin1String("Background_Color") == name) {
+        protocol->mainBackgroundCol = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
       }
@@ -614,6 +620,55 @@ namespace Jinhui {
     }
   }
 
+  void GTXLQX_XMLParser::readLayout(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mLayout == reader.name());
+
+    QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
+    QSharedPointer<GTXLQXPro> protocol = qSharedPointerCast<GTXLQXPro, Protocol>(mProtocol);
+    try {
+      if (!protocol) {
+        throw DowncastProtocolConversion();
+      }
+    } catch (ProtocolException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogError(msg);
+      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      return;
+    }
+
+    protocol->proType = GTXLQX;
+    while (xml.readNextStartElement()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Separator") == name) {
+        protocol->separator = xml.readElementText();
+      } else if (QLatin1String("MainWindow_ContentsMargins") == name) {
+        protocol->mainwindowContentsMargins = xml.readElementText();
+      } else if (QLatin1String("MainWindow_Spacing") == name) {
+        protocol->mainwindowSpacing = xml.readElementText();
+      } else if (QLatin1String("Titlebar_ContentsMargins") == name) {
+        protocol->titlebarContentsMargins = xml.readElementText();
+      } else if (QLatin1String("Titlebar_Spacing") == name) {
+        protocol->titlebarSpacing = xml.readElementText();
+      } else if (QLatin1String("Titlebar_Stretch") == name) {
+        protocol->titlebarStretch = xml.readElementText();
+      } else if (QLatin1String("Doorface_ContentsMargins") == name) {
+        protocol->doorfaceContentsMargins = xml.readElementText();
+      } else if (QLatin1String("Doorface_Spacing") == name) {
+        protocol->doorfaceSpacing = xml.readElementText();
+      } else if (QLatin1String("Doorface_Stretch") == name) {
+        protocol->doorfaceStretch = xml.readElementText();
+      } else if (QLatin1String("MenuContent_ContentsMargins") == name) {
+        protocol->menuContentsMargins = xml.readElementText();
+      } else if (QLatin1String("MenuContent_Spacing") == name) {
+        protocol->menuContentSpacing = xml.readElementText();
+      } else if (QLatin1String("MenuContent_Stretch") == name) {
+        protocol->menuContentStretch = xml.readElementText();
+        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+        break;
+      }
+    }
+  }
+
   // private
   // label name to label type
   GTXLQX_XMLParser::Label_Type GTXLQX_XMLParser::labelNameTolabelType(const QString& name) {
@@ -635,7 +690,9 @@ namespace Jinhui {
       labelType = MENU;
     } else if (mSubmenu == name) {
       labelType = SUBMENU;
-    } else {
+    } else if (mLayout == name) {
+      labelType = LAYOUT;
+    }else {
       labelType = INVALID;
     }
 

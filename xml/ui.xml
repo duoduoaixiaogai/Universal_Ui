@@ -18,6 +18,7 @@
     <Statusbar>no</Statusbar>
     <MinWidth>1200</MinWidth>
     <MinHeight>900</MinHeight>
+    <Background_Color>background: white</Background_Color>
   </MainWindow_Module>
   <!-- 标题模块 -->
   <Title_Module>
@@ -91,6 +92,9 @@
         <Item1_Name>submenu1</Item1_Name>
         <Item2_Name>submenu2</Item2_Name>
         <Item3_Name>submenu3</Item3_Name>
+        <Item1_Name>submenu4</Item1_Name>
+        <Item2_Name>submenu5</Item2_Name>
+        <Item3_Name>submenu6</Item3_Name>
         <End></End>
       </Submenu>
     </Menu>
@@ -117,4 +121,26 @@
     <Width>800</Width>
     <Height>900</Height>
   </Display_Module>
+  <!-- 布局模块 -->
+  <Layout>
+    <!-- 分隔符 -->
+    <Separator>,</Separator>
+    <!-- 主窗口布局 -->
+    <!-- 左、上、右、下 写入时不应该包含空格，只应该包含上面指定的分隔符 -->
+    <MainWindow_ContentsMargins>11,0,11,11</MainWindow_ContentsMargins>
+    <MainWindow_Spacing>0</MainWindow_Spacing>
+    <!-- 标题栏布局 -->
+    <Titlebar_ContentsMargins>0,0,0,0</Titlebar_ContentsMargins>
+    <Titlebar_Spacing></Titlebar_Spacing>
+    <Titlebar_Stretch>2</Titlebar_Stretch>
+    <!-- 门脸布局 -->
+    <Doorface_ContentsMargins>0,0,0,0</Doorface_ContentsMargins>
+    <Doorface_Spacing></Doorface_Spacing>
+    <Doorface_Stretch>4</Doorface_Stretch>
+    <!-- 菜单栏和内容区 -->
+    <MenuContent_ContentsMargins>0,11,0,0</MenuContent_ContentsMargins>
+    <MenuContent_Spacing></MenuContent_Spacing>
+    <MenuContent_Stretch>50</MenuContent_Stretch>
+
+  </Layout>
 </Universal_UI>

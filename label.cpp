@@ -292,6 +292,203 @@ namespace Jinhui {
   }
 
   /*
+   * TitlebarMinMaxShut_Label
+   */
+  // cotr
+  TitlebarMinMaxShut_Label::TitlebarMinMaxShut_Label(QSharedPointer<const Protocol> protocol, QWidget* parent)
+    :Label(parent)
+    ,mButtonWidth(30)
+    ,mButtonHeight(10)
+    ,mSpacing(5)
+    ,mLeftButtonPressed(false)
+    ,mMainWinMaxDisplayCurrent(false) {
+    mProtocol = protocol;
+    setMousetrackingWidget();
+  }
+
+  void TitlebarMinMaxShut_Label::setMousetrackingWidget() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    bool mousetracking = strToBool(pro->mousetracking);
+    setMouseTracking(mousetracking);
+
+  }
+
+  void TitlebarMinMaxShut_Label::mouseMoveEvent(QMouseEvent *ev) {
+    const QPoint pos = ev->pos();
+    if (mLeftButtonPressed && !getMinButtonRegion().contains(pos) && !getMaxButtonRegion().contains(pos)
+        && !getShutButtonRegion().contains(pos) && !mMainWinMaxDisplayCurrent) {
+      mMainWindow->mMainWindow->move(ev->globalPos() - mOldCursorPoint + mMainWindow->mMainWindow->pos());
+      // 实时更新鼠标上一次的位置
+      mOldCursorPoint = ev->globalPos();
+      ev->accept();
+    }
+
+    if (getMinButtonRegion().contains(pos)) {
+      mCurrentTitleButton = MIN;
+      update();
+      ev->accept();
+    } else if (getMaxButtonRegion().contains(pos)) {
+      mCurrentTitleButton = MAX;
+      update();
+      ev->accept();
+    } else if (getShutButtonRegion().contains(pos)) {
+      mCurrentTitleButton = SHUT;
+      update();
+      ev->accept();
+    } else {
+      mCurrentTitleButton = INVALID;
+      update();
+    }
+
+    ev->ignore();
+  }
+
+  void TitlebarMinMaxShut_Label::mousePressEvent(QMouseEvent *ev) {
+    if (Qt::LeftButton == ev->button()) {
+      mLeftButtonPressed = true;
+      mOldCursorPoint = ev->globalPos();
+      ev->accept();
+    }
+    ev->ignore();
+  }
+
+  void TitlebarMinMaxShut_Label::mouseReleaseEvent(QMouseEvent *ev) {
+    if (Qt::LeftButton == ev->button()) {
+      mLeftButtonPressed = false;
+
+      const QPoint pos = ev->pos();
+      if (getMinButtonRegion().contains(pos)) {
+        mMainWindow->mMainWindow->showMinimized();
+        ev->accept();
+      } else if (getMaxButtonRegion().contains(pos)) {
+        if (mMainWindow->mMainWindow->isMaximized()) {
+          mMainWindow->mMainWindow->showNormal();
+          mMainWinMaxDisplayCurrent = false;
+        } else {
+          mMainWindow->mMainWindow->showMaximized();
+          mMainWinMaxDisplayCurrent = true;
+        }
+        ev->accept();
+      } else if (getShutButtonRegion().contains(pos)) {
+        mMainWindow->mMainWindow->close();
+        ev->accept();
+      }
+
+      mCurrentTitleButton = INVALID;
+      update();
+    }
+    ev->ignore();
+  }
+
+  void TitlebarMinMaxShut_Label::paintEvent(QPaintEvent* ev) {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    QPainter painter(this);
+    if (mMainWinMaxDisplayCurrent) {
+      // 标题栏背景
+      QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, pro->titlePicName));
+      QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
+      painter.drawPixmap(rect(), scaPixmap);
+      // 最小化按钮
+      QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicDefault));
+      QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+      painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
+      // 最大化按钮
+      QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->maxPicDefault));
+      QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+      painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
+      // 关闭按钮
+      QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicDefault));
+      QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+      painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
+
+      if (MIN == mCurrentTitleButton) {
+        QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicMoved));
+        QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+        painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
+
+      } else if (MAX == mCurrentTitleButton) {
+        QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->maxPicMoved));
+        QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+        painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
+
+      } else if (SHUT == mCurrentTitleButton) {
+        QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicMoved));
+        QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+        painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
+      }
+    } else {
+      // 标题栏背景
+      QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, pro->titlePicName));
+      QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
+      painter.drawPixmap(rect(), scaPixmap);
+      // 最小化按钮
+      QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicDefault));
+      QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+      painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
+      // 最大化按钮
+      QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->normalPicDefault));
+      QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+      painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
+      // 关闭按钮
+      QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicDefault));
+      QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+      painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
+
+      if (MIN == mCurrentTitleButton) {
+        QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicMoved));
+        QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+        painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
+
+      } else if (MAX == mCurrentTitleButton) {
+        QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->normalPicMoved));
+        QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+        painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
+
+      } else if (SHUT == mCurrentTitleButton) {
+        QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicMoved));
+        QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+        painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
+
+      }
+    }
+
+    ev->accept();
+  }
+
+  void TitlebarMinMaxShut_Label::mouseDoubleClickEvent(QMouseEvent *event) {
+    if (Qt::LeftButton == event->button()) {
+      if (mMainWindow->mMainWindow->isMaximized()) {
+        mMainWindow->mMainWindow->showNormal();
+        mMainWinMaxDisplayCurrent = false;
+      } else {
+        mMainWindow->mMainWindow->showMaximized();
+        mMainWinMaxDisplayCurrent = true;
+      }
+      event->accept();
+    }
+    event->ignore();
+  }
+
+  QRect TitlebarMinMaxShut_Label::getMinButtonRegion() {
+    return QRect(rect().width() - mButtonWidth * 3, rect().y() + mButtonHeight
+                 ,mButtonWidth, mButtonHeight);
+  }
+
+  QRect TitlebarMinMaxShut_Label::getMaxButtonRegion() {
+    return QRect(rect().width() - mButtonWidth * 2, rect().y() + mButtonHeight
+                 ,mButtonWidth, mButtonHeight);
+
+  }
+
+  QRect TitlebarMinMaxShut_Label::getShutButtonRegion() {
+    return QRect(rect().width() - mButtonWidth, rect().y() + mButtonHeight
+                 ,mButtonWidth, mButtonHeight);
+
+  }
+
+  /*
    * Doorface_Label
    */
   // cotr

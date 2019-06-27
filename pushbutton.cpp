@@ -6,6 +6,9 @@
 * Last modified date: 2019/6/26
 ******************************************************************************/
 #include "product.h"
+#include "common.h"
+
+#include <QPainter>
 
 namespace Jinhui {
 
@@ -16,5 +19,39 @@ namespace Jinhui {
   PushButton::PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent)
     :QPushButton(parent) {
     mProtocol = protocol;
+  }
+
+  /*
+   * Menu_PushButton
+   */
+  // cotr
+  Menu_PushButton::Menu_PushButton(QSharedPointer<const Protocol> protocol, const QString &fileName, QWidget* parent)
+    :PushButton(protocol, parent)
+    ,mFileName(fileName) {}
+
+  void Menu_PushButton::paintEvent(QPaintEvent* ev) {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    QPainter painter(this);
+    QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, mFileName));
+    QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
+    painter.drawPixmap(rect(), scaPixmap);
+  }
+
+  /*
+   * SubMenu_PushButton
+   */
+  // cotr
+  MenuItem_PushButton::MenuItem_PushButton(QSharedPointer<const Protocol> protocol, const QString &fileName, QWidget* parent)
+    :PushButton(protocol, parent)
+    ,mFileName(fileName) {}
+
+  void MenuItem_PushButton::paintEvent(QPaintEvent *) {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    QPainter painter(this);
+    QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, mFileName));
+    QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
+    painter.drawPixmap(rect(), scaPixmap);
   }
 }
