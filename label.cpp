@@ -10,6 +10,7 @@
 
 #include <QMouseEvent>
 #include <QPainter>
+#include <QBitmap>
 
 namespace Jinhui {
   /*
@@ -96,7 +97,7 @@ namespace Jinhui {
   void MinWindow_Label::mouseReleaseEvent(QMouseEvent *ev) {
     Q_UNUSED(ev);
 
-    mMainWindow->mMainWindow->showMinimized();
+    mMainWindow->showMinimized();
   }
 
 
@@ -133,7 +134,7 @@ namespace Jinhui {
   }
 
   void MaxWindow_Label::setMouseInWidgetPicture() {
-    if (mMainWindow->mMainWindow->isMaximized()) {
+    if (mMainWindow->isMaximized()) {
       setMaxWindowMouseInWidgetPicture();
     } else {
       setNormalWindowMouseInWidgetPicture();
@@ -149,12 +150,12 @@ namespace Jinhui {
   void MaxWindow_Label::mouseReleaseEvent(QMouseEvent *ev) {
     Q_UNUSED(ev);
 
-    if (mMainWindow->mMainWindow->isMaximized()) {
-      mMainWindow->mMainWindow->showNormal();
+    if (mMainWindow->isMaximized()) {
+      mMainWindow->showNormal();
 
       setNormalWindowDefPicture();
     } else {
-      mMainWindow->mMainWindow->showMaximized();
+      mMainWindow->showMaximized();
 
       setMaxWindowDefPicture();
     }
@@ -251,7 +252,7 @@ namespace Jinhui {
   }
 
   void ShutdownWindow_Label::mouseReleaseEvent(QMouseEvent *ev) {
-    mMainWindow->mMainWindow->close();
+    mMainWindow->close();
 
     ev->accept();
   }
@@ -288,7 +289,7 @@ namespace Jinhui {
 
   // protected
   void Titlebar_Label::mouseMoveEvent(QMouseEvent *ev) {
-    mMainWindow->mMainWindow->move(ev->globalPos());
+    mMainWindow->move(ev->globalPos());
   }
 
   /*
@@ -298,13 +299,15 @@ namespace Jinhui {
   TitlebarMinMaxShut_Label::TitlebarMinMaxShut_Label(QSharedPointer<const Protocol> protocol, QWidget* parent)
     :Label(parent)
     ,mButtonWidth(30)
-    ,mButtonHeight(10)
+    ,mButtonDisTop(10)
     ,mSpacing(5)
     ,mLeftButtonPressed(false)
     ,mMainWinMaxDisplayCurrent(false) {
     mProtocol = protocol;
     setMousetrackingWidget();
   }
+
+  TitlebarMinMaxShut_Label::~TitlebarMinMaxShut_Label() {}
 
   void TitlebarMinMaxShut_Label::setMousetrackingWidget() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
@@ -318,7 +321,7 @@ namespace Jinhui {
     const QPoint pos = ev->pos();
     if (mLeftButtonPressed && !getMinButtonRegion().contains(pos) && !getMaxButtonRegion().contains(pos)
         && !getShutButtonRegion().contains(pos) && !mMainWinMaxDisplayCurrent) {
-      mMainWindow->mMainWindow->move(ev->globalPos() - mOldCursorPoint + mMainWindow->mMainWindow->pos());
+      mMainWindow->move(ev->globalPos() - mOldCursorPoint + mMainWindow->pos());
       // 实时更新鼠标上一次的位置
       mOldCursorPoint = ev->globalPos();
       ev->accept();
@@ -359,19 +362,19 @@ namespace Jinhui {
 
       const QPoint pos = ev->pos();
       if (getMinButtonRegion().contains(pos)) {
-        mMainWindow->mMainWindow->showMinimized();
+        mMainWindow->showMinimized();
         ev->accept();
       } else if (getMaxButtonRegion().contains(pos)) {
-        if (mMainWindow->mMainWindow->isMaximized()) {
-          mMainWindow->mMainWindow->showNormal();
+        if (mMainWindow->isMaximized()) {
+          mMainWindow->showNormal();
           mMainWinMaxDisplayCurrent = false;
         } else {
-          mMainWindow->mMainWindow->showMaximized();
+          mMainWindow->showMaximized();
           mMainWinMaxDisplayCurrent = true;
         }
         ev->accept();
       } else if (getShutButtonRegion().contains(pos)) {
-        mMainWindow->mMainWindow->close();
+        mMainWindow->close();
         ev->accept();
       }
 
@@ -392,30 +395,30 @@ namespace Jinhui {
       painter.drawPixmap(rect(), scaPixmap);
       // 最小化按钮
       QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicDefault));
-      QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+      QPixmap scaMinPixmap = minPixmap.scaled(getMinButtonRegion().width(), getMinButtonRegion().height());
       painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
       // 最大化按钮
       QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->maxPicDefault));
-      QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+      QPixmap scaMaxPixmap = maxPixmap.scaled(getMaxButtonRegion().width(), getMaxButtonRegion().height());
       painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
       // 关闭按钮
       QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicDefault));
-      QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+      QPixmap scaShutPixmap = shutPixmap.scaled(getShutButtonRegion().width(), getShutButtonRegion().height());
       painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
 
       if (MIN == mCurrentTitleButton) {
         QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicMoved));
-        QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+        QPixmap scaMinPixmap = minPixmap.scaled(getMinButtonRegion().width(), getMinButtonRegion().height());
         painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
 
       } else if (MAX == mCurrentTitleButton) {
         QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->maxPicMoved));
-        QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+        QPixmap scaMaxPixmap = maxPixmap.scaled(getMaxButtonRegion().width(), getMaxButtonRegion().height());
         painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
 
       } else if (SHUT == mCurrentTitleButton) {
         QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicMoved));
-        QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+        QPixmap scaShutPixmap = shutPixmap.scaled(getShutButtonRegion().width(), getShutButtonRegion().height());
         painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
       }
     } else {
@@ -425,30 +428,30 @@ namespace Jinhui {
       painter.drawPixmap(rect(), scaPixmap);
       // 最小化按钮
       QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicDefault));
-      QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+      QPixmap scaMinPixmap = minPixmap.scaled(getMinButtonRegion().width(), getMinButtonRegion().height());
       painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
       // 最大化按钮
       QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->normalPicDefault));
-      QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+      QPixmap scaMaxPixmap = maxPixmap.scaled(getMaxButtonRegion().width(), getMaxButtonRegion().height());
       painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
       // 关闭按钮
       QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicDefault));
-      QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+      QPixmap scaShutPixmap = shutPixmap.scaled(getShutButtonRegion().width(), getShutButtonRegion().height());
       painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
 
       if (MIN == mCurrentTitleButton) {
         QPixmap minPixmap(getAbsoluteFilename(pro->picDirPath, pro->minPicMoved));
-        QPixmap scaMinPixmap = minPixmap.scaled(mButtonWidth, mButtonHeight);
+        QPixmap scaMinPixmap = minPixmap.scaled(getMinButtonRegion().width(), getMinButtonRegion().height());
         painter.drawPixmap(getMinButtonRegion(), scaMinPixmap);
 
       } else if (MAX == mCurrentTitleButton) {
         QPixmap maxPixmap(getAbsoluteFilename(pro->picDirPath, pro->normalPicMoved));
-        QPixmap scaMaxPixmap = maxPixmap.scaled(mButtonWidth, mButtonHeight);
+        QPixmap scaMaxPixmap = maxPixmap.scaled(getMaxButtonRegion().width(), getMaxButtonRegion().height());
         painter.drawPixmap(getMaxButtonRegion(), scaMaxPixmap);
 
       } else if (SHUT == mCurrentTitleButton) {
         QPixmap shutPixmap(getAbsoluteFilename(pro->picDirPath, pro->shutPicMoved));
-        QPixmap scaShutPixmap = shutPixmap.scaled(mButtonWidth, mButtonHeight);
+        QPixmap scaShutPixmap = shutPixmap.scaled(getShutButtonRegion().width(), getShutButtonRegion().height());
         painter.drawPixmap(getShutButtonRegion(), scaShutPixmap);
 
       }
@@ -459,11 +462,11 @@ namespace Jinhui {
 
   void TitlebarMinMaxShut_Label::mouseDoubleClickEvent(QMouseEvent *event) {
     if (Qt::LeftButton == event->button()) {
-      if (mMainWindow->mMainWindow->isMaximized()) {
-        mMainWindow->mMainWindow->showNormal();
+      if (mMainWindow->isMaximized()) {
+        mMainWindow->showNormal();
         mMainWinMaxDisplayCurrent = false;
       } else {
-        mMainWindow->mMainWindow->showMaximized();
+        mMainWindow->showMaximized();
         mMainWinMaxDisplayCurrent = true;
       }
       event->accept();
@@ -472,19 +475,19 @@ namespace Jinhui {
   }
 
   QRect TitlebarMinMaxShut_Label::getMinButtonRegion() {
-    return QRect(rect().width() - mButtonWidth * 3, rect().y() + mButtonHeight
-                 ,mButtonWidth, mButtonHeight);
+    return QRect(rect().width() - mButtonWidth * 3, rect().y() + mButtonDisTop
+                 ,mButtonWidth, rect().height() - mButtonDisTop);
   }
 
   QRect TitlebarMinMaxShut_Label::getMaxButtonRegion() {
-    return QRect(rect().width() - mButtonWidth * 2, rect().y() + mButtonHeight
-                 ,mButtonWidth, mButtonHeight);
+    return QRect(rect().width() - mButtonWidth * 2, rect().y() + mButtonDisTop
+                 ,mButtonWidth, rect().height() - mButtonDisTop);
 
   }
 
   QRect TitlebarMinMaxShut_Label::getShutButtonRegion() {
-    return QRect(rect().width() - mButtonWidth, rect().y() + mButtonHeight
-                 ,mButtonWidth, mButtonHeight);
+    return QRect(rect().width() - mButtonWidth, rect().y() + mButtonDisTop
+                 ,mButtonWidth, rect().height() - mButtonDisTop);
 
   }
 
@@ -506,4 +509,91 @@ namespace Jinhui {
     painter.drawPixmap(rect(), scaPixmap);
   }
 
+  /*
+   * Menu_Label
+   */
+  // cotr
+  Menu_Label::Menu_Label(QSharedPointer<const Protocol> protocol, const QString &fileName, QWidget* parent)
+    :Label(parent)
+    ,mFileName(fileName) {
+    mProtocol = protocol;
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    QPixmap pixmap(getAbsoluteFilename(pro->picDirPath, mFileName));
+    setPixmap(pixmap);
+    setMask(pixmap.mask());
+  }
+
+  void Menu_Label::mouseReleaseEvent(QMouseEvent *ev) {
+    if (Qt::LeftButton == ev->button()) {
+      emit clicked();
+      ev->accept();
+    }
+
+    ev->ignore();
+  }
+
+  /*
+   * MenuItem_Label
+   */
+  // cotr
+  MenuItem_Label::MenuItem_Label(QSharedPointer<const Protocol> protocol, const QString& itemDefaultPicture
+                                 ,const QString& itemClickedPicture, QWidget* parent)
+    :Label(parent)
+    ,mItemDefaultPicture(itemDefaultPicture)
+    ,mItemClickedPicture(itemClickedPicture) {
+    mProtocol = protocol;
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+    QPixmap pixmap(getAbsoluteFilename(pro->picDirPath, mItemDefaultPicture));
+    setPixmap(pixmap);
+    setMask(pixmap.mask());
+  }
+
+  QSize MenuItem_Label::sizeHint() const {
+    return minimumSizeHint();
+  }
+
+  QSize MenuItem_Label::minimumSizeHint() const {
+    return QSize(140, 30);
+  }
+
+  //void MenuItem_Label::paintEvent(QPaintEvent *event) {
+  //  Q_UNUSED(event);
+
+  //  QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+  //  QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, mFileName));
+  //  QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
+  //  setPixmap(scaPixmap);
+  //  setMask(scaPixmap.mask());
+  //}
+
+  void MenuItem_Label::mousePressEvent(QMouseEvent *ev) {
+    if (Qt::LeftButton == ev->button()) {
+      QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+      QPixmap pixmap(getAbsoluteFilename(pro->picDirPath, mItemClickedPicture));
+      setPixmap(pixmap);
+      setMask(pixmap.mask());
+
+      ev->accept();
+    }
+    ev->ignore();
+  }
+
+  void MenuItem_Label::mouseReleaseEvent(QMouseEvent *ev) {
+    if (Qt::LeftButton == ev->button()) {
+      QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+
+      QPixmap pixmap(getAbsoluteFilename(pro->picDirPath, mItemDefaultPicture));
+      setPixmap(pixmap);
+      setMask(pixmap.mask());
+
+      emit clicked();
+      ev->accept();
+    }
+
+    ev->ignore();
+  }
 }

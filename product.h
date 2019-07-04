@@ -16,6 +16,8 @@
 #include <QTranslator>
 #include <QLabel>
 #include <QPushButton>
+#include <QSqlTableModel>
+#include <QTableView>
 
 QT_BEGIN_NAMESPACE
 class QFile;
@@ -27,7 +29,14 @@ QT_END_NAMESPACE
 
 namespace Jinhui {
   // Forward declaration
-  // do nothing
+  class Titlebar;
+  class Doorface_Label;
+  class Menubar;
+  class ContentArea;
+  class Menu_Label;
+  class SubMenu;
+  class MenuItem_Label;
+  class Mysql_Connection;
 
   /*******************************************************************************
    * 基类
@@ -39,6 +48,12 @@ namespace Jinhui {
   public:
     Product();
     virtual ~Product() = default;
+    static void doDelete(Product* obj) {
+      if (obj) {
+        delete obj;
+        obj = nullptr;
+      }
+    }
   };
 
   /*
@@ -67,7 +82,7 @@ namespace Jinhui {
       CHINESE,
     };
   public:
-    Language();
+    Language(QSharedPointer<const Protocol> protocol);
     ~Language() = default;
   protected:
     // 加载翻译文件
@@ -90,23 +105,41 @@ namespace Jinhui {
     QString mTraDirPath;
     // 每种语言的计数器(加载语言加1，卸载语言减1)
     static char mCnCount;
+    QSharedPointer<const Protocol> mProtocol;
   };
 
   /*
    * 基类 主窗口类
    */
-  class MainWindow : public Product {
+  // 此类有问题 关闭程序时智能指针报错 后续查看下
+  //class MainWindow : public Product {
+  //public:
+  //  MainWindow(QWidget* parent = nullptr);
+  //  ~MainWindow() = default;
+  //  // 设置主窗口中央小部件的背景色
+  //  virtual void setBackgroundColor();
+  //public:
+  //  QSharedPointer<QMainWindow> mMainWindow;
+  //protected:
+  //  QSharedPointer<Ui::MainWindow> mUi;
+  //  // 主窗口中央小部件(此处不能用智能指针，因为QMainWindow获取小部件指针的所有权并在适当的时候删除它)
+  //  QWidget* mCentralWidget;
+  //};
+
+  /*
+   * MainWindow类的重新实现
+   */
+  class MainWindow : public Product, public QMainWindow {
   public:
-    MainWindow(QWidget* parent = nullptr);
-    ~MainWindow() = default;
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
     // 设置主窗口中央小部件的背景色
     virtual void setBackgroundColor();
-  public:
-    QSharedPointer<QMainWindow> mMainWindow;
+    static void doDeleteLater(Product* obj);
   protected:
-    QSharedPointer<Ui::MainWindow> mUi;
-    // 主窗口中央小部件(此处不能用智能指针，因为QMainWindow获取小部件指针的所有权并在适当的时候删除它)
     QWidget* mCentralWidget;
+  private:
+    Ui::MainWindow* mUi;
   };
 
   /*
@@ -171,6 +204,58 @@ namespace Jinhui {
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
   };
 
+  /*
+   * 基类 数据库类
+   */
+  class Database : public Product {
+  public:
+    Database(QSharedPointer<const Protocol> protocol);
+    ~Database() = default;
+    // 增
+    virtual void append_Into(const RecordType& record);
+    // 删
+    virtual void delete_From(const int row);
+    // 改
+    virtual void update();
+    // 查
+    virtual void selectEx();
+    // commit
+    virtual void commit();
+  protected:
+    QSharedPointer<const Protocol> mProtocol;
+  };
+
+  /*
+   * 基类 连接类
+   */
+  class Connection : public Product {
+  public:
+    Connection() = default;
+    ~Connection() = default;
+  };
+
+  /*
+   * 子类 数据库连接类
+   */
+  class Database_Connection : public Connection {
+  public:
+    Database_Connection(const QString& driver, const QString& connectionName);
+    ~Database_Connection();
+    // 打开连接
+    virtual void openConnection();
+  protected:
+    const QString mDriver, mConnectionName;
+  };
+
+  /*
+   * 基类 视图类
+   */
+  class View : public Product {
+  public:
+    View() = default;
+    ~View() = default;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -179,7 +264,7 @@ namespace Jinhui {
    */
   class SimplifiedChinese : public Language {
   public:
-    SimplifiedChinese();
+    SimplifiedChinese(QSharedPointer<const Protocol> protocol);
     ~SimplifiedChinese() = default;
   };
 
@@ -275,6 +360,7 @@ namespace Jinhui {
       INVALID = 0x40,
       UNIVERSAL,
       LANGUAGES,
+      DATABASE,
     } Label_Type;
   public:
     ConfigParser();
@@ -288,13 +374,14 @@ namespace Jinhui {
     // 读取模块中元素的内容
     void readUniversalModule(const QXmlStreamReader& reader);
     void readLanguagesModule(const QXmlStreamReader& reader);
+    void readDatabaseModule(const QXmlStreamReader& reader);
     // 转换函数 元素标签的名称转换为元素标签的枚举类型
     Label_Type labelNameTolabelType(const QString& name);
 
 
   private:
     // 模块的名称
-    const QLatin1String mUniversalModule, mLanguagesModule;
+    const QLatin1String mUniversalModule, mLanguagesModule, mDatabaseModule;
     // 语言的数量
     const int mLansCount;
   };
@@ -303,8 +390,10 @@ namespace Jinhui {
    * 子类 高铁线路缺陷主窗口类
    */
   class GTXLQX_MainWindow : public MainWindow {
+    Q_OBJECT
   public:
-    GTXLQX_MainWindow(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
+    GTXLQX_MainWindow(QSharedPointer<const Protocol> uiPro,
+                      QSharedPointer<const Protocol> configPro, QWidget* parent = nullptr);
     ~GTXLQX_MainWindow();
     void setBackgroundColor() Q_DECL_OVERRIDE;
   public:
@@ -331,10 +420,28 @@ namespace Jinhui {
     void addMenubar();
     // 添加内容窗口
     void addContentWindow();
+    // 连接信号和槽
+    void createConnect();
+  public slots:
+    void menu1Clicked();
+    void menu2Clicked();
+    void menu3Clicked();
+    void menu1Submenu1Item1Clicked();
+    void menu2Submenu1Item1Clicked();
   protected:
-    QSharedPointer<const Protocol> mProtocol;
+    QSharedPointer<const Protocol> mUiPro, mConfigPro;
     QVBoxLayout* mVLayout;
     QHBoxLayout* mTitleLayout, *mDoorfaceLayout, *mMenu_Content;
+    // 标题栏
+    Titlebar* mTitlebar;
+    // 门脸
+    Doorface_Label* mDoorfaceLabel;
+    // 菜单栏
+    Menubar* mMenubar;
+    // 内容区
+    ContentArea* mContentArea;
+
+
   };
 
   /*
@@ -424,7 +531,7 @@ namespace Jinhui {
     };
   public:
     TitlebarMinMaxShut_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
-    ~TitlebarMinMaxShut_Label() = default;
+    ~TitlebarMinMaxShut_Label();
     void setMousetrackingWidget() Q_DECL_OVERRIDE;
   protected:
     void mouseMoveEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
@@ -440,9 +547,9 @@ namespace Jinhui {
     QRect getShutButtonRegion();
   protected:
     QPoint mOldCursorPoint;
-    // 按钮宽度、高度
+    // 按钮的宽度、按钮与标题栏顶部的距离
     int mButtonWidth;
-    int mButtonHeight;
+    int mButtonDisTop;
     // 填充的空白区域大小
     int mSpacing;
     // 当前鼠标点击或移动到的按钮类型
@@ -468,34 +575,50 @@ namespace Jinhui {
   /*
    * 子类 标题栏类
    */
-  class Titlebar : public Widget {
+  class Titlebar final : public Widget {
   public:
     Titlebar(QWidget* parent = nullptr);
     ~Titlebar() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  private:
+    TitlebarMinMaxShut_Label* mTitlebarMinMaxShut;
+    friend class GTXLQX_MainWindow;
   };
 
   /*
    * 子类 菜单栏类
    */
-  class Menubar : public Widget {
+  class Menubar final : public Widget {
+    Q_OBJECT
   public:
     Menubar(QWidget* parent = nullptr);
     ~Menubar() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    // 隐藏所有子菜单
+    void hideAllSubmenus();
+  private:
+    // 所有主菜单
+    QHash<const QString, Menu_Label*> mMenus;
+    // 所有子菜单
+    QHash<const QString, SubMenu*> mSubmenus;
+    friend class GTXLQX_MainWindow;
   };
 
   /*
    * 子类 子菜单栏类
    */
   class SubMenu : public Widget {
+    Q_OBJECT
   public:
-    SubMenu(const QStringList& items, QWidget* parent = nullptr);
+    SubMenu(const GTXLQXPro::Submenu& subMenu, QWidget* parent = nullptr);
     ~SubMenu() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
   protected:
-    // 菜单项
-    const QStringList mItems;
+    // 子菜单
+    const GTXLQXPro::Submenu mSubmenu;
+    // 所有菜单项
+    QHash<const QString, MenuItem_Label*> mMenuItems;
+    friend class GTXLQX_MainWindow;
   };
 
   /*
@@ -503,29 +626,50 @@ namespace Jinhui {
    */
   class ContentArea :public Widget {
   public:
-    ContentArea(QWidget* parent = nullptr);
+    ContentArea(QSharedPointer<const Protocol> configPro, QWidget* parent = nullptr);
     ~ContentArea() = default;
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     // 向容器中添加小部件
     void addWidgetInContentArea(Widget* widget);
     // 从容器中删除小部件
     void removeWidgetInContentArea(const QString& name);
+    // 显示指定小部件
+    void showSpecifiedWidget(Widget* widget);
   protected:
     // 内容区中所有小部件的容器(容器中存储的每一个小部件是一个整体，这个整体中添加自定义的界面)
     QStackedWidget* mWidgets;
     // 存储所有小部件的名称与小部件
     QHash<const QString, Widget*> mWidgetsIndex;
+    QSharedPointer<const Protocol> mConfigPro;
+    friend class GTXLQX_MainWindow;
   };
 
- /*
+  /*
   * 子类 主菜单按钮类
   */
   class Menu_PushButton : public PushButton {
+    Q_OBJECT
   public:
     Menu_PushButton(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
     ~Menu_PushButton() = default;
   protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+  protected:
+    const QString mFileName;
+  };
+
+  /*
+   * 子类 主菜单标签类
+   */
+  class Menu_Label : public Label {
+    Q_OBJECT
+  public:
+    Menu_Label(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
+    ~Menu_Label() = default;
+  Q_SIGNALS:
+    void clicked();
+  protected:
+    void mouseReleaseEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
   protected:
     const QString mFileName;
   };
@@ -544,6 +688,27 @@ namespace Jinhui {
   };
 
   /*
+   * 子类 菜单项标签类
+   */
+  class MenuItem_Label : public Label {
+    Q_OBJECT
+  public:
+    MenuItem_Label(QSharedPointer<const Protocol> protocol, const QString& itemDefaultPicture
+                   ,const QString& itemClickedPicture, QWidget* parent = nullptr);
+    ~MenuItem_Label() = default;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+  Q_SIGNALS:
+    void clicked();
+  protected:
+    //void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
+  protected:
+    const QString mItemDefaultPicture, mItemClickedPicture;
+  };
+
+  /*
    * 四分屏类
    */
   class QuadScreen : public Widget {
@@ -553,6 +718,64 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 子类  Mysql数据库类
+   */
+  class Mysql_Database : public Database, public QSqlTableModel {
+  public:
+    Mysql_Database(QSqlDatabase connection, QSharedPointer<const Protocol> protocol, QObject* parent = nullptr);
+    ~Mysql_Database();
+    // 增
+    virtual void append_Into(const RecordType& record) Q_DECL_OVERRIDE;
+    // 删
+    virtual void delete_From(const int row) Q_DECL_OVERRIDE;
+    // 改
+    virtual void update() Q_DECL_OVERRIDE;
+    // 查
+    virtual void selectEx() Q_DECL_OVERRIDE;
+    virtual void commit() Q_DECL_OVERRIDE;
+    //QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+  protected:
+    // 初始化
+    void init();
+    // 设置表头
+    void setTableHeader();
+    // 附加高铁线路缺陷记录
+    void appendGTXLQXRecord(const RecordType& record);
+  protected:
+    static int mRow;
+  };
+
+  /*
+   * 子类 Mysql数据库连接类
+   */
+  class Mysql_Connection final : public Database_Connection {
+  public:
+    Mysql_Connection(QSharedPointer<const Protocol> protocol);
+    ~Mysql_Connection() = default;
+    virtual void openConnection();
+  private:
+    QSharedPointer<const Protocol> mProtocol;
+  };
+
+  /*
+   * 子类 测试视图
+   */
+  class Test_View : public View, public QTableView {
+  public:
+    Test_View(QSqlTableModel* model, QWidget* parent = nullptr);
+    ~Test_View() = default;
+  };
+
+  /*
+   * 子类 测试视图
+   */
+  class Test_Widget : public Widget {
+  public:
+    Test_Widget(QWidget* parent = nullptr);
+    ~Test_Widget() = default;
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+  };
 }
 
 #endif // PARSER_H

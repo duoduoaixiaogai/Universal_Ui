@@ -568,7 +568,9 @@ namespace Jinhui {
     GTXLQXPro::Menu menu;
     while (xml.readNextStartElement()) {
       QStringRef name = reader.name();
-      if (QLatin1String("Picture_name") == name) {
+      if (QLatin1String("Object_Name") == name) {
+        menu.objectName = xml.readElementText();
+      } else if (QLatin1String("Picture_name") == name) {
         menu.menuPicName = xml.readElementText();
       } else if (QLatin1String("Picture_Width") == name) {
         menu.menuPicWidth = xml.readElementText();
@@ -615,8 +617,17 @@ namespace Jinhui {
       if (QLatin1String("End") == name) {
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
+      } else if (QLatin1String("Object_Name") == name) {
+        menu.subMenu.objectName = xml.readElementText();
+      } else if (QLatin1String("Hide") == name) {
+        menu.subMenu.hide = xml.readElementText();
+      } else {
+        GTXLQXPro::MenuItem menuItem;
+        menuItem.objectName = reader.attributes().value(QLatin1String("objectName")).toString();
+        menuItem.itemClickedPicture = reader.attributes().value(QLatin1String("clickedPicture")).toString();
+        menuItem.itemDefaultPicture = xml.readElementText();
+        menu.subMenu.itemsName.append(menuItem);
       }
-      menu.itemsName.append(xml.readElementText());
     }
   }
 
@@ -663,6 +674,14 @@ namespace Jinhui {
         protocol->menuContentSpacing = xml.readElementText();
       } else if (QLatin1String("MenuContent_Stretch") == name) {
         protocol->menuContentStretch = xml.readElementText();
+      } else if (QLatin1String("Menubar_Stretch") == name) {
+        protocol->menubarStretch = xml.readElementText();
+      } else if (QLatin1String("Menubar_Alignment") == name) {
+        protocol->menubarAlignment = xml.readElementText();
+      } else if (QLatin1String("Content_Stretch") == name) {
+        protocol->contentStretch = xml.readElementText();
+      } else if (QLatin1String("Content_Alignment") == name) {
+        protocol->contentAlignment = xml.readElementText();
         // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
         break;
       }
@@ -707,6 +726,7 @@ namespace Jinhui {
     :XMLParser()
     ,mUniversalModule("Universal_Module")
     ,mLanguagesModule("Languages_Module")
+    ,mDatabaseModule("Database_Module")
     ,mLansCount(1) {
     mProtocol = QSharedPointer<Protocol>(new ConfigPro);
   }
@@ -726,6 +746,9 @@ namespace Jinhui {
         break;
       case LANGUAGES:
         readLanguagesModule(reader);
+        break;
+      case DATABASE:
+        readDatabaseModule(reader);
         break;
     }
   }
@@ -800,6 +823,41 @@ namespace Jinhui {
     }
   }
 
+  void ConfigParser::readDatabaseModule(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mDatabaseModule == reader.name());
+
+    QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
+    QSharedPointer<ConfigPro> protocol = qSharedPointerCast<ConfigPro, Protocol>(mProtocol);
+    try {
+      if (!protocol) {
+        throw DowncastProtocolConversion();
+      }
+    } catch (ProtocolException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogError(msg);
+      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      return;
+    }
+
+    protocol->proType = CONFIG;
+    while (xml.readNextStartElement()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Host_Name") == name) {
+        protocol->hostName = xml.readElementText();
+      } else if (QLatin1String("Database_Name") == name) {
+        protocol->databaseName = xml.readElementText();
+      } else if (QLatin1String("Table_Name") == name) {
+        protocol->tableName = xml.readElementText();
+      } else if (QLatin1String("User_Name") == name) {
+        protocol->userName = xml.readElementText();
+      } else if (QLatin1String("User_Password") == name) {
+        protocol->userPassword = xml.readElementText();
+        // 人工干预强制退出循环 模块元素中的子元素的内容已经获取完毕
+        break;
+      }
+    }
+  }
+
   // label name to label type
   ConfigParser::Label_Type ConfigParser::labelNameTolabelType(const QString& name) {
     Label_Type labelType = INVALID;
@@ -808,6 +866,8 @@ namespace Jinhui {
       labelType = UNIVERSAL;
     } else if (mLanguagesModule == name) {
       labelType = LANGUAGES;
+    } else if (mDatabaseModule == name) {
+      labelType = DATABASE;
     }
 
     return labelType;

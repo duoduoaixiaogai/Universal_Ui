@@ -92,6 +92,16 @@ namespace Jinhui {
     const QString what() const Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 基类 数据库异常类
+   */
+  class DatabaseException : public Exception {
+  public:
+    DatabaseException() = default;
+    ~DatabaseException() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -234,6 +244,16 @@ namespace Jinhui {
   public:
     IncorrectNumberParameters() = default;
     ~IncorrectNumberParameters() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 数据库连接失败异常
+   */
+  class ConnectionFailed_Database : public DatabaseException {
+  public:
+    ConnectionFailed_Database() = default;
+    ~ConnectionFailed_Database() = default;
     const QString what() const Q_DECL_OVERRIDE;
   };
 }

@@ -12,18 +12,18 @@ namespace Jinhui {
    * MainWindow
    */
   // cotr
-  MainWindow::MainWindow(QWidget *parent)
-    :Product()
-    ,mMainWindow(QSharedPointer<QMainWindow>(new QMainWindow(parent)))
-    ,mUi(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow))
-    ,mCentralWidget(new QWidget)
-  {
-    mUi->setupUi(mMainWindow.data());
-    mMainWindow->setCentralWidget(mCentralWidget);
-    //autoCreateMainWindow();
-  }
+  //MainWindow::MainWindow(QWidget *parent)
+  //  :Product()
+  //  ,mMainWindow(QSharedPointer<QMainWindow>(new QMainWindow(parent)))
+  //  ,mUi(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow))
+  //  ,mCentralWidget(new QWidget)
+  //{
+  //  mUi->setupUi(mMainWindow.data());
+  //  mMainWindow->setCentralWidget(mCentralWidget);
+  //  //autoCreateMainWindow();
+  //}
 
-  void MainWindow::setBackgroundColor() {}
+  //void MainWindow::setBackgroundColor() {}
 
   //MainWindow::~MainWindow()
   //{
@@ -31,12 +31,42 @@ namespace Jinhui {
   //}
 
   /*
+   * MainWindow类的重新实现
+   */
+  // cotr
+  MainWindow::MainWindow(QWidget *parent)
+    :QMainWindow(parent)
+    ,mCentralWidget(new QWidget)
+    ,mUi(new Ui::MainWindow) {
+    mUi->setupUi(this);
+    setCentralWidget(mCentralWidget);
+  }
+
+  MainWindow::~MainWindow() {
+    if (mUi) {
+      delete mUi;
+      mUi = nullptr;
+    }
+  }
+
+  void MainWindow::setBackgroundColor() {}
+
+  void MainWindow::doDeleteLater(Product *obj) {
+    MainWindow* mainWindow = dynamic_cast<MainWindow*>(obj);
+    if (mainWindow) {
+      mainWindow->deleteLater();
+    }
+  }
+
+  /*
    * GTXLQX_MainWindow
    */
   // cotr
-  GTXLQX_MainWindow::GTXLQX_MainWindow(QSharedPointer<const Protocol> protocol, QWidget* parent)
+  GTXLQX_MainWindow::GTXLQX_MainWindow(QSharedPointer<const Protocol> uiPro,
+                                       QSharedPointer<const Protocol> configPro, QWidget* parent)
     :MainWindow(parent)
-    ,mProtocol(protocol)
+    ,mUiPro(uiPro)
+    ,mConfigPro(configPro)
     ,mVLayout(new QVBoxLayout)
     ,mTitleLayout(new QHBoxLayout)
     ,mDoorfaceLayout(new QHBoxLayout)
@@ -44,12 +74,13 @@ namespace Jinhui {
     setBackgroundColor();
     setLayout();
     autoCreateMainWindow();
+    createConnect();
   }
 
   void GTXLQX_MainWindow::setBackgroundColor() {
-    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
-    mMainWindow->setStyleSheet(pro->mainBackgroundCol);
+    setStyleSheet(pro->mainBackgroundCol);
   }
 
   GTXLQX_MainWindow::~GTXLQX_MainWindow() {}
@@ -64,38 +95,38 @@ namespace Jinhui {
   }
 
   void GTXLQX_MainWindow::setMainWindowFlags() {
-    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
     bool rimless = strToBool(pro->rimless);
     if (rimless) {
-      mMainWindow->setWindowFlag(Qt::FramelessWindowHint);
+      setWindowFlag(Qt::FramelessWindowHint);
     }
   }
 
   void GTXLQX_MainWindow::setMenubar() {
-    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
     bool menubar = strToBool(pro->menubar);
     if (!menubar) {
-      mMainWindow->setMenuBar(nullptr);
+      setMenuBar(nullptr);
     }
   }
 
   void GTXLQX_MainWindow::setStatusbar() {
-    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
     bool statusbar = strToBool(pro->statusbar);
     if (!statusbar) {
-      mMainWindow->setStatusBar(nullptr);
+      setStatusBar(nullptr);
     }
   }
 
   void GTXLQX_MainWindow::setMainWinMinSize() {
-    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
     int minWidth = pro->mainMinWidth.toInt();
     int minHeight = pro->mainMinHeight.toInt();
-    mMainWindow->setMinimumSize(minWidth, minHeight);
+    setMinimumSize(minWidth, minHeight);
   }
 
   void GTXLQX_MainWindow::setCentralWidget() {
@@ -106,7 +137,7 @@ namespace Jinhui {
   }
 
   void GTXLQX_MainWindow::setLayout() {
-    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
     mCentralWidget->setLayout(mVLayout);
     mVLayout->addLayout(mTitleLayout, pro->titlebarStretch.toInt());
@@ -158,26 +189,105 @@ namespace Jinhui {
   }
 
   void GTXLQX_MainWindow::addTitlebar() {
-    Titlebar* titlebar = new Titlebar;
-    titlebar->setMainWindow(QSharedPointer<GTXLQX_MainWindow>(this));
-    titlebar->setupUi(mProtocol);
-    mTitleLayout->addWidget(titlebar);
+    mTitlebar = new Titlebar;
+    mTitlebar->setMainWindow(QSharedPointer<GTXLQX_MainWindow>(this));
+    mTitlebar->setupUi(mUiPro);
+    mTitleLayout->addWidget(mTitlebar);
   }
 
   void GTXLQX_MainWindow::addDoorface() {
-    Doorface_Label* doorfaceLabel = new Doorface_Label(mProtocol);
-    mDoorfaceLayout->addWidget(doorfaceLabel);
+    mDoorfaceLabel = new Doorface_Label(mUiPro);
+    mDoorfaceLayout->addWidget(mDoorfaceLabel);
   }
 
   void GTXLQX_MainWindow::addMenubar() {
-    Menubar* menubar = new Menubar;
-    menubar->setupUi(mProtocol);
-    mMenu_Content->addWidget(menubar, 1);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    mMenubar = new Menubar;
+    mMenubar->setupUi(mUiPro);
+    mMenu_Content->addWidget(mMenubar, pro->menubarStretch.toInt());
   }
 
   void GTXLQX_MainWindow::addContentWindow() {
-    ContentArea* contentArea = new ContentArea;
-    contentArea->setupUi(mProtocol);
-    mMenu_Content->addWidget(contentArea, 5);
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    mContentArea = new ContentArea(mConfigPro);
+    mContentArea->setupUi(mUiPro);
+    mMenu_Content->addWidget(mContentArea, pro->contentStretch.toInt());
   }
+
+  void GTXLQX_MainWindow::createConnect() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    /*
+     * 菜单栏
+     */
+    // 主菜单
+    connect(mMenubar->mMenus.value(pro->menus.at(0).objectName), SIGNAL(clicked())
+            ,this, SLOT(menu1Clicked()));
+    connect(mMenubar->mMenus.value(pro->menus.at(1).objectName), SIGNAL(clicked())
+            ,this, SLOT(menu2Clicked()));
+    connect(mMenubar->mMenus.value(pro->menus.at(2).objectName), SIGNAL(clicked())
+            ,this, SLOT(menu3Clicked()));
+    // 子菜单
+    // 菜单项
+    // 四分屏
+    connect(mMenubar->mSubmenus.value(pro->menus.at(0).subMenu.objectName)
+            ->mMenuItems.value(pro->menus.at(0).subMenu.itemsName.at(0).objectName), SIGNAL(clicked())
+            ,this, SLOT(menu1Submenu1Item1Clicked()));
+    // MySQL数据库表格展示
+    connect(mMenubar->mSubmenus.value(pro->menus.at(1).subMenu.objectName)
+            ->mMenuItems.value(pro->menus.at(1).subMenu.itemsName.at(1).objectName), SIGNAL(clicked())
+            ,this, SLOT(menu2Submenu1Item1Clicked()));
+  }
+
+  // public slots
+  void GTXLQX_MainWindow::menu1Clicked() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    SubMenu* subMenu = mMenubar->mSubmenus.value(pro->menus.at(0).subMenu.objectName);
+    if (subMenu) {
+      mMenubar->hideAllSubmenus();
+      subMenu->show();
+    }
+  }
+
+  void GTXLQX_MainWindow::menu2Clicked() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    SubMenu* subMenu = mMenubar->mSubmenus.value(pro->menus.at(1).subMenu.objectName);
+    if (subMenu) {
+      mMenubar->hideAllSubmenus();
+      subMenu->show();
+    }
+  }
+
+  void GTXLQX_MainWindow::menu3Clicked() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    SubMenu* subMenu = mMenubar->mSubmenus.value(pro->menus.at(2).subMenu.objectName);
+    if (subMenu) {
+      mMenubar->hideAllSubmenus();
+      subMenu->show();
+    }
+  }
+
+  void GTXLQX_MainWindow::menu1Submenu1Item1Clicked() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    Widget* widget = mContentArea->mWidgetsIndex.value(QLatin1String("quadScreen"));
+    if (widget) {
+      mContentArea->showSpecifiedWidget(widget);
+    }
+  }
+
+  void GTXLQX_MainWindow::menu2Submenu1Item1Clicked() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    Widget* widget = mContentArea->mWidgetsIndex.value(QLatin1String("testWidget"));
+    if (widget) {
+      mContentArea->showSpecifiedWidget(widget);
+    }
+  }
+
 }

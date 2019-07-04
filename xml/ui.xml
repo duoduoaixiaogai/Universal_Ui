@@ -63,7 +63,8 @@
   <Menus_Module>
     <!-- 菜单一 -->
     <Menu>
-      <Picture_name>comparison</Picture_name>
+      <Object_Name>menu1</Object_Name>
+      <Picture_name>menu1</Picture_name>
       <Picture_Width>10</Picture_Width>
       <Picture_Height>20</Picture_Height>
       <Submenu>
@@ -72,15 +73,18 @@
         <Picture_Width>30</Picture_Width>
         <Picture_Height>40</Picture_Height>
         -->
-        <Item1_Name>submenu1</Item1_Name>
-        <Item2_Name>submenu2</Item2_Name>
-        <Item3_Name>submenu3</Item3_Name>
+        <Object_Name>menu1</Object_Name>
+        <Hide>yes</Hide>
+        <Item1_Name objectName="quadScrren" clickedPicture="clickedmenu1submenu1item1">menu1submenu1item1</Item1_Name>
+        <Item2_Name objectName="" clickedPicture="clickedmenu1submenu1item2">menu1submenu1item2</Item2_Name>
+        <Item3_Name objectName="" clickedPicture="clickedmenu1submenu1item3">menu1submenu1item3</Item3_Name>
         <End></End>
       </Submenu>
     </Menu>
     <!-- 菜单二 -->
     <Menu>
-      <Picture_name>dataquery</Picture_name>
+      <Object_Name>menu2</Object_Name>
+      <Picture_name>menu2</Picture_name>
       <Picture_Width>50</Picture_Width>
       <Picture_Height>60</Picture_Height>
       <Submenu>
@@ -89,18 +93,21 @@
         <Picture_Width>70</Picture_Width>
         <Picture_Height>80</Picture_Height>
         -->
-        <Item1_Name>submenu1</Item1_Name>
-        <Item2_Name>submenu2</Item2_Name>
-        <Item3_Name>submenu3</Item3_Name>
-        <Item1_Name>submenu4</Item1_Name>
-        <Item2_Name>submenu5</Item2_Name>
-        <Item3_Name>submenu6</Item3_Name>
+        <Object_Name>menu2</Object_Name>
+        <Hide>yes</Hide>
+        <Item1_Name objectName="" clickedPicture="clickedmenu2submenu1item1">menu2submenu1item1</Item1_Name>
+        <Item2_Name objectName="testWidget" clickedPicture="clickedmenu2submenu1item2">menu2submenu1item2</Item2_Name>
+        <Item3_Name objectName="" clickedPicture="clickedmenu2submenu1item3">menu2submenu1item3</Item3_Name>
+        <Item1_Name objectName="" clickedPicture="clickedmenu2submenu1item4">menu2submenu1item4</Item1_Name>
+        <Item2_Name objectName="" clickedPicture="clickedmenu2submenu1item5">menu2submenu1item5</Item2_Name>
+        <Item3_Name objectName="" clickedPicture="clickedmenu2submenu1item6">menu2submenu1item6</Item3_Name>
         <End></End>
       </Submenu>
     </Menu>
     <!-- 菜单三 -->
     <Menu>
-      <Picture_name>systemsetting</Picture_name>
+      <Object_Name>menu3</Object_Name>
+      <Picture_name>menu3</Picture_name>
       <Picture_Width>90</Picture_Width>
       <Picture_Height>95.8</Picture_Height>
       <Submenu>
@@ -109,9 +116,11 @@
         <Picture_Width>20.8</Picture_Width>
         <Picture_Height>2.89</Picture_Height>
         -->
-        <Item1_Name>submenu1</Item1_Name>
-        <Item2_Name>submenu2</Item2_Name>
-        <Item3_Name>submenu3</Item3_Name>
+        <Object_Name>menu3</Object_Name>
+        <Hide>yes</Hide>
+        <Item1_Name objectName="" clickedPicture="clickedmenu3submenu1item1">menu3submenu1item1</Item1_Name>
+        <Item2_Name objectName="" clickedPicture="clickedmenu3submenu1item2">menu3submenu1item2</Item2_Name>
+        <Item3_Name objectName="" clickedPicture="clickedmenu3submenu1item3">menu3submenu1item3</Item3_Name>
         <End></End>
       </Submenu>
     </Menu>
@@ -129,6 +138,7 @@
     <!-- 左、上、右、下 写入时不应该包含空格，只应该包含上面指定的分隔符 -->
     <MainWindow_ContentsMargins>11,0,11,11</MainWindow_ContentsMargins>
     <MainWindow_Spacing>0</MainWindow_Spacing>
+    <!-- 以下调整的都是布局在主窗口布局中的表现(下面这些布局全是主窗口中的小布局) -->
     <!-- 标题栏布局 -->
     <Titlebar_ContentsMargins>0,0,0,0</Titlebar_ContentsMargins>
     <Titlebar_Spacing></Titlebar_Spacing>
@@ -137,10 +147,17 @@
     <Doorface_ContentsMargins>0,0,0,0</Doorface_ContentsMargins>
     <Doorface_Spacing></Doorface_Spacing>
     <Doorface_Stretch>4</Doorface_Stretch>
-    <!-- 菜单栏和内容区 -->
+    <!-- 菜单栏和内容区(这是一个水平布局, 包含菜单栏和内容区，调整的是整个水平布局在父布局中的表现) -->
     <MenuContent_ContentsMargins>0,11,0,0</MenuContent_ContentsMargins>
     <MenuContent_Spacing></MenuContent_Spacing>
     <MenuContent_Stretch>50</MenuContent_Stretch>
+    <!-- 以下调整的是具体的小部件在加入到具体小布局中的表现 -->
+    <!-- 菜单栏 -->
+    <Menubar_Stretch>0</Menubar_Stretch>
+    <Menubar_Alignment></Menubar_Alignment>
+    <!-- 内容区 -->
+    <Content_Stretch>5</Content_Stretch>
+    <Content_Alignment></Content_Alignment>
 
   </Layout>
 </Universal_UI>

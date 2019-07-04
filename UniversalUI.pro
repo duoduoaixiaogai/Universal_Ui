@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,7 +36,10 @@ SOURCES += \
     widget.cpp \
     pushbutton.cpp \
     frame.cpp \
-    signalrelay.cpp
+    signalsrelay.cpp \
+    database.cpp \
+    connection.cpp \
+    view.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,7 +49,7 @@ HEADERS += \
     log.h \
     exception.h \
     common.h \
-    signalrelay.h
+    signalsrelay.h
 
 FORMS += \
         mainwindow.ui
@@ -64,3 +67,5 @@ DISTFILES += \
     xml/ui.xml \
     translation.cn.ts \
     readme.txt
+
+LIBS += -LD:/NYQProject/UniversalUI/libs -llibmysql

@@ -16,4 +16,12 @@
       <Suffix>.qm</Suffix>
     </Language>
   </Languages_Module>
+  <!-- 数据库模块 -->
+  <Database_Module>
+    <Host_Name>localhost</Host_Name>
+    <Database_Name>Jinhui_Gaotie</Database_Name>
+    <Table_Name>Jinhui_GTXLQX</Table_Name>
+    <User_Name>root</User_Name>
+    <User_Password>niuyiqun</User_Password>
+  </Database_Module>
 </Config>

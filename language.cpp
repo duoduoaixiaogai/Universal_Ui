@@ -13,22 +13,23 @@ namespace Jinhui {
   char Language::mCnCount = 0;
 
   // ctor
-  Language::Language()
+  Language::Language(QSharedPointer<const Protocol> protocol)
     :Product()
     ,mCurrentLan(INVALID)
     ,mChinese("Chinese") {
+    mProtocol = protocol;
     loadTranslationFiles();
   }
 
   // protected
   // load translation files
   void Language::loadTranslationFiles() {
-    ConfigParser configPar;
-    configPar.parse(getConfigFilePath());
-    QSharedPointer<const Protocol> protocol = configPar.getProtocol();
+    //ConfigParser configPar;
+    //configPar.parse(getConfigFilePath());
+    //QSharedPointer<const Protocol> protocol = configPar.getProtocol();
     // config配置文件
-    if (ProType::CONFIG == protocol->proType) {
-      QSharedPointer<const ConfigPro> configPro = qSharedPointerCast<const ConfigPro, const Protocol>(protocol);
+    if (ProType::CONFIG == mProtocol->proType) {
+      QSharedPointer<const ConfigPro> configPro = qSharedPointerCast<const ConfigPro, const Protocol>(mProtocol);
       try {
         if (!configPro) {
           throw DowncastProtocolConversion();
@@ -77,8 +78,8 @@ namespace Jinhui {
    * SimplifiedChinese
    */
   // ctor
-  SimplifiedChinese::SimplifiedChinese()
-    :Language() {
+  SimplifiedChinese::SimplifiedChinese(QSharedPointer<const Protocol> protocol)
+    :Language(protocol) {
     // ? 下面这句话为何不能放到成员初始化列表中 难道基类受保护的成员变量不能在子类的成员初始化列表中初始化吗
     mCurrentLan = CHINESE;
 

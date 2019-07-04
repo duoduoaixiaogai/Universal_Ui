@@ -13,6 +13,10 @@
 #include <QString>
 #include <QCoreApplication>
 
+#if 1
+  #include <QDir>
+#endif
+
 namespace Jinhui {
   // 获取可执行文件所在的目录路径
   static QString getExeInDirPath() {
@@ -21,16 +25,28 @@ namespace Jinhui {
 
   // 获取配置文件路径
   static QString getConfigFilePath() {
+#if 1
+    return QDir::currentPath()
+        .append("/xml/")
+        .append("config.xml");
+#else
     return getExeInDirPath()
         .append("/xml/")
         .append("config.xml");
+#endif
   }
 
   // 获取Ui文件路径
   static QString getUiFilePath() {
+#if 1
+    return QDir::currentPath()
+        .append("/xml/")
+        .append("ui.xml");
+#else
     return getExeInDirPath()
         .append("/xml/")
         .append("ui.xml");
+#endif
   }
 
   // 字符串转布尔类型(字符串为: yes no; true false;)
@@ -58,6 +74,24 @@ namespace Jinhui {
         .append(filename);
   }
 
+  /*
+   * 字符串转对齐类型(字符串为: left, right, hCenter, top, bottom, vCenter)
+   */
+  static Qt::Alignment strToAlignment(const QString& str) {
+    if (0 == str.compare(QLatin1String("left"), Qt::CaseInsensitive)) {
+      return Qt::AlignLeft;
+    } else if (0 == str.compare(QLatin1String("right"), Qt::CaseInsensitive)) {
+      return Qt::AlignRight;
+    } else if (0 == str.compare(QLatin1String("hCenter"), Qt::CaseInsensitive)) {
+      return Qt::AlignHCenter;
+    } else if (0 == str.compare(QLatin1String("top"), Qt::CaseInsensitive)) {
+      return Qt::AlignTop;
+    } else if (0 == str.compare(QLatin1String("bottom"), Qt::CaseInsensitive)) {
+      return Qt::AlignBottom;
+    } else if (0 == str.compare(QLatin1String("vCenter"), Qt::CaseInsensitive)) {
+      return Qt::AlignVCenter;
+    }
+  }
 }
 
 #endif // COMMON_H

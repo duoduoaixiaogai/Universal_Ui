@@ -6,7 +6,6 @@
 #include <QVector>
 
 namespace Jinhui {
-
   /*
    * 协议类型
    */
@@ -32,8 +31,25 @@ namespace Jinhui {
     /*
      * 菜单
      */
+    // 菜单项
+    struct MenuItem {
+      // 和具体业务逻辑相关的名字
+      QString objectName;
+      // XML文件中和图片相关的名字
+      QString itemDefaultPicture;
+      QString itemClickedPicture;
+    };
+
+    // 子菜单
+    struct Submenu {
+      QString objectName;
+      QString hide;
+      // 所有菜单项的名称
+      QVector<MenuItem> itemsName;
+    };
+    // 顶级菜单
     struct Menu {
-      // 顶级菜单
+      QString objectName;
       QString menuPicName;
       QString menuPicWidth;
       QString menuPicHeight;
@@ -43,7 +59,9 @@ namespace Jinhui {
       QString subPicWidth;
       QString subPicHeight;
       */
-      QStringList itemsName;
+      //QString hide;
+      //QStringList itemsName;
+      Submenu subMenu;
     };
 
     /*
@@ -99,7 +117,7 @@ namespace Jinhui {
     QString doorPicWidth;
     QString doorPicHeight;
     /*
-     * 所有的菜单
+     * 所有的菜单(xml解析菜单栏中的菜单时是顺序解析的，因为菜单栏样式是从上到下的，所以索引0就是第一个菜单，依次类推)
      */
     QVector<Menu> menus;
 
@@ -110,6 +128,7 @@ namespace Jinhui {
     // 主窗口
     QString mainwindowContentsMargins;
     QString mainwindowSpacing;
+    // 以下调整的都是布局在主窗口布局中的表现(下面这些布局全是主窗口中的小布局)
     // 标题栏
     QString titlebarContentsMargins;
     QString titlebarSpacing;
@@ -122,6 +141,13 @@ namespace Jinhui {
     QString menuContentsMargins;
     QString menuContentSpacing;
     QString menuContentStretch;
+    // 以下调整的是具体的小部件在加入到具体小布局中的表现
+    // 菜单栏
+    QString menubarStretch;
+    QString menubarAlignment;
+    // 内容区
+    QString contentStretch;
+    QString contentAlignment;
 
   } GTXLQXPro;
 
@@ -147,7 +173,46 @@ namespace Jinhui {
      * 所有的语言
      */
     QHash<QString, Lan> languages;
+    /*
+     * 数据库
+     */
+    QString hostName;
+    QString databaseName;
+    QString tableName;
+    QString userName;
+    QString userPassword;
   } ConfigPro;
+
+  /*
+   * 数据库中表的类型对应不同的数据表
+   */
+  enum DatabaseTable_Type {
+    INVALID = 0x70,
+    GTXLQX_Table,
+  };
+
+  /*
+   * 不同数据库数据表每条记录类型
+   */
+  struct RecordType {
+    DatabaseTable_Type type;
+  };
+
+  /*******************************************************************************
+   * 子类
+   ******************************************************************************/
+  /*
+   * 高铁线路缺陷数据表记录类型
+   */
+  struct GTXLQX_Record : public RecordType {
+    int index;
+    QString lineName;
+    QString lineDirection;
+    QString exportState;
+    QString defectType;
+    QString defectName;
+    QString picturePath;
+  };
 
 }
 

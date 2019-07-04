@@ -7,8 +7,10 @@
 ******************************************************************************/
 #include "product.h"
 #include "common.h"
+#include "signalsrelay.h"
 
 #include <QPainter>
+#include <QPaintEvent>
 
 namespace Jinhui {
 
@@ -36,6 +38,8 @@ namespace Jinhui {
     QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, mFileName));
     QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
     painter.drawPixmap(rect(), scaPixmap);
+
+    ev->accept();
   }
 
   /*
@@ -46,12 +50,15 @@ namespace Jinhui {
     :PushButton(protocol, parent)
     ,mFileName(fileName) {}
 
-  void MenuItem_PushButton::paintEvent(QPaintEvent *) {
+  void MenuItem_PushButton::paintEvent(QPaintEvent* ev) {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mProtocol);
 
     QPainter painter(this);
     QPixmap oriPixmap(getAbsoluteFilename(pro->picDirPath, mFileName));
     QPixmap scaPixmap = oriPixmap.scaled(rect().width(), rect().height());
     painter.drawPixmap(rect(), scaPixmap);
+
+    ev->accept();
   }
+
 }

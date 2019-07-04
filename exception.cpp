@@ -110,6 +110,13 @@ namespace Jinhui {
   }
 
   /*
+   * DatabaseException
+   */
+  const QString DatabaseException::what() const {
+    return QObject::tr("Database error!");
+  }
+
+  /*
    * ParserExceptionXml
    */
   const QString ParserExceptionXml::what() const {
@@ -193,4 +200,10 @@ namespace Jinhui {
     return QObject::tr("Incorrect number of parameters!");
   }
 
+  /*
+   * ConnectionFailed_Database
+   */
+  const QString ConnectionFailed_Database::what() const {
+    return QObject::tr("Database connection failed!");
+  }
 }
