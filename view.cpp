@@ -21,4 +21,24 @@ namespace Jinhui {
       horizontalHeader()->setStretchLastSection(true);
       horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
   }
+
+  /*
+   * TableView
+   */
+  // cotr
+  TableView::TableView(QWidget* parent)
+    :QTableView(parent) {}
+
+  TableView::~TableView() {}
+
+  /*
+   * DatabaseTable_View
+   */
+  // cotr
+  DatabaseTable_View::DatabaseTable_View(QWidget* parent)
+    :TableView(parent) {
+    horizontalHeader()->setStretchLastSection(true);
+  }
+
+  DatabaseTable_View::~DatabaseTable_View() {}
 }

@@ -33,7 +33,7 @@ namespace Jinhui {
     :QObject(parent) {}
 
   template<class theProduct, DoDelete deleter>
-  template< class... Args>
+  template<class... Args>
   QSharedPointer<Product> Factory<theProduct, deleter>::createProduct(Args&&... args) {
     return qSharedPointerDynamicCast<Product, theProduct>(QSharedPointer<theProduct>(new theProduct(std::forward<Args>(args)...), deleter));
   }

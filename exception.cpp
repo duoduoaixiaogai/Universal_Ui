@@ -206,4 +206,11 @@ namespace Jinhui {
   const QString ConnectionFailed_Database::what() const {
     return QObject::tr("Database connection failed!");
   }
+
+  /*
+   * SqlQuery_Exception
+   */
+  const QString SqlQuery_Exception::what() const {
+    return QObject::tr("QSqlQuery query error!:  ");
+  }
 }

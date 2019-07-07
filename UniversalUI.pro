@@ -39,7 +39,10 @@ SOURCES += \
     signalsrelay.cpp \
     database.cpp \
     connection.cpp \
-    view.cpp
+    view.cpp \
+    model.cpp \
+    combobox.cpp \
+    progressbar.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -65,7 +68,7 @@ DISTFILES += \
     ui.xml \
     xml/config.xml \
     xml/ui.xml \
-    translation.cn.ts \
-    readme.txt
+    readme.txt \
+    translation_cn.ts
 
 LIBS += -LD:/NYQProject/UniversalUI/libs -llibmysql

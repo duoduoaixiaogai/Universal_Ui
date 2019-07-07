@@ -12,7 +12,7 @@
       <Select>Chinese</Select>
       <!-- 如果有前缀则调用有前缀的加载函数，否则调用包含绝对完整文件名的函数 -->
       <Prefix></Prefix>
-      <Filename>translation.cn</Filename>
+      <Filename>translation_cn</Filename>
       <Suffix>.qm</Suffix>
     </Language>
   </Languages_Module>

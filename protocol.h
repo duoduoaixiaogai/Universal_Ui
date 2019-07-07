@@ -198,6 +198,11 @@ namespace Jinhui {
     DatabaseTable_Type type;
   };
 
+  // 数据库表的列名
+  typedef QStringList ColumnsName;
+  // 数据库表的记录
+  typedef QStringList Record;
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -213,6 +218,9 @@ namespace Jinhui {
     QString defectName;
     QString picturePath;
   };
+
+
+
 
 }
 

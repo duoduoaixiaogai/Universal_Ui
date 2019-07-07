@@ -18,6 +18,12 @@ namespace Jinhui {
    * PushButton
    */
   // cotr
+  PushButton::PushButton(QWidget* parent)
+    :QPushButton(parent) {}
+
+  PushButton::PushButton(const QString& text, QWidget* parent)
+    :QPushButton(text, parent) {}
+
   PushButton::PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent)
     :QPushButton(parent) {
     mProtocol = protocol;

@@ -239,6 +239,10 @@ namespace Jinhui {
     connect(mMenubar->mSubmenus.value(pro->menus.at(1).subMenu.objectName)
             ->mMenuItems.value(pro->menus.at(1).subMenu.itemsName.at(1).objectName), SIGNAL(clicked())
             ,this, SLOT(menu2Submenu1Item1Clicked()));
+    /*
+     * 内容区
+     */
+
   }
 
   // public slots
@@ -284,7 +288,7 @@ namespace Jinhui {
   void GTXLQX_MainWindow::menu2Submenu1Item1Clicked() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
-    Widget* widget = mContentArea->mWidgetsIndex.value(QLatin1String("testWidget"));
+    Widget* widget = mContentArea->mWidgetsIndex.value(QLatin1String("reviewResultQuery"));
     if (widget) {
       mContentArea->showSpecifiedWidget(widget);
     }

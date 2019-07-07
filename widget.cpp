@@ -14,6 +14,9 @@
 #include <QScrollArea>
 #include <QStackedWidget>
 
+// ui
+#include <QDateTimeEdit>
+
 namespace Jinhui {
   /*
    * Widget
@@ -143,9 +146,9 @@ namespace Jinhui {
     QuadScreen* quadScreen = new QuadScreen;
     quadScreen->setupUi(protocol);
     addWidgetInContentArea(quadScreen);
-    Test_Widget* testWidget = new Test_Widget;
-    testWidget->setupUi(mConfigPro);
-    addWidgetInContentArea(testWidget);
+    ReviewResultQuery_Widget* revResQueWidget = new ReviewResultQuery_Widget;
+    revResQueWidget->setupUi(mConfigPro);
+    addWidgetInContentArea(revResQueWidget);
     hLayout->addWidget(mWidgets);
     setLayout(hLayout);
   }
@@ -198,37 +201,171 @@ namespace Jinhui {
    * Test_Widget
    */
   // cotr
-  Test_Widget::Test_Widget(QWidget* parent)
+  //Test_Widget::Test_Widget(QWidget* parent)
+  //  :Widget(parent) {}
+
+  //void Test_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+  //  setObjectName(QLatin1String("testWidget"));
+
+  //  QVBoxLayout* vLayout = new QVBoxLayout;
+
+  //  Mysql_Connection connection(protocol);
+  //  connection.openConnection();
+  //  Mysql_Database* database = new Mysql_Database(QSqlDatabase::database(QLatin1String("Mysql")), protocol);
+  //  GTXLQX_Record record;
+  //  record.type = GTXLQX_Table;
+  //  record.index = 1;
+  //  record.lineName = "beijing";
+  //  record.lineDirection = "north";
+  //  record.exportState = "type 1";
+  //  record.defectType = "query 1";
+  //  record.defectName = "line";
+  //  record.picturePath = "http://test.url";
+  //  //database->delete_From(102);
+  //  //for (int i = 0; i < 100; ++i) {
+  //  // record.index = i;
+  //  //  database->append_Into(record);
+  //  //}
+  //  //database->update();
+  //  //database->commit();
+  //  database->selectEx();
+  //  Test_View* view = new Test_View(database);
+  //  vLayout->addWidget(view);
+  //  setLayout(vLayout);
+  //}
+
+  /*
+   * ReviewResultQuery_Widget
+   */
+  // cotr
+  ReviewResultQuery_Widget::ReviewResultQuery_Widget(QWidget* parent)
     :Widget(parent) {}
 
-  void Test_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
-    setObjectName(QLatin1String("testWidget"));
+  ReviewResultQuery_Widget::~ReviewResultQuery_Widget() {}
 
-    QVBoxLayout* vLayout = new QVBoxLayout;
+  void ReviewResultQuery_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+    setObjectName(QLatin1String("reviewResultQuery"));
 
     Mysql_Connection connection(protocol);
     connection.openConnection();
-    Mysql_Database* database = new Mysql_Database(QSqlDatabase::database(QLatin1String("Mysql")), protocol);
-    GTXLQX_Record record;
-    record.type = GTXLQX_Table;
-    record.index = 1;
-    record.lineName = "beijing";
-    record.lineDirection = "north";
-    record.exportState = "type 1";
-    record.defectType = "query 1";
-    record.defectName = "line";
-    record.picturePath = "http://test.url";
-    //database->delete_From(102);
-    //for (int i = 0; i < 100; ++i) {
-    // record.index = i;
-    //  database->append_Into(record);
-    //}
-    //database->update();
-    //database->commit();
-    database->selectEx();
-    Test_View* view = new Test_View(database);
-    vLayout->addWidget(view);
-    setLayout(vLayout);
+    mDatabase = QSharedPointer<Database>(new MySQL_Database(protocol, connection.getConnectionName()));
+
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    QHBoxLayout* upLayout = new QHBoxLayout;
+    QHBoxLayout* queryLayout = new QHBoxLayout;
+    QVBoxLayout* leftQueryLayout = new QVBoxLayout;
+    QVBoxLayout* left1QueryLayout = new QVBoxLayout;
+    QVBoxLayout* midQueryLayout = new QVBoxLayout;
+    QVBoxLayout* mid1QueryLayout = new QVBoxLayout;
+    QVBoxLayout* rightQueryLayout = new QVBoxLayout;
+    QHBoxLayout* rigUpQueryLayout = new QHBoxLayout;
+    QHBoxLayout* rigBotQueryLayout = new QHBoxLayout;
+    QVBoxLayout* pictureLayout = new QVBoxLayout;
+    QHBoxLayout* viewLayout = new QHBoxLayout;
+    QHBoxLayout* operLayout = new QHBoxLayout;
+    QHBoxLayout* progressLayout = new QHBoxLayout;
+
+    mLineName_Label = new Label(tr("Line name:"));
+    mLineName_Combobox = new ComboBox;
+    mLineDirection_Label = new Label(tr("Line direction:"));
+    mLineDirection_Combobox = new ComboBox;
+    mExportState_Label = new Label(tr("Export state:"));
+    mExportState_Combobox = new ComboBox;
+    mDefectName_Label = new Label(tr("Defect name:"));
+    mDefectName_Combobox = new ComboBox;
+    mAuditType_Label = new Label(tr("Audit type:"));
+    mAuditType_Combobox = new ComboBox;
+    mStartTime_Label = new Label(tr("Start time:"));
+    mStartTime_TimeEdit = new QDateTimeEdit;
+    mEndTime = new Label(tr("End time:"));
+    mEndTime_TimeEdit = new QDateTimeEdit;
+    mQuery_Btn = new PushButton(tr("Query"));
+    mCount_Label = new Label(tr("0"));
+    mTotal_Label = new Label(tr("Total:"));
+
+    leftQueryLayout->addWidget(mLineName_Label);
+    leftQueryLayout->addWidget(mDefectName_Label);
+    leftQueryLayout->addWidget(mStartTime_Label);
+
+    left1QueryLayout->addWidget(mLineName_Combobox);
+    left1QueryLayout->addWidget(mDefectName_Combobox);
+    left1QueryLayout->addWidget(mStartTime_TimeEdit);
+
+    midQueryLayout->addWidget(mLineDirection_Label );
+    midQueryLayout->addWidget(mAuditType_Label);
+    midQueryLayout->addWidget(mEndTime);
+
+    mid1QueryLayout->addWidget(mLineDirection_Combobox );
+    mid1QueryLayout->addWidget(mAuditType_Combobox);
+    mid1QueryLayout->addWidget(mEndTime_TimeEdit);
+
+    rigUpQueryLayout->addWidget(mExportState_Label);
+    rigUpQueryLayout->addWidget(mExportState_Combobox);
+
+
+    rigBotQueryLayout->addWidget(mQuery_Btn);
+    rigBotQueryLayout->addWidget(mTotal_Label);
+    rigBotQueryLayout->addWidget(mCount_Label);
+
+    rightQueryLayout->addLayout(rigUpQueryLayout);
+    rightQueryLayout->addStretch();
+    rightQueryLayout->addLayout(rigBotQueryLayout);
+
+    mPicture_Label = new Label;
+    pictureLayout->addWidget(mPicture_Label);
+
+    mView = new DatabaseTable_View;
+    viewLayout->addWidget(mView);
+
+    PushButton* selectAll_Btn = new PushButton(tr("Select all"));
+    PushButton* exportSelecteds  = new PushButton(tr("Export selecteds"));
+    PushButton* exportAll = new PushButton(tr("Export all"));
+    PushButton* prePage = new PushButton(tr("Previous page"));
+    PushButton* nextPage = new PushButton(tr("Next page"));
+    operLayout->addStretch();
+    operLayout->addWidget(selectAll_Btn);
+    operLayout->addStretch();
+    operLayout->addWidget(exportSelecteds);
+    operLayout->addStretch();
+    operLayout->addWidget(exportAll);
+    operLayout->addStretch();
+    operLayout->addWidget(prePage);
+    operLayout->addStretch();
+    operLayout->addWidget(nextPage);
+    operLayout->addStretch();
+
+    ProgressBar* proBar = new ProgressBar;
+    progressLayout->addWidget(proBar);
+
+    queryLayout->addLayout(leftQueryLayout);
+    queryLayout->addLayout(left1QueryLayout);
+    queryLayout->addLayout(midQueryLayout);
+    queryLayout->addLayout(mid1QueryLayout);
+    queryLayout->addLayout(rightQueryLayout);
+    upLayout->addLayout(queryLayout);
+    upLayout->addStretch();
+    upLayout->addLayout(pictureLayout);
+    mainLayout->addLayout(upLayout);
+    mainLayout->addLayout(viewLayout, 1);
+    mainLayout->addLayout(operLayout);
+    mainLayout->addLayout(progressLayout);
+    setLayout(mainLayout);
+
+    mModel = new GTXLQX_Model;
+    mView->setModel(mModel);
+
+    createConnection();
   }
 
+  void ReviewResultQuery_Widget::createConnection() {
+    connect(mQuery_Btn, SIGNAL(clicked()), this, SLOT(queryBtnClicked()));
+  }
+
+  void ReviewResultQuery_Widget::queryBtnClicked() {
+    qSharedPointerDynamicCast<MySQL_Database, Database>(mDatabase)->selectAll();
+    QVector<Record> records = mDatabase->getData(mModel->getHeader());
+    //mModel->updateModel(mDatabase->getData(mModel->getHeader()));
+    QList<Record> records1 = records.toList();
+    dynamic_cast<GTXLQX_Model*>(mModel)->showReviewResult(records1);
+  }
 }

@@ -256,6 +256,16 @@ namespace Jinhui {
     ~ConnectionFailed_Database() = default;
     const QString what() const Q_DECL_OVERRIDE;
   };
+
+  /*
+   * 子类 QSqlQuery异常类
+   */
+  class SqlQuery_Exception : public DatabaseException {
+  public:
+    SqlQuery_Exception() = default;
+    ~SqlQuery_Exception() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
 }
 
 #endif // EXCEPTION_H

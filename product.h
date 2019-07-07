@@ -19,12 +19,20 @@
 #include <QSqlTableModel>
 #include <QTableView>
 
+// ui
+#include <QComboBox>
+#include <QProgressBar>
+
+// database
+#include <QSqlQuery>
+
 QT_BEGIN_NAMESPACE
 class QFile;
 class QXmlStreamReader;
 class QHBoxLayout;
 class QVBoxLayout;
 class QStackedWidget;
+class QDateTimeEdit;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -37,6 +45,9 @@ namespace Jinhui {
   class SubMenu;
   class MenuItem_Label;
   class Mysql_Connection;
+  class Model;
+  class GTXLQX_Model;
+  class DatabaseTable_View;
 
   /*******************************************************************************
    * 基类
@@ -147,6 +158,7 @@ namespace Jinhui {
    */
   class Label : public Product, public QLabel {
   public:
+    Label(const QString& text, QWidget* parent = nullptr);
     Label(QWidget* parent = nullptr);
     ~Label() = default;
     // 设置主窗口
@@ -187,6 +199,8 @@ namespace Jinhui {
    */
   class PushButton : public Product, public QPushButton {
   public:
+    PushButton(QWidget* parent = nullptr);
+    PushButton(const QString& text, QWidget* parent = nullptr);
     PushButton(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~PushButton() = default;
   protected:
@@ -209,20 +223,26 @@ namespace Jinhui {
    */
   class Database : public Product {
   public:
-    Database(QSharedPointer<const Protocol> protocol);
+    Database(QSharedPointer<const Protocol> protocol, const QString& connectionName);
     ~Database() = default;
     // 增
-    virtual void append_Into(const RecordType& record);
+    virtual void insert(const QString& sql);
     // 删
-    virtual void delete_From(const int row);
+    virtual void deleteEx(const QString& sql);
     // 改
-    virtual void update();
+    virtual void update(const QString& sql);
     // 查
-    virtual void selectEx();
+    virtual void selectEx(const QString& sql);
     // commit
     virtual void commit();
+    // 获取数据
+    virtual QVector<Record> getData(const ColumnsName& columnsName);
+  protected:
+    // 执行sql语句
+    void sqlExec(const QString& sql);
   protected:
     QSharedPointer<const Protocol> mProtocol;
+    QSqlQuery mQuery;
   };
 
   /*
@@ -230,8 +250,30 @@ namespace Jinhui {
    */
   class Connection : public Product {
   public:
-    Connection() = default;
+    Connection(const QString& connectionName);
     ~Connection() = default;
+    // 获取连接名字
+    const QString getConnectionName() const;
+  protected:
+    const QString mConnectionName;
+  };
+
+  /*
+   * 基类 组合框类
+   */
+  class ComboBox : public Product, public QComboBox {
+  public:
+    ComboBox(QWidget* parent = nullptr);
+    ~ComboBox();
+  };
+
+  /*
+   * 基类 进度条类
+   */
+  class ProgressBar : public Product, public QProgressBar {
+  public:
+    ProgressBar(QWidget* parent = nullptr);
+    ~ProgressBar();
   };
 
   /*
@@ -244,7 +286,7 @@ namespace Jinhui {
     // 打开连接
     virtual void openConnection();
   protected:
-    const QString mDriver, mConnectionName;
+    const QString mDriver;
   };
 
   /*
@@ -254,6 +296,43 @@ namespace Jinhui {
   public:
     View() = default;
     ~View() = default;
+  };
+
+  /*
+   * 基类 表视图类
+   */
+  class TableView : public View, public QTableView {
+  public:
+    TableView(QWidget* parent = nullptr);
+    ~TableView();
+  };
+
+  /*
+   * 基类 模型类
+   */
+  class Model : public Product, public QAbstractItemModel {
+  public:
+    Model(QObject* parent = nullptr);
+    ~Model();
+    int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) Q_DECL_OVERRIDE;
+    QModelIndex parent(const QModelIndex &index) const Q_DECL_OVERRIDE;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) Q_DECL_OVERRIDE;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+    // 添加列名
+    //void addColumnName(const QString& );
+    // 更新表头
+    void updateHeader(ColumnsName& columnsName);
+    // 获取表头
+    const ColumnsName getHeader() const;
+  protected:
+    ColumnsName mColumnsName;
+    // 所有记录
+    QList<Record> mRecords;
   };
 
   /*******************************************************************************
@@ -721,29 +800,39 @@ namespace Jinhui {
   /*
    * 子类  Mysql数据库类
    */
-  class Mysql_Database : public Database, public QSqlTableModel {
+  //class Mysql_Database : public Database, public QSqlTableModel {
+  //public:
+  //  Mysql_Database(QSqlDatabase connection, QSharedPointer<const Protocol> protocol, QObject* parent = nullptr);
+  //  ~Mysql_Database();
+  //  // 增
+  //  virtual void append_Into(const RecordType& record) Q_DECL_OVERRIDE;
+  //  // 删
+  //  virtual void delete_From(const int row) Q_DECL_OVERRIDE;
+  //  // 改
+  //  virtual void update() Q_DECL_OVERRIDE;
+  //  // 查
+  //  virtual void selectEx() Q_DECL_OVERRIDE;
+  //  virtual void commit() Q_DECL_OVERRIDE;
+  //  //QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+  //protected:
+  //  // 初始化
+  //  void init();
+  //  // 设置表头
+  //  void setTableHeader();
+  //  // 附加高铁线路缺陷记录
+  //  void appendGTXLQXRecord(const RecordType& record);
+  //protected:
+  //  static int mRow;
+  //};
+
+  /*
+   * 子类  Mysql数据库类
+   */
+  class MySQL_Database : public Database {
   public:
-    Mysql_Database(QSqlDatabase connection, QSharedPointer<const Protocol> protocol, QObject* parent = nullptr);
-    ~Mysql_Database();
-    // 增
-    virtual void append_Into(const RecordType& record) Q_DECL_OVERRIDE;
-    // 删
-    virtual void delete_From(const int row) Q_DECL_OVERRIDE;
-    // 改
-    virtual void update() Q_DECL_OVERRIDE;
-    // 查
-    virtual void selectEx() Q_DECL_OVERRIDE;
-    virtual void commit() Q_DECL_OVERRIDE;
-    //QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
-  protected:
-    // 初始化
-    void init();
-    // 设置表头
-    void setTableHeader();
-    // 附加高铁线路缺陷记录
-    void appendGTXLQXRecord(const RecordType& record);
-  protected:
-    static int mRow;
+    MySQL_Database(QSharedPointer<const Protocol> protocol, const QString& connectionName);
+    ~MySQL_Database();
+    void selectAll();
   };
 
   /*
@@ -770,12 +859,73 @@ namespace Jinhui {
   /*
    * 子类 测试视图
    */
-  class Test_Widget : public Widget {
+  //class Test_Widget : public Widget {
+  //public:
+  //  Test_Widget(QWidget* parent = nullptr);
+  //  ~Test_Widget() = default;
+  //  virtual void setupUi(QSharedPointer<const Protocol> protocol);
+  //};
+
+  /*
+   * 子类 审查结果查询小部件类
+   */
+  class ReviewResultQuery_Widget : public Widget {
+    Q_OBJECT
   public:
-    Test_Widget(QWidget* parent = nullptr);
-    ~Test_Widget() = default;
+    ReviewResultQuery_Widget(QWidget* parent = nullptr);
+    ~ReviewResultQuery_Widget();
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
+  protected:
+    // 创建信号和槽
+    void createConnection();
+  public Q_SLOTS:
+    void queryBtnClicked();
+  protected:
+    Label* mLineName_Label;
+    ComboBox* mLineName_Combobox;
+    Label* mLineDirection_Label;
+    ComboBox* mLineDirection_Combobox;
+    Label* mExportState_Label;
+    ComboBox* mExportState_Combobox;
+    Label* mDefectName_Label;
+    ComboBox* mDefectName_Combobox;
+    Label* mAuditType_Label;
+    ComboBox* mAuditType_Combobox;
+    Label* mStartTime_Label;
+    QDateTimeEdit* mStartTime_TimeEdit;
+    Label* mEndTime;
+    QDateTimeEdit* mEndTime_TimeEdit;
+    PushButton* mQuery_Btn;
+    Label* mCount_Label;
+    Label* mTotal_Label;
+    Label* mPicture_Label;
+    TableView* mView;
+    QSharedPointer<Database> mDatabase;
+    Model* mModel;
+  //private:
+  //  friend class GTXLQX_MainWindow;
   };
+
+  /*
+   * 子类 数据库表视图类
+   */
+  class DatabaseTable_View : public TableView {
+  public:
+    DatabaseTable_View(QWidget* parent = nullptr);
+    ~DatabaseTable_View();
+  };
+
+  /*
+   * 子类 高铁线路缺陷模型类
+   */
+  class GTXLQX_Model : public Model {
+  public:
+    GTXLQX_Model(QObject* parent = nullptr);
+    ~GTXLQX_Model();
+    // 显示审查结果
+    void showReviewResult(QList<Record>& records);
+  };
+
 }
 
 #endif // PARSER_H

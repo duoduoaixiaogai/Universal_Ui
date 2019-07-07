@@ -12,12 +12,23 @@
 
 namespace Jinhui {
   /*
+   * Connection
+   */
+  // cotr
+  Connection::Connection(const QString& connectionName)
+    :mConnectionName(connectionName) {}
+
+  const QString Connection::getConnectionName() const {
+    return mConnectionName;
+  }
+
+  /*
    * Database_Connection
    */
   // cotr
   Database_Connection::Database_Connection(const QString& driver, const QString& connectionName)
-    :mDriver(driver)
-    ,mConnectionName(connectionName) {}
+    :Connection(connectionName)
+    ,mDriver(driver) {}
 
   Database_Connection::~Database_Connection() {
     // 还没有想好怎么解决删除连接

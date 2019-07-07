@@ -17,6 +17,9 @@ namespace Jinhui {
   * Label
   */
   // cotr
+  Label::Label(const QString& text, QWidget* parent)
+    :QLabel(text, parent) {}
+
   Label::Label(QWidget* parent)
     :QLabel(parent) {}
 
