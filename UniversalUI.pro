@@ -42,7 +42,10 @@ SOURCES += \
     view.cpp \
     model.cpp \
     combobox.cpp \
-    progressbar.cpp
+    progressbar.cpp \
+    scene.cpp \
+    item.cpp \
+    qttoopencv.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -52,7 +55,8 @@ HEADERS += \
     log.h \
     exception.h \
     common.h \
-    signalsrelay.h
+    signalsrelay.h \
+    qttoopencv.h
 
 FORMS += \
         mainwindow.ui
@@ -71,4 +75,8 @@ DISTFILES += \
     readme.txt \
     translation_cn.ts
 
-LIBS += -LD:/NYQProject/UniversalUI/libs -llibmysql
+INCLUDEPATH += D:\opencv4.1.0\opencv\build\include\opencv2 \
+               D:\opencv4.1.0\opencv\build\include
+
+LIBS += -LD:/NYQProject/UniversalUI/libs -llibmysql \
+        -LD:\opencv4.1.0\opencv\build\x64\vc15\lib -lopencv_world410d

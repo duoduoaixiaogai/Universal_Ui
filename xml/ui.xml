@@ -118,7 +118,7 @@
         -->
         <Object_Name>menu3</Object_Name>
         <Hide>yes</Hide>
-        <Item1_Name objectName="" clickedPicture="clickedmenu3submenu1item1">menu3submenu1item1</Item1_Name>
+        <Item1_Name objectName="splitScreenDisplay32Channel" clickedPicture="clickedmenu3submenu1item1">menu3submenu1item1</Item1_Name>
         <Item2_Name objectName="" clickedPicture="clickedmenu3submenu1item2">menu3submenu1item2</Item2_Name>
         <Item3_Name objectName="" clickedPicture="clickedmenu3submenu1item3">menu3submenu1item3</Item3_Name>
         <End></End>

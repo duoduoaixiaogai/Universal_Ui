@@ -13,6 +13,7 @@
 #include <QPainter>
 #include <QScrollArea>
 #include <QStackedWidget>
+#include <QSplitter>
 
 // ui
 #include <QDateTimeEdit>
@@ -149,6 +150,9 @@ namespace Jinhui {
     ReviewResultQuery_Widget* revResQueWidget = new ReviewResultQuery_Widget;
     revResQueWidget->setupUi(mConfigPro);
     addWidgetInContentArea(revResQueWidget);
+    SplitScreenDisplay32Channel* display32Channel = new SplitScreenDisplay32Channel;
+    display32Channel->setupUi(protocol);
+    addWidgetInContentArea(display32Channel);
     hLayout->addWidget(mWidgets);
     setLayout(hLayout);
   }
@@ -367,5 +371,124 @@ namespace Jinhui {
     //mModel->updateModel(mDatabase->getData(mModel->getHeader()));
     QList<Record> records1 = records.toList();
     dynamic_cast<GTXLQX_Model*>(mModel)->showReviewResult(records1);
+  }
+
+  /*
+   * SplitScreenDisplay32Channel
+   */
+  // cotr
+  SplitScreenDisplay32Channel::SplitScreenDisplay32Channel(QWidget* parent)
+    :Widget(parent)
+    ,mRows(8)
+    ,mColumns(4)
+    ,mItem(nullptr) {
+    connect(&mTimer, SIGNAL(timeout()), this, SLOT(timeouted()));
+  }
+
+  SplitScreenDisplay32Channel::~SplitScreenDisplay32Channel() {}
+
+  void SplitScreenDisplay32Channel::setupUi(QSharedPointer<const Protocol> protocol) {
+    //mH1Splitter = new QSplitter;
+    //mH2Splitter = new QSplitter;
+    //mH3Splitter = new QSplitter;
+    //mH4Splitter = new QSplitter;
+    //mH5Splitter = new QSplitter;
+    //mH6Splitter = new QSplitter;
+    //mH7Splitter = new QSplitter;
+    //mH8Splitter = new QSplitter;
+
+    //QSplitter* vSplitter = new QSplitter;
+    //vSplitter->setOrientation(Qt::Vertical);
+    //vSplitter->addWidget(mH1Splitter);
+    //vSplitter->addWidget(mH2Splitter);
+    //vSplitter->addWidget(mH3Splitter);
+    //vSplitter->addWidget(mH4Splitter);
+    //vSplitter->addWidget(mH5Splitter);
+    //vSplitter->addWidget(mH6Splitter);
+    //vSplitter->addWidget(mH7Splitter);
+    //vSplitter->addWidget(mH8Splitter);
+
+
+    //QSplitter* h1Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h2Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h3Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h4Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h5Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h6Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h7Splitter = new QSplitter(Qt::Vertical);
+    //QSplitter* h8Splitter = new QSplitter(Qt::Vertical);
+    //mHSplitters.append(h1Splitter);
+    //mHSplitters.append(h2Splitter);
+    //mHSplitters.append(h3Splitter);
+    //mHSplitters.append(h4Splitter);
+    //mHSplitters.append(h5Splitter);
+    //mHSplitters.append(h6Splitter);
+    //mHSplitters.append(h7Splitter);
+    //mHSplitters.append(h8Splitter);
+
+    //QSplitter* vSplitter = new QSplitter;
+    //vSplitter->setOrientation(Qt::Vertical);
+    //vSplitter->addWidget(h1Splitter);
+    //vSplitter->addWidget(h2Splitter);
+    //vSplitter->addWidget(h3Splitter);
+    //vSplitter->addWidget(h4Splitter);
+    //vSplitter->addWidget(h5Splitter);
+    //vSplitter->addWidget(h6Splitter);
+    //vSplitter->addWidget(h7Splitter);
+    //vSplitter->addWidget(h8Splitter);
+
+    //for (int i = 0; i < mRows; ++i) {
+    //  QSplitter* hSplitter = mHSplitters.at(0);
+    //  for (int j = 0; j < mColumns; ++j) {
+    //    OnewayDisplay* display = new OnewayDisplay;
+    //    hSplitter->addWidget(display);
+    //  }
+    //}
+
+    //QHBoxLayout* mainLayout = new QHBoxLayout;
+    //mainLayout->addWidget(vSplitter);
+    //setLayout(mainLayout);
+
+    setObjectName(QLatin1String("splitScreenDisplay32Channel"));
+
+    mScene = new Channel32_Scene(this);
+
+    QGridLayout* mainLayout = new QGridLayout;
+    for (int i = 0; i < mRows; ++i) {
+      for (int j = 0; j < mColumns; ++j) {
+        Channel_Frame* channel = new Channel_Frame;
+        channel->setupUi(protocol);
+        channel->view()->setScene(mScene);
+        mainLayout->addWidget(channel, i, j);
+        mChannels.append(channel);
+      }
+    }
+
+    setLayout(mainLayout);
+    const std::string videoStreamAddress = "rtsp://admin:ferret123@192.168.8.31:554/main/Channels/1";
+    //cv::VideoCapture vcap;
+    vcap.open(videoStreamAddress);
+    //while (true) {
+    //  cv::Mat frame;
+    //  vcap >> frame;
+    //  cv::imshow("pic", frame);
+    //  cv::waitKey(30);
+    //}
+    mTimer.start(40);
+  }
+
+  void SplitScreenDisplay32Channel::timeouted() {
+    //QPixmap oriPixmap("D:\\NYQProject\\UniversalUI\\11.jpg");
+
+    //mScene->addPixmap(QPixmap("D:\\NYQProject\\UniversalUI\\11.jpg"));
+    if (mItem) {
+      mScene->removeItem(mItem);
+      delete mItem;
+      mItem = nullptr;
+    }
+    cv::Mat frame;
+    vcap >> frame;
+    QPixmap oriPixmap = mConv.cvMatToQPixmap(frame);
+    mItem = mScene->addPixmap(oriPixmap);
   }
 }

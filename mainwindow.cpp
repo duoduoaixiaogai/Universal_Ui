@@ -238,7 +238,11 @@ namespace Jinhui {
     // MySQL数据库表格展示
     connect(mMenubar->mSubmenus.value(pro->menus.at(1).subMenu.objectName)
             ->mMenuItems.value(pro->menus.at(1).subMenu.itemsName.at(1).objectName), SIGNAL(clicked())
-            ,this, SLOT(menu2Submenu1Item1Clicked()));
+            ,this, SLOT(menu2Submenu1Item2Clicked()));
+    // 32路显示
+    connect(mMenubar->mSubmenus.value(pro->menus.at(2).subMenu.objectName)
+            ->mMenuItems.value(pro->menus.at(2).subMenu.itemsName.at(0).objectName), SIGNAL(clicked())
+            ,this, SLOT(menu3Submenu1Item1Clicked()));
     /*
      * 内容区
      */
@@ -285,7 +289,7 @@ namespace Jinhui {
     }
   }
 
-  void GTXLQX_MainWindow::menu2Submenu1Item1Clicked() {
+  void GTXLQX_MainWindow::menu2Submenu1Item2Clicked() {
     QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
 
     Widget* widget = mContentArea->mWidgetsIndex.value(QLatin1String("reviewResultQuery"));
@@ -294,4 +298,12 @@ namespace Jinhui {
     }
   }
 
+  void GTXLQX_MainWindow::menu3Submenu1Item1Clicked() {
+    QSharedPointer<const GTXLQXPro> pro = qSharedPointerCast<const GTXLQXPro, const Protocol>(mUiPro);
+
+    Widget* widget = mContentArea->mWidgetsIndex.value(QLatin1String("splitScreenDisplay32Channel"));
+    if (widget) {
+      mContentArea->showSpecifiedWidget(widget);
+    }
+  }
 }

@@ -10,6 +10,7 @@
 
 #include "protocol.h"
 #include "ui_mainwindow.h"
+#include "qttoopencv.h"
 
 #include <QObject>
 #include <QSharedPointer>
@@ -18,6 +19,9 @@
 #include <QPushButton>
 #include <QSqlTableModel>
 #include <QTableView>
+#include <QGraphicsView>
+#include <QGraphicsItem>
+#include <QTimer>
 
 // ui
 #include <QComboBox>
@@ -26,6 +30,9 @@
 // database
 #include <QSqlQuery>
 
+// opencv4.1.0
+#include <opencv2/opencv.hpp>
+
 QT_BEGIN_NAMESPACE
 class QFile;
 class QXmlStreamReader;
@@ -33,6 +40,7 @@ class QHBoxLayout;
 class QVBoxLayout;
 class QStackedWidget;
 class QDateTimeEdit;
+class QSplitter;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -308,6 +316,15 @@ namespace Jinhui {
   };
 
   /*
+   * 基类 图形视图类
+   */
+  class GraphicsView : public View, public QGraphicsView {
+  public:
+    GraphicsView(QWidget* parent = nullptr);
+    ~GraphicsView();
+  };
+
+  /*
    * 基类 模型类
    */
   class Model : public Product, public QAbstractItemModel {
@@ -333,6 +350,26 @@ namespace Jinhui {
     ColumnsName mColumnsName;
     // 所有记录
     QList<Record> mRecords;
+  };
+
+  /*
+   * 基类 图形项目基类
+   */
+  class GraphicsItem : public Product, public QGraphicsItem {
+  public:
+    GraphicsItem();
+    ~GraphicsItem();
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 基类 图形场景基类
+   */
+  class GraphicsScene : public Product, public QGraphicsScene {
+  public:
+    GraphicsScene(QObject* parent = nullptr);
+    ~GraphicsScene();
   };
 
   /*******************************************************************************
@@ -506,7 +543,8 @@ namespace Jinhui {
     void menu2Clicked();
     void menu3Clicked();
     void menu1Submenu1Item1Clicked();
-    void menu2Submenu1Item1Clicked();
+    void menu2Submenu1Item2Clicked();
+    void menu3Submenu1Item1Clicked();
   protected:
     QSharedPointer<const Protocol> mUiPro, mConfigPro;
     QVBoxLayout* mVLayout;
@@ -902,8 +940,8 @@ namespace Jinhui {
     TableView* mView;
     QSharedPointer<Database> mDatabase;
     Model* mModel;
-  //private:
-  //  friend class GTXLQX_MainWindow;
+    //private:
+    //  friend class GTXLQX_MainWindow;
   };
 
   /*
@@ -926,6 +964,66 @@ namespace Jinhui {
     void showReviewResult(QList<Record>& records);
   };
 
+  /*
+   * 子类 单路显示类
+   */
+  class Channel_Frame: public Frame {
+  public:
+    Channel_Frame(QWidget* parent = nullptr);
+    ~Channel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    GraphicsView* view() const;
+  protected:
+    GraphicsView* mView;
+  };
+
+  /*
+   * 子类 32路分屏显示类
+   */
+  class SplitScreenDisplay32Channel : public Widget {
+    Q_OBJECT
+  public:
+    SplitScreenDisplay32Channel(QWidget* parent = nullptr);
+    ~SplitScreenDisplay32Channel();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected Q_SLOTS:
+    void timeouted();
+  protected:
+    //QVector<QSplitter*> mHSplitters;
+    //    QSplitter* mH1Splitter;
+    //    QSplitter* mH2Splitter;
+    //    QSplitter* mH3Splitter;
+    //    QSplitter* mH4Splitter;
+    //    QSplitter* mH5Splitter;
+    //    QSplitter* mH6Splitter;
+    //    QSplitter* mH7Splitter;
+    //    QSplitter* mH8Splitter;
+    const int mRows, mColumns;
+    QVector<Channel_Frame*> mChannels;
+    GraphicsScene* mScene;
+    QTimer mTimer;
+    cv::VideoCapture vcap;
+    QtToOpencv::ImageConversion mConv;
+    QGraphicsItem* mItem;
+  };
+
+  /*
+   * 子类 单路视图类
+   */
+  class Channel_View : public GraphicsView {
+  public:
+    Channel_View(QWidget* parent = nullptr);
+    ~Channel_View();
+  };
+
+  /*
+   * 子类 32路场景类
+   */
+  class Channel32_Scene : public GraphicsScene {
+  public:
+    Channel32_Scene(QObject* parent = nullptr);
+    ~Channel32_Scene();
+  };
 }
 
 #endif // PARSER_H

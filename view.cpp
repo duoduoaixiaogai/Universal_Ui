@@ -41,4 +41,22 @@ namespace Jinhui {
   }
 
   DatabaseTable_View::~DatabaseTable_View() {}
+
+  /*
+   * GraphicsView
+   */
+  // cotr
+  GraphicsView::GraphicsView(QWidget* parent)
+    :QGraphicsView(parent) {}
+
+  GraphicsView::~GraphicsView() {}
+
+  /*
+   * OnewayView
+   */
+  // cotr
+  Channel_View::Channel_View(QWidget* parent)
+    :GraphicsView(parent) {}
+
+  Channel_View::~Channel_View() {}
 }
