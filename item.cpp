@@ -24,4 +24,13 @@ namespace Jinhui {
     Q_UNUSED(option);
     Q_UNUSED(widget);
   }
+
+  /*
+   * GraphicsPixmapItem
+   */
+  // cotr
+  GraphicsPixmapItem::GraphicsPixmapItem(const QPixmap &pixmap)
+    :QGraphicsPixmapItem(pixmap) {}
+
+  GraphicsPixmapItem::~GraphicsPixmapItem() {}
 }

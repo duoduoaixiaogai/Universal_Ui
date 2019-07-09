@@ -16,10 +16,10 @@ namespace Jinhui {
   // cotr
   Test_View::Test_View(QSqlTableModel* model, QWidget* parent)
     :QTableView(parent) {
-      setModel(model);
+    setModel(model);
 
-      horizontalHeader()->setStretchLastSection(true);
-      horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    horizontalHeader()->setStretchLastSection(true);
+    horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
   }
 
   /*
@@ -47,9 +47,21 @@ namespace Jinhui {
    */
   // cotr
   GraphicsView::GraphicsView(QWidget* parent)
-    :QGraphicsView(parent) {}
+    :QGraphicsView(parent)
+    ,mItem(nullptr) {}
 
   GraphicsView::~GraphicsView() {}
+
+  void GraphicsView::setItem(GraphicsPixmapItem *item) {
+    mItem = item;
+  }
+
+  // protected
+  void GraphicsView::resizeEvent(QResizeEvent *event) {
+    if (mItem) {
+      fitInView(mItem);
+    }
+  }
 
   /*
    * OnewayView

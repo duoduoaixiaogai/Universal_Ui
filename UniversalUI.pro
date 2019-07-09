@@ -45,7 +45,9 @@ SOURCES += \
     progressbar.cpp \
     scene.cpp \
     item.cpp \
-    qttoopencv.cpp
+    qttoopencv.cpp \
+    worker.cpp \
+    controller.cpp
 
 HEADERS += \
         mainwindow.h \

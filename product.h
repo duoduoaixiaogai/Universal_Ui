@@ -22,6 +22,7 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QTimer>
+#include <QThread>
 
 // ui
 #include <QComboBox>
@@ -56,6 +57,9 @@ namespace Jinhui {
   class Model;
   class GTXLQX_Model;
   class DatabaseTable_View;
+  class GraphicsItem;
+  class GraphicsPixmapItem;
+  class Channel32_Controller;
 
   /*******************************************************************************
    * 基类
@@ -322,6 +326,11 @@ namespace Jinhui {
   public:
     GraphicsView(QWidget* parent = nullptr);
     ~GraphicsView();
+    void setItem(GraphicsPixmapItem* item);
+  protected:
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    GraphicsPixmapItem* mItem;
   };
 
   /*
@@ -370,6 +379,38 @@ namespace Jinhui {
   public:
     GraphicsScene(QObject* parent = nullptr);
     ~GraphicsScene();
+  };
+
+  /*
+   * 基类 像素图项目类
+   */
+  class GraphicsPixmapItem : public Product, public QGraphicsPixmapItem {
+  public:
+    GraphicsPixmapItem(const QPixmap& pixmap);
+    ~GraphicsPixmapItem();
+  };
+
+  /*
+   * 基类 工作者基类
+   */
+  class Worker : public QObject, public Product {
+    Q_OBJECT
+  public:
+    Worker(QObject* parent = nullptr);
+    ~Worker();
+  };
+
+  /*
+   * 基类 控制者基类
+   */
+  class Controller : public QObject, public Product {
+    Q_OBJECT
+  public:
+    Controller(Worker* worker, QObject* parent = nullptr);
+    ~Controller();
+  protected:
+    QThread mWorkerThread;
+    Worker* mWorker;
   };
 
   /*******************************************************************************
@@ -971,8 +1012,10 @@ namespace Jinhui {
   public:
     Channel_Frame(QWidget* parent = nullptr);
     ~Channel_Frame();
+    //Channel_Frame(const Channel_Frame&);
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     GraphicsView* view() const;
+    void setItem(GraphicsPixmapItem* item);
   protected:
     GraphicsView* mView;
   };
@@ -986,6 +1029,8 @@ namespace Jinhui {
     SplitScreenDisplay32Channel(QWidget* parent = nullptr);
     ~SplitScreenDisplay32Channel();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void populateScene();
   protected Q_SLOTS:
     void timeouted();
   protected:
@@ -998,13 +1043,14 @@ namespace Jinhui {
     //    QSplitter* mH6Splitter;
     //    QSplitter* mH7Splitter;
     //    QSplitter* mH8Splitter;
-    const int mRows, mColumns;
     QVector<Channel_Frame*> mChannels;
     GraphicsScene* mScene;
     QTimer mTimer;
     cv::VideoCapture vcap;
     QtToOpencv::ImageConversion mConv;
     QGraphicsItem* mItem;
+    QHash<const int, GraphicsPixmapItem*> mItems;
+    QScopedPointer<Controller, QScopedPointerDeleteLater> mController;
   };
 
   /*
@@ -1024,6 +1070,40 @@ namespace Jinhui {
     Channel32_Scene(QObject* parent = nullptr);
     ~Channel32_Scene();
   };
+
+  /*
+   * 子类 32路显示工作者类
+   */
+  class Channel32_Worker : public Worker {
+    Q_OBJECT
+  public:
+    Channel32_Worker(QObject* parent = nullptr);
+    ~Channel32_Worker();
+  public Q_SLOTS:
+    void doWork(QVector<Channel_Frame*> channels);
+    //void doWork();
+  protected:
+    void populateScene();
+  protected:
+    QScopedPointer<GraphicsScene, QScopedPointerDeleteLater> mScene;
+    QHash<const int, GraphicsPixmapItem*> mItems;
+  };
+
+  /*
+   * 子类 32路显示控制者类
+   */
+  class Channel32_Controller : public Controller {
+    Q_OBJECT
+  public:
+    Channel32_Controller(QObject* parent = nullptr);
+    ~Channel32_Controller();
+  Q_SIGNALS:
+    void operate(QVector<Channel_Frame*> channels);
+    //void operate();
+  };
 }
+
+Q_DECLARE_METATYPE(Jinhui::Product)
+//Q_DECLARE_METATYPE(Jinhui::Channel_Frame)
 
 #endif // PARSER_H

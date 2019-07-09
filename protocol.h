@@ -203,6 +203,29 @@ namespace Jinhui {
   // 数据库表的记录
   typedef QStringList Record;
 
+  /*
+   * 分辩率
+   */
+  enum Resolution {
+    P1080 = 0x80,
+
+  };
+
+  /*
+   * 分屏
+   */
+  enum SplitScreen {
+    THIRTYTWO = 0x90,
+  };
+
+  /*
+   * 行列
+   */
+  struct RowsColumns {
+    int rows;
+    int columns;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/

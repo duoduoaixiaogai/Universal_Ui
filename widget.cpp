@@ -379,9 +379,8 @@ namespace Jinhui {
   // cotr
   SplitScreenDisplay32Channel::SplitScreenDisplay32Channel(QWidget* parent)
     :Widget(parent)
-    ,mRows(8)
-    ,mColumns(4)
-    ,mItem(nullptr) {
+    ,mItem(nullptr)
+  ,mController(new Channel32_Controller){
     connect(&mTimer, SIGNAL(timeout()), this, SLOT(timeouted()));
   }
 
@@ -451,44 +450,67 @@ namespace Jinhui {
 
     setObjectName(QLatin1String("splitScreenDisplay32Channel"));
 
-    mScene = new Channel32_Scene(this);
+    //populateScene();
 
+    //int index = 0;
+    RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
     QGridLayout* mainLayout = new QGridLayout;
-    for (int i = 0; i < mRows; ++i) {
-      for (int j = 0; j < mColumns; ++j) {
+    for (int i = 0; i < rowsColumns.rows; ++i) {
+      for (int j = 0; j < rowsColumns.columns; ++j) {
+        //mScene->addPixmap(QPixmap(""));
         Channel_Frame* channel = new Channel_Frame;
         channel->setupUi(protocol);
-        channel->view()->setScene(mScene);
+        //channel->view()->setScene(mScene);
+        //channel->setItem(mItems.value(index));
         mainLayout->addWidget(channel, i, j);
         mChannels.append(channel);
+        //++index;
       }
     }
 
     setLayout(mainLayout);
-    const std::string videoStreamAddress = "rtsp://admin:ferret123@192.168.8.31:554/main/Channels/1";
+    //const std::string videoStreamAddress = "rtsp://admin:ferret123@192.168.8.31:554/main/Channels/1";
     //cv::VideoCapture vcap;
-    vcap.open(videoStreamAddress);
+    //vcap.open(videoStreamAddress);
     //while (true) {
     //  cv::Mat frame;
     //  vcap >> frame;
     //  cv::imshow("pic", frame);
     //  cv::waitKey(30);
     //}
-    mTimer.start(40);
+    //mTimer.start(40);
+    emit dynamic_cast<Channel32_Controller*>(mController.data())->operate(mChannels);
   }
 
   void SplitScreenDisplay32Channel::timeouted() {
     //QPixmap oriPixmap("D:\\NYQProject\\UniversalUI\\11.jpg");
 
     //mScene->addPixmap(QPixmap("D:\\NYQProject\\UniversalUI\\11.jpg"));
-    if (mItem) {
-      mScene->removeItem(mItem);
-      delete mItem;
-      mItem = nullptr;
-    }
-    cv::Mat frame;
-    vcap >> frame;
-    QPixmap oriPixmap = mConv.cvMatToQPixmap(frame);
-    mItem = mScene->addPixmap(oriPixmap);
+    //if (mItem) {
+    //  mScene->removeItem(mItem);
+    //  delete mItem;
+    //  mItem = nullptr;
+    //}
+    //cv::Mat frame;
+    //vcap >> frame;
+    //QPixmap oriPixmap = mConv.cvMatToQPixmap(frame);
+    ////mItem = mScene->addPixmap(oriPixmap);
+    //for(int i = 0; i < mRows * mColumns; ++i) {
+    //  QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(mItems.value(i));
+    //  if (pixmapItem) {
+    //    pixmapItem->setPixmap(oriPixmap);
+    //  }
+    //}
   }
+
+  void SplitScreenDisplay32Channel::populateScene() {
+    //mScene = new Channel32_Scene(this);
+
+    //for(int i = 0; i < mRows * mColumns; ++i) {
+    //  //mItems[i] = dynamic_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
+    //  //QGraphicsPixmapItem* item = mScene->addPixmap(QPixmap(resolutionToSize(P1080)));
+    //  mItems[i] = static_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
+    //}
+  }
+
 }

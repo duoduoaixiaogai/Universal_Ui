@@ -10,11 +10,14 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include "protocol.h"
+
 #include <QString>
 #include <QCoreApplication>
+#include <QSize>
 
 #if 1
-  #include <QDir>
+#include <QDir>
 #endif
 
 namespace Jinhui {
@@ -92,6 +95,35 @@ namespace Jinhui {
       return Qt::AlignVCenter;
     }
   }
+
+  /*
+   * 分辩率转尺寸
+   */
+  static QSize resolutionToSize(Resolution resolution) {
+    QSize size;
+    switch (resolution) {
+      case P1080:
+        size.setWidth(1920);
+        size.setHeight(1080);
+        break;
+    }
+    return size;
+  }
+
+  /*
+   * 分屏转行列数(几行几列)
+   */
+  static RowsColumns splitScreenToSize(SplitScreen splitScreen) {
+    RowsColumns rowsColumns;
+    switch (splitScreen) {
+      case THIRTYTWO:
+        rowsColumns.rows = 8;
+        rowsColumns.columns = 4;
+        break;
+    }
+    return rowsColumns;
+  }
+
 }
 
 #endif // COMMON_H

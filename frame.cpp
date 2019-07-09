@@ -7,6 +7,8 @@
 ******************************************************************************/
 #include "product.h"
 
+#include <QHBoxLayout>
+
 namespace Jinhui {
   /*
    * Frame
@@ -30,11 +32,21 @@ namespace Jinhui {
 
   Channel_Frame::~Channel_Frame() {}
 
+  //Channel_Frame::Channel_Frame(const Channel_Frame&) {}
+
   void Channel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
-    mView = new Channel_View(this);
+    QHBoxLayout* mainLayout = new QHBoxLayout;
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mView = new Channel_View;
+    mainLayout->addWidget(mView);
+    setLayout(mainLayout);
   }
 
   GraphicsView* Channel_Frame::view() const {
     return mView;
+  }
+
+  void Channel_Frame::setItem(GraphicsPixmapItem* item) {
+    mView->setItem(item);
   }
 }
