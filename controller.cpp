@@ -31,15 +31,10 @@ namespace Jinhui {
   // cotr
   Channel32_Controller::Channel32_Controller(QObject* parent)
     :Controller(new Channel32_Worker, parent) {
-    //qRegisterMetaType<Channel_Frame>();
-    qRegisterMetaType<Jinhui::Product>();
-    connect(this, SIGNAL(operate(QVector<Channel_Frame*>))
-            ,dynamic_cast<Channel32_Worker*>(mWorker), SLOT(doWork(QVector<Channel_Frame*>)));
-    //connect(this, SIGNAL(operate())
-    //        ,dynamic_cast<Channel32_Worker*>(mWorker), SLOT(doWork()));
+    //qRegisterMetaType< QVector<Channel_Frame*> >();
+    //connect(this, SIGNAL(operate(QVector<Channel_Frame*>))
+    //        ,dynamic_cast<Channel32_Worker*>(mWorker), SLOT(doWork(QVector<Channel_Frame*>)));
     mWorkerThread.start();
-    //QVector<Channel_Frame*> test;
-    //emit this->operate();
   }
 
   Channel32_Controller::~Channel32_Controller() {}

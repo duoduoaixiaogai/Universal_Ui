@@ -32,7 +32,13 @@ namespace Jinhui {
 
   Channel_Frame::~Channel_Frame() {}
 
-  //Channel_Frame::Channel_Frame(const Channel_Frame&) {}
+  Channel_Frame::Channel_Frame(const Channel_Frame& other) {
+    QPixmap otherPixmap = other.view()->getItem()->pixmap();
+
+    mView = new GraphicsView;
+    GraphicsPixmapItem* pixmapItem = new GraphicsPixmapItem(otherPixmap);
+    mView->setItem(pixmapItem);
+  }
 
   void Channel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
     QHBoxLayout* mainLayout = new QHBoxLayout;

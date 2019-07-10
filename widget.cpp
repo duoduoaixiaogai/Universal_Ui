@@ -7,6 +7,7 @@
 ******************************************************************************/
 #include "product.h"
 #include "common.h"
+#include "exception.h"
 
 #include <QHBoxLayout>
 #include <QMouseEvent>
@@ -381,7 +382,11 @@ namespace Jinhui {
     :Widget(parent)
     ,mItem(nullptr)
   ,mController(new Channel32_Controller){
-    connect(&mTimer, SIGNAL(timeout()), this, SLOT(timeouted()));
+    //connect(&mTimer, SIGNAL(timeout()), this, SLOT(timeouted()));
+    connect(dynamic_cast<Channel32_Controller*>(mController.data())->mWorker, SIGNAL(resultReady(QVariantHash))
+            ,this, SLOT(handleResults(QVariantHash)));
+    connect(dynamic_cast<Channel32_Controller*>(mController.data()), SIGNAL(operate())
+            ,dynamic_cast<Channel32_Controller*>(mController.data())->mWorker, SLOT(doWork()));
   }
 
   SplitScreenDisplay32Channel::~SplitScreenDisplay32Channel() {}
@@ -450,21 +455,21 @@ namespace Jinhui {
 
     setObjectName(QLatin1String("splitScreenDisplay32Channel"));
 
-    //populateScene();
+    populateScene();
 
-    //int index = 0;
+    int index = 0;
     RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
     QGridLayout* mainLayout = new QGridLayout;
+    mainLayout->setSpacing(0);
     for (int i = 0; i < rowsColumns.rows; ++i) {
       for (int j = 0; j < rowsColumns.columns; ++j) {
-        //mScene->addPixmap(QPixmap(""));
         Channel_Frame* channel = new Channel_Frame;
         channel->setupUi(protocol);
-        //channel->view()->setScene(mScene);
-        //channel->setItem(mItems.value(index));
+        channel->view()->setScene(mScene);
+        channel->setItem(mItems.value(index));
         mainLayout->addWidget(channel, i, j);
         mChannels.append(channel);
-        //++index;
+        ++index;
       }
     }
 
@@ -479,7 +484,7 @@ namespace Jinhui {
     //  cv::waitKey(30);
     //}
     //mTimer.start(40);
-    emit dynamic_cast<Channel32_Controller*>(mController.data())->operate(mChannels);
+    emit dynamic_cast<Channel32_Controller*>(mController.data())->operate();
   }
 
   void SplitScreenDisplay32Channel::timeouted() {
@@ -504,13 +509,36 @@ namespace Jinhui {
   }
 
   void SplitScreenDisplay32Channel::populateScene() {
-    //mScene = new Channel32_Scene(this);
+    mScene = new Channel32_Scene(this);
 
-    //for(int i = 0; i < mRows * mColumns; ++i) {
-    //  //mItems[i] = dynamic_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
-    //  //QGraphicsPixmapItem* item = mScene->addPixmap(QPixmap(resolutionToSize(P1080)));
-    //  mItems[i] = static_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
-    //}
+    RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
+    for(int i = 0; i < rowsColumns.rows * rowsColumns.columns; ++i) {
+      //mItems[i] = dynamic_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
+      //QGraphicsPixmapItem* item = mScene->addPixmap(QPixmap(resolutionToSize(P1080)));
+      mItems[i] = static_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
+    }
+  }
+
+  // public slots
+  void SplitScreenDisplay32Channel::handleResults(QVariantHash pixmaps) {
+    RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
+    try {
+    if (rowsColumns.rows * rowsColumns.columns != pixmaps.size()) {
+      throw ContainerItemsNumIncorrect();
+    }
+    } catch (ContainerException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogWarn(msg);
+      ex.showMessage(nullptr, MessageLevel::WARN, msg);
+      return;
+    }
+
+    for(int i = 0; i < rowsColumns.rows * rowsColumns.columns; ++i) {
+      QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(mItems.value(i));
+      if (pixmapItem) {
+        pixmapItem->setPixmap(pixmaps.value(QString::number(i)).value<QPixmap>());
+      }
+    }
   }
 
 }

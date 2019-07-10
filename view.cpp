@@ -56,6 +56,10 @@ namespace Jinhui {
     mItem = item;
   }
 
+  GraphicsPixmapItem* GraphicsView::getItem() const {
+    return mItem;
+  }
+
   // protected
   void GraphicsView::resizeEvent(QResizeEvent *event) {
     if (mItem) {

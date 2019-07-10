@@ -117,6 +117,13 @@ namespace Jinhui {
   }
 
   /*
+   * ContainerException
+   */
+  const QString ContainerException::what() const {
+    return QObject::tr("Container exception!");
+  }
+
+  /*
    * ParserExceptionXml
    */
   const QString ParserExceptionXml::what() const {
@@ -213,4 +220,13 @@ namespace Jinhui {
   const QString SqlQuery_Exception::what() const {
     return QObject::tr("QSqlQuery query error!:  ");
   }
+
+  /*
+   * ContainerItemsNumIncorrect
+   * Description: 容器中的项目数量不正确异常
+   */
+  const QString ContainerItemsNumIncorrect::what() const {
+    return QObject::tr("The number of items in the container is incorrect!");
+  }
+
 }

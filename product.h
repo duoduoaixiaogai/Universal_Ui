@@ -23,6 +23,8 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QThread>
+#include <QHash>
+#include <QPixmap>
 
 // ui
 #include <QComboBox>
@@ -327,6 +329,7 @@ namespace Jinhui {
     GraphicsView(QWidget* parent = nullptr);
     ~GraphicsView();
     void setItem(GraphicsPixmapItem* item);
+    GraphicsPixmapItem* getItem() const;
   protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
   protected:
@@ -1012,7 +1015,7 @@ namespace Jinhui {
   public:
     Channel_Frame(QWidget* parent = nullptr);
     ~Channel_Frame();
-    //Channel_Frame(const Channel_Frame&);
+    Channel_Frame(const Channel_Frame& other);
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     GraphicsView* view() const;
     void setItem(GraphicsPixmapItem* item);
@@ -1031,6 +1034,8 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
   protected:
     void populateScene();
+  public Q_SLOTS:
+    void handleResults(QVariantHash pixmaps);
   protected Q_SLOTS:
     void timeouted();
   protected:
@@ -1080,13 +1085,10 @@ namespace Jinhui {
     Channel32_Worker(QObject* parent = nullptr);
     ~Channel32_Worker();
   public Q_SLOTS:
-    void doWork(QVector<Channel_Frame*> channels);
-    //void doWork();
+    void doWork();
+  Q_SIGNALS:
+    void resultReady(QVariantHash pixmaps);
   protected:
-    void populateScene();
-  protected:
-    QScopedPointer<GraphicsScene, QScopedPointerDeleteLater> mScene;
-    QHash<const int, GraphicsPixmapItem*> mItems;
   };
 
   /*
@@ -1098,12 +1100,12 @@ namespace Jinhui {
     Channel32_Controller(QObject* parent = nullptr);
     ~Channel32_Controller();
   Q_SIGNALS:
-    void operate(QVector<Channel_Frame*> channels);
-    //void operate();
+    void operate();
+  protected:
+    friend class SplitScreenDisplay32Channel;
   };
 }
 
-Q_DECLARE_METATYPE(Jinhui::Product)
-//Q_DECLARE_METATYPE(Jinhui::Channel_Frame)
+Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)
 
 #endif // PARSER_H

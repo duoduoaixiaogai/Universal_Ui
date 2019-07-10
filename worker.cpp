@@ -24,48 +24,30 @@ namespace Jinhui {
    */
   // cotr
   Channel32_Worker::Channel32_Worker(QObject* parent)
-    :Worker(parent)
-    ,mScene(new Channel32_Scene) {}
+    :Worker(parent) {}
 
   Channel32_Worker::~Channel32_Worker() {}
 
-  void Channel32_Worker::doWork(QVector<Channel_Frame*> channels) {
-    populateScene();
+  void Channel32_Worker::doWork() {
     const std::string videoStreamAddress = "rtsp://admin:ferret123@192.168.8.31:554/main/Channels/1";
     cv::VideoCapture vcap;
     vcap.open(videoStreamAddress);
     QtToOpencv::ImageConversion conv;
     RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
 
-    for (int i = 0; i < rowsColumns.rows * rowsColumns.columns; ++i) {
-      Channel_Frame* channel = channels.at(i);
-      channel->view()->setScene(mScene.data());
-      channel->view()->setItem(mItems[i]);
-    }
-
     while (true) {
       cv::Mat frame;
       vcap >> frame;
-      QPixmap oriPixmap = conv.cvMatToQPixmap(frame);
-      for(int i = 0; i < rowsColumns.rows * rowsColumns.columns; ++i) {
-        QGraphicsPixmapItem* pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(mItems.value(i));
-        if (pixmapItem) {
-          pixmapItem->setPixmap(oriPixmap);
-        }
+      QVariantHash pixmaps;
+      for (int i = 0; i < rowsColumns.rows * rowsColumns.columns; ++i) {
+        QPixmap oriPixmap = conv.cvMatToQPixmap(frame);
+        pixmaps[QString::number(i)] = oriPixmap;
       }
-
+      emit resultReady(pixmaps);
+      //cv::imshow("pic", frame);
+      //cv::waitKey(30);
       QThread::msleep(40);
     }
   }
 
-  //void Channel32_Worker::doWork() {
-  //  int i = 10;
-  //}
-
-  void Channel32_Worker::populateScene() {
-    RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
-    for(int i = 0; i < rowsColumns.rows * rowsColumns.columns; ++i) {
-      mItems[i] = static_cast<GraphicsPixmapItem*>(mScene->addPixmap(QPixmap(resolutionToSize(P1080))));
-    }
-  }
 }

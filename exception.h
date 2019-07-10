@@ -102,6 +102,16 @@ namespace Jinhui {
     const QString what() const Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 基类 容器异常类
+   */
+  class ContainerException : public Exception {
+  public:
+    ContainerException() = default;
+    ~ContainerException() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -266,6 +276,17 @@ namespace Jinhui {
     ~SqlQuery_Exception() = default;
     const QString what() const Q_DECL_OVERRIDE;
   };
+
+  /*
+   * 子类 容器中的项目数量不正确异常类
+   */
+  class ContainerItemsNumIncorrect : public ContainerException {
+  public:
+    ContainerItemsNumIncorrect() = default;
+    ~ContainerItemsNumIncorrect() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
 }
 
 #endif // EXCEPTION_H
