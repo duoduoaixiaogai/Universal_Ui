@@ -8,6 +8,7 @@
 #ifndef PRODUCT_H
 #define PRODUCT_H
 
+#include "global.h"
 #include "protocol.h"
 #include "ui_mainwindow.h"
 #include "qttoopencv.h"
@@ -17,7 +18,7 @@
 #include <QTranslator>
 #include <QLabel>
 #include <QPushButton>
-#include <QSqlTableModel>
+//#include <QSqlTableModel>
 #include <QTableView>
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -25,6 +26,7 @@
 #include <QThread>
 #include <QHash>
 #include <QPixmap>
+#include <QStack>
 
 // ui
 #include <QComboBox>
@@ -44,6 +46,7 @@ class QVBoxLayout;
 class QStackedWidget;
 class QDateTimeEdit;
 class QSplitter;
+class QSqlTableModel;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -62,6 +65,12 @@ namespace Jinhui {
   class GraphicsItem;
   class GraphicsPixmapItem;
   class Channel32_Controller;
+  class IVMS4200Menu_Widget;
+  class IVMS4200TitleBar_Widget;
+  class IVMS4200ContentArea_Widget;
+  class IVMS4200StatusBar_Widget;
+  class IVMS4200MenuBarMainBtn_Widget;
+  class IVMS4200MenuBarSeparator_Widget;
 
   /*******************************************************************************
    * 基类
@@ -69,7 +78,7 @@ namespace Jinhui {
   /*
    * 基类 产品类
    */
-  class Product {
+  class EXPORT Product {
   public:
     Product();
     virtual ~Product() = default;
@@ -84,7 +93,7 @@ namespace Jinhui {
   /*
    * 基类 解析器类
    */
-  class Parser : public Product {
+  class EXPORT Parser : public Product {
   public:
     Parser();
     ~Parser() = default;
@@ -99,7 +108,7 @@ namespace Jinhui {
   /*
    * 基类 语言类
    */
-  class Language : public Product{
+  class EXPORT Language : public Product{
   protected:
     // 语言的枚举类型
     enum LanTypes {
@@ -154,7 +163,7 @@ namespace Jinhui {
   /*
    * MainWindow类的重新实现
    */
-  class MainWindow : public Product, public QMainWindow {
+  class EXPORT MainWindow : public Product, public QMainWindow {
   public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -170,7 +179,7 @@ namespace Jinhui {
   /*
    * 基类 标签类
    */
-  class Label : public Product, public QLabel {
+  class EXPORT Label : public Product, public QLabel {
   public:
     Label(const QString& text, QWidget* parent = nullptr);
     Label(QWidget* parent = nullptr);
@@ -196,7 +205,7 @@ namespace Jinhui {
   /*
    * 基类 小部件类
    */
-  class Widget : public Product, public QWidget {
+  class EXPORT Widget : public Product, public QWidget {
   public:
     Widget(QWidget* parent = nullptr);
     ~Widget() = default;
@@ -204,6 +213,7 @@ namespace Jinhui {
     virtual void setMainWindow(QSharedPointer<MainWindow> mainWindow);
     // 设置自定义界面
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    virtual void setupUi();
   protected:
     QSharedPointer<MainWindow> mMainWindow;
   };
@@ -211,7 +221,7 @@ namespace Jinhui {
   /*
    * 基类 按钮类
    */
-  class PushButton : public Product, public QPushButton {
+  class EXPORT PushButton : public Product, public QPushButton {
   public:
     PushButton(QWidget* parent = nullptr);
     PushButton(const QString& text, QWidget* parent = nullptr);
@@ -224,7 +234,7 @@ namespace Jinhui {
   /*
    * 基类 框架类
    */
-  class Frame : public Product, public QFrame {
+  class EXPORT Frame : public Product, public QFrame {
   public:
     Frame(QWidget* parent = nullptr);
     ~Frame() = default;
@@ -235,7 +245,7 @@ namespace Jinhui {
   /*
    * 基类 数据库类
    */
-  class Database : public Product {
+  class EXPORT Database : public Product {
   public:
     Database(QSharedPointer<const Protocol> protocol, const QString& connectionName);
     ~Database() = default;
@@ -262,7 +272,7 @@ namespace Jinhui {
   /*
    * 基类 连接类
    */
-  class Connection : public Product {
+  class EXPORT Connection : public Product {
   public:
     Connection(const QString& connectionName);
     ~Connection() = default;
@@ -275,7 +285,7 @@ namespace Jinhui {
   /*
    * 基类 组合框类
    */
-  class ComboBox : public Product, public QComboBox {
+  class EXPORT ComboBox : public Product, public QComboBox {
   public:
     ComboBox(QWidget* parent = nullptr);
     ~ComboBox();
@@ -284,7 +294,7 @@ namespace Jinhui {
   /*
    * 基类 进度条类
    */
-  class ProgressBar : public Product, public QProgressBar {
+  class EXPORT ProgressBar : public Product, public QProgressBar {
   public:
     ProgressBar(QWidget* parent = nullptr);
     ~ProgressBar();
@@ -293,7 +303,7 @@ namespace Jinhui {
   /*
    * 子类 数据库连接类
    */
-  class Database_Connection : public Connection {
+  class EXPORT Database_Connection : public Connection {
   public:
     Database_Connection(const QString& driver, const QString& connectionName);
     ~Database_Connection();
@@ -306,7 +316,7 @@ namespace Jinhui {
   /*
    * 基类 视图类
    */
-  class View : public Product {
+  class EXPORT View : public Product {
   public:
     View() = default;
     ~View() = default;
@@ -315,7 +325,7 @@ namespace Jinhui {
   /*
    * 基类 表视图类
    */
-  class TableView : public View, public QTableView {
+  class EXPORT TableView : public View, public QTableView {
   public:
     TableView(QWidget* parent = nullptr);
     ~TableView();
@@ -324,7 +334,7 @@ namespace Jinhui {
   /*
    * 基类 图形视图类
    */
-  class GraphicsView : public View, public QGraphicsView {
+  class EXPORT GraphicsView : public View, public QGraphicsView {
   public:
     GraphicsView(QWidget* parent = nullptr);
     ~GraphicsView();
@@ -339,7 +349,7 @@ namespace Jinhui {
   /*
    * 基类 模型类
    */
-  class Model : public Product, public QAbstractItemModel {
+  class EXPORT Model : public Product, public QAbstractItemModel {
   public:
     Model(QObject* parent = nullptr);
     ~Model();
@@ -367,7 +377,7 @@ namespace Jinhui {
   /*
    * 基类 图形项目基类
    */
-  class GraphicsItem : public Product, public QGraphicsItem {
+  class EXPORT GraphicsItem : public Product, public QGraphicsItem {
   public:
     GraphicsItem();
     ~GraphicsItem();
@@ -378,7 +388,7 @@ namespace Jinhui {
   /*
    * 基类 图形场景基类
    */
-  class GraphicsScene : public Product, public QGraphicsScene {
+  class EXPORT GraphicsScene : public Product, public QGraphicsScene {
   public:
     GraphicsScene(QObject* parent = nullptr);
     ~GraphicsScene();
@@ -387,7 +397,7 @@ namespace Jinhui {
   /*
    * 基类 像素图项目类
    */
-  class GraphicsPixmapItem : public Product, public QGraphicsPixmapItem {
+  class EXPORT GraphicsPixmapItem : public Product, public QGraphicsPixmapItem {
   public:
     GraphicsPixmapItem(const QPixmap& pixmap);
     ~GraphicsPixmapItem();
@@ -396,7 +406,7 @@ namespace Jinhui {
   /*
    * 基类 工作者基类
    */
-  class Worker : public QObject, public Product {
+  class EXPORT Worker : public QObject, public Product {
     Q_OBJECT
   public:
     Worker(QObject* parent = nullptr);
@@ -406,7 +416,7 @@ namespace Jinhui {
   /*
    * 基类 控制者基类
    */
-  class Controller : public QObject, public Product {
+  class EXPORT Controller : public QObject, public Product {
     Q_OBJECT
   public:
     Controller(Worker* worker, QObject* parent = nullptr);
@@ -422,7 +432,7 @@ namespace Jinhui {
   /*
    * 子类 中文(简体)
    */
-  class SimplifiedChinese : public Language {
+  class EXPORT SimplifiedChinese : public Language {
   public:
     SimplifiedChinese(QSharedPointer<const Protocol> protocol);
     ~SimplifiedChinese() = default;
@@ -431,7 +441,7 @@ namespace Jinhui {
   /*
    * 子类 XML解析器类
    */
-  class XMLParser : public Parser {
+  class EXPORT XMLParser : public Parser {
   public:
     XMLParser();
     ~XMLParser() = default;
@@ -463,7 +473,7 @@ namespace Jinhui {
   /*
    * 子类 高铁线路缺陷UI系统XML解析器类
    */
-  class GTXLQX_XMLParser : public XMLParser {
+  class EXPORT GTXLQX_XMLParser : public XMLParser {
   private:
     typedef enum Label_Type {
       INVALID = 0x30,
@@ -514,7 +524,7 @@ namespace Jinhui {
   /*
    * 子类 配置文件解析类
    */
-  class ConfigParser : public XMLParser {
+  class EXPORT ConfigParser : public XMLParser {
   private:
     typedef enum Label_Type {
       INVALID = 0x40,
@@ -549,7 +559,7 @@ namespace Jinhui {
   /*
    * 子类 高铁线路缺陷主窗口类
    */
-  class GTXLQX_MainWindow : public MainWindow {
+  class EXPORT GTXLQX_MainWindow : public MainWindow {
     Q_OBJECT
   public:
     GTXLQX_MainWindow(QSharedPointer<const Protocol> uiPro,
@@ -608,7 +618,7 @@ namespace Jinhui {
   /*
    * 子类 最小化窗口标签类
    */
-  class MinWindow_Label : public Label {
+  class EXPORT MinWindow_Label : public Label {
   public:
     MinWindow_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~MinWindow_Label() = default;
@@ -626,7 +636,7 @@ namespace Jinhui {
   /*
    * 子类 最大化窗口标签类
    */
-  class MaxWindow_Label : public Label {
+  class EXPORT MaxWindow_Label : public Label {
   public:
     MaxWindow_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~MaxWindow_Label() = default;
@@ -651,7 +661,7 @@ namespace Jinhui {
   /*
    * 子类 关闭窗口标签类
    */
-  class ShutdownWindow_Label : public Label {
+  class EXPORT ShutdownWindow_Label : public Label {
   public:
     ShutdownWindow_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~ShutdownWindow_Label() = default;
@@ -668,7 +678,7 @@ namespace Jinhui {
   /*
    * 子类 标题栏标签类
    */
-  class Titlebar_Label : public Label {
+  class EXPORT Titlebar_Label : public Label {
   public:
     Titlebar_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~Titlebar_Label() = default;
@@ -682,7 +692,7 @@ namespace Jinhui {
   /*
    * 子类 标题栏标签类(包含最小化、最大化、关闭按钮)
    */
-  class TitlebarMinMaxShut_Label : public Label {
+  class EXPORT TitlebarMinMaxShut_Label : public Label {
   protected:
     enum TitleButton {
       INVALID = 0x60,
@@ -724,7 +734,7 @@ namespace Jinhui {
   /*
    * 子类 门脸标签类
    */
-  class Doorface_Label : public Label {
+  class EXPORT Doorface_Label : public Label {
   public:
     Doorface_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~Doorface_Label() = default;
@@ -736,7 +746,7 @@ namespace Jinhui {
   /*
    * 子类 标题栏类
    */
-  class Titlebar final : public Widget {
+  class EXPORT Titlebar final : public Widget {
   public:
     Titlebar(QWidget* parent = nullptr);
     ~Titlebar() = default;
@@ -749,7 +759,7 @@ namespace Jinhui {
   /*
    * 子类 菜单栏类
    */
-  class Menubar final : public Widget {
+  class EXPORT Menubar final : public Widget {
     Q_OBJECT
   public:
     Menubar(QWidget* parent = nullptr);
@@ -768,7 +778,7 @@ namespace Jinhui {
   /*
    * 子类 子菜单栏类
    */
-  class SubMenu : public Widget {
+  class EXPORT SubMenu : public Widget {
     Q_OBJECT
   public:
     SubMenu(const GTXLQXPro::Submenu& subMenu, QWidget* parent = nullptr);
@@ -785,7 +795,7 @@ namespace Jinhui {
   /*
    * 子类 内容区类
    */
-  class ContentArea :public Widget {
+  class EXPORT ContentArea :public Widget {
   public:
     ContentArea(QSharedPointer<const Protocol> configPro, QWidget* parent = nullptr);
     ~ContentArea() = default;
@@ -808,7 +818,7 @@ namespace Jinhui {
   /*
   * 子类 主菜单按钮类
   */
-  class Menu_PushButton : public PushButton {
+  class EXPORT Menu_PushButton : public PushButton {
     Q_OBJECT
   public:
     Menu_PushButton(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
@@ -822,7 +832,7 @@ namespace Jinhui {
   /*
    * 子类 主菜单标签类
    */
-  class Menu_Label : public Label {
+  class EXPORT Menu_Label : public Label {
     Q_OBJECT
   public:
     Menu_Label(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
@@ -838,7 +848,7 @@ namespace Jinhui {
   /*
    * 子类 菜单项按钮类
    */
-  class MenuItem_PushButton : public PushButton {
+  class EXPORT MenuItem_PushButton : public PushButton {
   public:
     MenuItem_PushButton(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
     ~MenuItem_PushButton() = default;
@@ -851,7 +861,7 @@ namespace Jinhui {
   /*
    * 子类 菜单项标签类
    */
-  class MenuItem_Label : public Label {
+  class EXPORT MenuItem_Label : public Label {
     Q_OBJECT
   public:
     MenuItem_Label(QSharedPointer<const Protocol> protocol, const QString& itemDefaultPicture
@@ -872,7 +882,7 @@ namespace Jinhui {
   /*
    * 四分屏类
    */
-  class QuadScreen : public Widget {
+  class EXPORT QuadScreen : public Widget {
   public:
     QuadScreen(QWidget* parent = nullptr);
     ~QuadScreen() = default;
@@ -910,7 +920,7 @@ namespace Jinhui {
   /*
    * 子类  Mysql数据库类
    */
-  class MySQL_Database : public Database {
+  class EXPORT MySQL_Database : public Database {
   public:
     MySQL_Database(QSharedPointer<const Protocol> protocol, const QString& connectionName);
     ~MySQL_Database();
@@ -920,7 +930,7 @@ namespace Jinhui {
   /*
    * 子类 Mysql数据库连接类
    */
-  class Mysql_Connection final : public Database_Connection {
+  class EXPORT Mysql_Connection final : public Database_Connection {
   public:
     Mysql_Connection(QSharedPointer<const Protocol> protocol);
     ~Mysql_Connection() = default;
@@ -932,7 +942,7 @@ namespace Jinhui {
   /*
    * 子类 测试视图
    */
-  class Test_View : public View, public QTableView {
+  class EXPORT Test_View : public View, public QTableView {
   public:
     Test_View(QSqlTableModel* model, QWidget* parent = nullptr);
     ~Test_View() = default;
@@ -951,7 +961,7 @@ namespace Jinhui {
   /*
    * 子类 审查结果查询小部件类
    */
-  class ReviewResultQuery_Widget : public Widget {
+  class EXPORT ReviewResultQuery_Widget : public Widget {
     Q_OBJECT
   public:
     ReviewResultQuery_Widget(QWidget* parent = nullptr);
@@ -991,7 +1001,7 @@ namespace Jinhui {
   /*
    * 子类 数据库表视图类
    */
-  class DatabaseTable_View : public TableView {
+  class EXPORT DatabaseTable_View : public TableView {
   public:
     DatabaseTable_View(QWidget* parent = nullptr);
     ~DatabaseTable_View();
@@ -1000,7 +1010,7 @@ namespace Jinhui {
   /*
    * 子类 高铁线路缺陷模型类
    */
-  class GTXLQX_Model : public Model {
+  class EXPORT GTXLQX_Model : public Model {
   public:
     GTXLQX_Model(QObject* parent = nullptr);
     ~GTXLQX_Model();
@@ -1011,7 +1021,7 @@ namespace Jinhui {
   /*
    * 子类 单路显示类
    */
-  class Channel_Frame: public Frame {
+  class EXPORT Channel_Frame: public Frame {
   public:
     Channel_Frame(QWidget* parent = nullptr);
     ~Channel_Frame();
@@ -1026,7 +1036,7 @@ namespace Jinhui {
   /*
    * 子类 32路分屏显示类
    */
-  class SplitScreenDisplay32Channel : public Widget {
+  class EXPORT SplitScreenDisplay32Channel : public Widget {
     Q_OBJECT
   public:
     SplitScreenDisplay32Channel(QWidget* parent = nullptr);
@@ -1061,7 +1071,7 @@ namespace Jinhui {
   /*
    * 子类 单路视图类
    */
-  class Channel_View : public GraphicsView {
+  class EXPORT Channel_View : public GraphicsView {
   public:
     Channel_View(QWidget* parent = nullptr);
     ~Channel_View();
@@ -1070,7 +1080,7 @@ namespace Jinhui {
   /*
    * 子类 32路场景类
    */
-  class Channel32_Scene : public GraphicsScene {
+  class EXPORT Channel32_Scene : public GraphicsScene {
   public:
     Channel32_Scene(QObject* parent = nullptr);
     ~Channel32_Scene();
@@ -1079,7 +1089,7 @@ namespace Jinhui {
   /*
    * 子类 32路显示工作者类
    */
-  class Channel32_Worker : public Worker {
+  class EXPORT Channel32_Worker : public Worker {
     Q_OBJECT
   public:
     Channel32_Worker(QObject* parent = nullptr);
@@ -1094,7 +1104,7 @@ namespace Jinhui {
   /*
    * 子类 32路显示控制者类
    */
-  class Channel32_Controller : public Controller {
+  class EXPORT Channel32_Controller : public Controller {
     Q_OBJECT
   public:
     Channel32_Controller(QObject* parent = nullptr);
@@ -1104,6 +1114,163 @@ namespace Jinhui {
   protected:
     friend class SplitScreenDisplay32Channel;
   };
+
+  /*
+   * 子类 菜单栏类(模仿海康IVMS-4200菜单栏样式)
+   */
+  class EXPORT IVMS4200Menubar_Widget : public Widget {
+    Q_OBJECT
+  public:
+    IVMS4200Menubar_Widget(QWidget* parent = nullptr);
+    ~IVMS4200Menubar_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    // 前序添加菜单
+    void addMenuFront(IVMS4200Menu_Widget* menu);
+    // 设置菜单栏主按钮
+    void setMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
+    // 取消菜单栏主按钮
+    void cancelMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
+    void cancelMenuBarMainButton(const int index = 0);
+  Q_SIGNALS:
+    void addMenuFront_Signal();
+  public Q_SLOTS:
+    void addMenuFront_Slot();
+  protected:
+    // 添加菜单
+    void addMenuStack(IVMS4200Menu_Widget* menu);
+    void initWindow();
+    void initLayout();
+  protected:
+    // variable
+    QStack<IVMS4200Menu_Widget*> mMenusStack;
+    QHBoxLayout* mMainLayout;
+  };
+
+  /*
+   * 子类 菜单类(模仿海康IVMS-4200菜单样式)
+   */
+  class EXPORT IVMS4200Menu_Widget : public Widget {
+  public:
+    IVMS4200Menu_Widget(QWidget* parent = nullptr);
+    ~IVMS4200Menu_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* iconLabel() const;
+    Label* contentLabel() const;
+    Label* closeLabel() const;
+    Label* colorBarLabel() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    IVMS4200Menu_Widget* mPreItem;
+    IVMS4200Menu_Widget* mNextItem;
+    IVMS4200MenuBarSeparator_Widget* mPreSeparator;
+    IVMS4200MenuBarSeparator_Widget* mNextSeparator;
+    QVBoxLayout* mMainLayout;
+    QHBoxLayout* mContentLayout;
+    QHBoxLayout* mColorBarLayout;
+    Label* mIcon;
+    Label* mContent;
+    Label* mClose;
+    Label* mColorBar;
+  private:
+    friend class IVMS4200Menubar_Widget;
+  };
+
+  /*
+   * 子类 入侵检测主窗口类
+   */
+  class EXPORT IntrusionDetection_MainWindow : public Widget {
+  public:
+    IntrusionDetection_MainWindow(QWidget* parent = nullptr);
+    ~IntrusionDetection_MainWindow();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    IVMS4200TitleBar_Widget* titleBar() const;
+    IVMS4200Menubar_Widget* menuBar() const;
+    IVMS4200ContentArea_Widget* contentArea() const;
+    IVMS4200StatusBar_Widget* statusBar() const;
+    void addMenuFront(IVMS4200Menu_Widget* menu);
+    void insertMenu(const int index, IVMS4200Menu_Widget* menu);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+    void setMenuBar(Widget* menuBar);
+    void setTitleBar(Widget* titleBar);
+    void setContentArea(Widget* contentArea);
+    void setStatusBar(Widget* statusBar);
+  protected:
+    // variable
+    QVBoxLayout* mMainLayout;
+    QHBoxLayout* mTitleLayout;
+    QHBoxLayout* mMenuLayout;
+    QHBoxLayout* mContentLayout;
+    QHBoxLayout* mStatusBarLayout;
+
+    Widget* mTitleBar;
+    Widget* mMenuBar;
+    Widget* mContentArea;
+    Widget* mStatusBar;
+  };
+
+  /*
+   * 子类 标题栏类(模仿海康IVMS-4200标题栏样式)
+   */
+  class EXPORT IVMS4200TitleBar_Widget : public Widget {
+  public:
+    IVMS4200TitleBar_Widget(QWidget* parent = nullptr);
+    ~IVMS4200TitleBar_Widget();
+  protected:
+    void initWindow();
+  };
+
+  /*
+   * 子类 内容区类(模仿海康IVMS-4200内容区)
+   */
+  class IVMS4200ContentArea_Widget : public Widget {
+  public:
+    IVMS4200ContentArea_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ContentArea_Widget();
+  };
+
+  /*
+   * 子类 状态栏类(模仿海康IVMS-4200状态栏样式)
+   */
+  class IVMS4200StatusBar_Widget : public Widget {
+  public:
+    IVMS4200StatusBar_Widget(QWidget* parent = nullptr);
+    ~IVMS4200StatusBar_Widget();
+  protected:
+    void initWindow();
+  };
+
+  /*
+   * 子类 菜单栏主按钮(模仿海康IVMS-4200菜单栏主按钮)
+   */
+  class IVMS4200MenuBarMainBtn_Widget : public Widget {
+  public:
+    IVMS4200MenuBarMainBtn_Widget(QWidget* parent = nullptr);
+    ~IVMS4200MenuBarMainBtn_Widget();
+  };
+
+  /*
+   * 子类 菜单栏菜单项分隔符类(模仿海康IVMS-4200菜单栏菜单项分隔符)
+   */
+  class IVMS4200MenuBarSeparator_Widget : public Widget {
+  public:
+    IVMS4200MenuBarSeparator_Widget(QWidget* parent = nullptr);
+    ~IVMS4200MenuBarSeparator_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QVBoxLayout* mMainLayout;
+    Label* mLabel;
+  };
+
 }
 
 Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)

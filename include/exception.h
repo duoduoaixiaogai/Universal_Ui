@@ -1,6 +1,8 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
+#include "global.h"
+
 #include <QObject>
 
 namespace Jinhui {
@@ -19,7 +21,7 @@ namespace Jinhui {
   /*
    * 异常基类
    */
-  class Exception/* : public QObject*/ {
+  class EXPORT Exception/* : public QObject*/ {
   public:
     Exception(/*QObject *parent = nullptr*/);
     virtual ~Exception() = default;
@@ -35,7 +37,7 @@ namespace Jinhui {
   /*
    * 基类 文件异常类(文件相关)
    */
-  class FileException : public Exception {
+  class EXPORT FileException : public Exception {
   public:
     FileException(/*QObject *parent = nullptr*/);
     ~FileException() = default;
@@ -45,7 +47,7 @@ namespace Jinhui {
   /*
    * 字符编码格式错误异常类
    */
-  class CharactersEncodingFormatErr : public FileException {
+  class EXPORT CharactersEncodingFormatErr : public FileException {
   public:
     CharactersEncodingFormatErr() = default;
     ~CharactersEncodingFormatErr() = default;
@@ -55,7 +57,7 @@ namespace Jinhui {
   /*
    * 基类 解析器异常类
    */
-  class ParserException : public Exception {
+  class EXPORT ParserException : public Exception {
   public:
     ParserException() = default;
     ~ParserException() = default;
@@ -65,7 +67,7 @@ namespace Jinhui {
   /*
    * 基类 协议异常类
    */
-  class ProtocolException : public Exception {
+  class EXPORT ProtocolException : public Exception {
   public:
     ProtocolException() = default;
     ~ProtocolException() = default;
@@ -75,7 +77,7 @@ namespace Jinhui {
   /*
    * 基类 语言异常类
    */
-  class LanguageException : public Exception {
+  class EXPORT LanguageException : public Exception {
   public:
     LanguageException() = default;
     ~LanguageException() = default;
@@ -85,7 +87,7 @@ namespace Jinhui {
   /*
    * 基类 参数异常类
    */
-  class ParameterException : public Exception {
+  class EXPORT ParameterException : public Exception {
   public:
     ParameterException() = default;
     ~ParameterException() = default;
@@ -95,7 +97,7 @@ namespace Jinhui {
   /*
    * 基类 数据库异常类
    */
-  class DatabaseException : public Exception {
+  class EXPORT DatabaseException : public Exception {
   public:
     DatabaseException() = default;
     ~DatabaseException() = default;
@@ -105,7 +107,7 @@ namespace Jinhui {
   /*
    * 基类 容器异常类
    */
-  class ContainerException : public Exception {
+  class EXPORT ContainerException : public Exception {
   public:
     ContainerException() = default;
     ~ContainerException() = default;
@@ -118,7 +120,7 @@ namespace Jinhui {
   /*
    * 子类 文件打不开异常类
    */
-  class FileExceptionOpenErr : public FileException {
+  class EXPORT FileExceptionOpenErr : public FileException {
   public:
     FileExceptionOpenErr(/*QObject *parent = nullptr*/);
     ~FileExceptionOpenErr() = default;
@@ -128,7 +130,7 @@ namespace Jinhui {
   /*
    * 子类 文件不存在异常类
    */
-  class FileExceptionNotExist : public FileException {
+  class EXPORT FileExceptionNotExist : public FileException {
   public:
     FileExceptionNotExist() = default;
     ~FileExceptionNotExist() = default;
@@ -139,7 +141,7 @@ namespace Jinhui {
   /*
    * 子类 XML解析器异常类
    */
-  class ParserExceptionXml : public ParserException {
+  class EXPORT ParserExceptionXml : public ParserException {
   public:
     ParserExceptionXml() = default;
     ~ParserExceptionXml() = default;
@@ -149,7 +151,7 @@ namespace Jinhui {
   /*
    * XML版本不正确异常类
    */
-  class IncorrectVersion : public ParserExceptionXml {
+  class EXPORT IncorrectVersion : public ParserExceptionXml {
   public:
     IncorrectVersion() = default;
     ~IncorrectVersion() = default;
@@ -159,7 +161,7 @@ namespace Jinhui {
   /*
    * 元素的标签不正确
    */
-  class LabelIsIncorrect : public ParserExceptionXml {
+  class EXPORT LabelIsIncorrect : public ParserExceptionXml {
   public:
     LabelIsIncorrect() = default;
     ~LabelIsIncorrect() = default;
@@ -169,7 +171,7 @@ namespace Jinhui {
   /*
    * 子类 高铁线路缺陷系统XML解析器异常类
    */
-  class ParserExceptionGTXLQX : public ParserExceptionXml {
+  class EXPORT ParserExceptionGTXLQX : public ParserExceptionXml {
   public:
     ParserExceptionGTXLQX() = default;
     ~ParserExceptionGTXLQX() = default;
@@ -179,7 +181,7 @@ namespace Jinhui {
   /*
    * PrematureEndOfDocumentError异常类
    */
-  class PrematureEndOfDocumentError : public ParserExceptionGTXLQX {
+  class EXPORT PrematureEndOfDocumentError : public ParserExceptionGTXLQX {
   public:
     PrematureEndOfDocumentError() = default;
     ~PrematureEndOfDocumentError() = default;
@@ -189,7 +191,7 @@ namespace Jinhui {
   /*
    *  NotWellFormedError异常类
    */
-  class NotWellFormedError : public ParserExceptionGTXLQX {
+  class EXPORT NotWellFormedError : public ParserExceptionGTXLQX {
   public:
     NotWellFormedError() = default;
     ~NotWellFormedError() = default;
@@ -200,7 +202,7 @@ namespace Jinhui {
   /*
    * 子类 向上协议转换异常类
    */
-  class UpcastProtocolConversion : public ProtocolException {
+  class EXPORT UpcastProtocolConversion : public ProtocolException {
   public:
     UpcastProtocolConversion() = default;
     ~UpcastProtocolConversion() = default;
@@ -210,7 +212,7 @@ namespace Jinhui {
   /*
    * 子类 向下协议转换异常类
    */
-  class DowncastProtocolConversion : public ProtocolException {
+  class EXPORT DowncastProtocolConversion : public ProtocolException {
   public:
     DowncastProtocolConversion() = default;
     ~DowncastProtocolConversion() = default;
@@ -220,7 +222,7 @@ namespace Jinhui {
   /*
    * 子类 加载翻译文件异常类
    */
-  class LoadTranslationFile : public LanguageException {
+  class EXPORT LoadTranslationFile : public LanguageException {
   public:
     LoadTranslationFile() = default;
     ~LoadTranslationFile() = default;
@@ -230,7 +232,7 @@ namespace Jinhui {
   /*
    * 子类 删除翻译文件异常类
    */
-  class delTranslationFile : public LanguageException {
+  class EXPORT delTranslationFile : public LanguageException {
   public:
     delTranslationFile() = default;
     ~delTranslationFile() = default;
@@ -240,7 +242,7 @@ namespace Jinhui {
   /*
    * 子类 添加翻译文件异常类
    */
-  class addTranslationFile : public LanguageException {
+  class EXPORT addTranslationFile : public LanguageException {
   public:
     addTranslationFile() = default;
     ~addTranslationFile() = default;
@@ -250,7 +252,7 @@ namespace Jinhui {
   /*
    * 子类 参数数量不正确
    */
-  class IncorrectNumberParameters : public ParameterException {
+  class EXPORT IncorrectNumberParameters : public ParameterException {
   public:
     IncorrectNumberParameters() = default;
     ~IncorrectNumberParameters() = default;
@@ -260,7 +262,7 @@ namespace Jinhui {
   /*
    * 子类 数据库连接失败异常
    */
-  class ConnectionFailed_Database : public DatabaseException {
+  class EXPORT ConnectionFailed_Database : public DatabaseException {
   public:
     ConnectionFailed_Database() = default;
     ~ConnectionFailed_Database() = default;
@@ -270,7 +272,7 @@ namespace Jinhui {
   /*
    * 子类 QSqlQuery异常类
    */
-  class SqlQuery_Exception : public DatabaseException {
+  class EXPORT SqlQuery_Exception : public DatabaseException {
   public:
     SqlQuery_Exception() = default;
     ~SqlQuery_Exception() = default;
@@ -280,7 +282,7 @@ namespace Jinhui {
   /*
    * 子类 容器中的项目数量不正确异常类
    */
-  class ContainerItemsNumIncorrect : public ContainerException {
+  class EXPORT ContainerItemsNumIncorrect : public ContainerException {
   public:
     ContainerItemsNumIncorrect() = default;
     ~ContainerItemsNumIncorrect() = default;

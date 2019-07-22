@@ -1,6 +1,8 @@
 #ifndef QTTOOPENCV_H
 #define QTTOOPENCV_H
 
+#include "global.h"
+
 #include <QImage>
 #include <QPixmap>
 #include <opencv2/opencv.hpp>
@@ -9,7 +11,7 @@
 
 namespace QtToOpencv
 {
-    class ImageConversion
+    class EXPORT ImageConversion
     {
         public:
         QImage  cvMatToQImage( const cv::Mat &inMat );

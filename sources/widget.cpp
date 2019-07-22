@@ -5,9 +5,9 @@
 * Last modified person: Niu yi qun
 * Last modified date: 2019/6/25
 ******************************************************************************/
-#include "product.h"
-#include "common.h"
-#include "exception.h"
+#include "include/product.h"
+#include "include/common.h"
+#include "include/exception.h"
 
 #include <QHBoxLayout>
 #include <QMouseEvent>
@@ -34,6 +34,8 @@ namespace Jinhui {
   void Widget::setupUi(QSharedPointer<const Protocol> protocol) {
     Q_UNUSED(protocol);
   }
+
+  void Widget::setupUi() {}
 
   /*
    * Titlebar
@@ -381,7 +383,7 @@ namespace Jinhui {
   SplitScreenDisplay32Channel::SplitScreenDisplay32Channel(QWidget* parent)
     :Widget(parent)
     ,mItem(nullptr)
-  ,mController(new Channel32_Controller){
+    ,mController(new Channel32_Controller){
     //connect(&mTimer, SIGNAL(timeout()), this, SLOT(timeouted()));
     connect(dynamic_cast<Channel32_Controller*>(mController.data())->mWorker, SIGNAL(resultReady(QVariantHash))
             ,this, SLOT(handleResults(QVariantHash)));
@@ -523,9 +525,9 @@ namespace Jinhui {
   void SplitScreenDisplay32Channel::handleResults(QVariantHash pixmaps) {
     RowsColumns rowsColumns = splitScreenToSize(THIRTYTWO);
     try {
-    if (rowsColumns.rows * rowsColumns.columns != pixmaps.size()) {
-      throw ContainerItemsNumIncorrect();
-    }
+      if (rowsColumns.rows * rowsColumns.columns != pixmaps.size()) {
+        throw ContainerItemsNumIncorrect();
+      }
     } catch (ContainerException& ex) {
       const QString msg = ex.what();
       ex.writeLogWarn(msg);
@@ -539,6 +541,333 @@ namespace Jinhui {
         pixmapItem->setPixmap(pixmaps.value(QString::number(i)).value<QPixmap>());
       }
     }
+  }
+
+  /*
+   * IVMS4200Menubar_Widget
+   */
+  // cotr
+  IVMS4200Menubar_Widget::IVMS4200Menubar_Widget(QWidget* parent)
+    :Widget(parent) {
+    connect(this, SIGNAL(addMenuFront_Signal()), this, SLOT(addMenuFront_Slot()));
+  }
+
+  IVMS4200Menubar_Widget::~IVMS4200Menubar_Widget() {}
+
+  void IVMS4200Menubar_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+  }
+
+  void IVMS4200Menubar_Widget::addMenuFront(IVMS4200Menu_Widget* menu) {
+    addMenuStack(menu);
+    emit addMenuFront_Signal();
+  }
+
+  void IVMS4200Menubar_Widget::setMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn) {
+    mMainLayout->insertWidget(0, mainBtn);
+  }
+
+  void IVMS4200Menubar_Widget::cancelMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn) {
+    mMainLayout->removeWidget(mainBtn);
+  }
+
+  void IVMS4200Menubar_Widget::cancelMenuBarMainButton(const int index) {
+    mMainLayout->removeWidget(mMainLayout->itemAt(index)->widget());
+  }
+
+  // public slots
+  void IVMS4200Menubar_Widget::addMenuFront_Slot() {
+    IVMS4200Menu_Widget* menu = mMenusStack.pop();
+    // 首元素
+    if (mMenusStack.isEmpty()) {
+      menu->mPreSeparator->setupUi(QSharedPointer<const Protocol>());
+      mMainLayout->insertWidget(0, menu->mPreSeparator);
+      mMainLayout->insertWidget(0, menu);
+      menu->mNextSeparator->setupUi(QSharedPointer<const Protocol>());
+      mMainLayout->insertWidget(0, menu->mNextSeparator);
+    } else {
+      mMainLayout->insertWidget(1, menu);
+      mMainLayout->insertWidget(1, menu->mPreSeparator);
+    }
+    mMenusStack.push(menu);
+  }
+
+  // protected
+  void IVMS4200Menubar_Widget::addMenuStack(IVMS4200Menu_Widget* menu) {
+    // 首元素
+    if (mMenusStack.isEmpty()) {
+      menu->mPreItem = nullptr;
+      menu->mNextItem = nullptr;
+      menu->mPreSeparator = new IVMS4200MenuBarSeparator_Widget;
+      menu->mNextSeparator = new IVMS4200MenuBarSeparator_Widget;
+    } else {
+      IVMS4200Menu_Widget* lastMenu = mMenusStack.pop();
+      menu->mPreItem = nullptr;
+      menu->mNextItem = lastMenu;
+      menu->mPreSeparator = new IVMS4200MenuBarSeparator_Widget;
+      menu->mNextSeparator = lastMenu->mPreSeparator;
+
+      lastMenu->mPreItem = menu;
+
+      mMenusStack.push(lastMenu);
+    }
+
+    mMenusStack.push(menu);
+  }
+
+  void IVMS4200Menubar_Widget::initWindow() {
+    setFixedHeight(30);
+  }
+
+  void IVMS4200Menubar_Widget::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setSpacing(0);
+    mMainLayout->addStretch();
+  }
+
+  /*
+   * IVMS4200Menu_Widget
+   */
+  // cotr
+  IVMS4200Menu_Widget::IVMS4200Menu_Widget(QWidget* parent)
+    :Widget(parent)
+    ,mPreItem(nullptr)
+    ,mNextItem(nullptr) {}
+
+  IVMS4200Menu_Widget::~IVMS4200Menu_Widget() {}
+
+  void IVMS4200Menu_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* IVMS4200Menu_Widget::iconLabel() const {
+    return mIcon;
+  }
+
+  Label* IVMS4200Menu_Widget::contentLabel() const {
+    return mContent;
+  }
+
+  Label* IVMS4200Menu_Widget::closeLabel() const {
+    return mClose;
+  }
+
+  Label* IVMS4200Menu_Widget::colorBarLabel() const {
+    return mColorBar;
+  }
+
+  // protected
+  void IVMS4200Menu_Widget::initWindow() {
+    setMaximumWidth(170);
+    setStyleSheet(QString("background-color:black"));
+  }
+  void IVMS4200Menu_Widget::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mContentLayout = new QHBoxLayout;
+    mColorBarLayout = new QHBoxLayout;
+    mMainLayout->setSpacing(0);
+    mMainLayout->addLayout(mContentLayout);
+    mMainLayout->addLayout(mColorBarLayout);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    //mContentLayout->setContentsMargins(4, 4, 4, 4);
+    mColorBarLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void IVMS4200Menu_Widget::init() {
+    mIcon = new Label;
+    mContent = new Label;
+    mClose = new Label;
+    mColorBar = new Label;
+    mColorBar->setFixedHeight(3);
+    mColorBar->setStyleSheet(QString("background-color:red"));
+    mContentLayout->addStretch();
+    mContentLayout->addWidget(mIcon);
+    mContentLayout->addStretch();
+    mContentLayout->addWidget(mContent);
+    mContentLayout->addStretch();
+    mContentLayout->addWidget(mClose);
+    mContentLayout->addStretch();
+    mColorBarLayout->addWidget(mColorBar);
+  }
+
+  /*
+   * IntrusionDetection_Window
+   */
+  // cotr
+  IntrusionDetection_MainWindow::IntrusionDetection_MainWindow(QWidget* parent)
+    :Widget(parent) {}
+
+  IntrusionDetection_MainWindow::~IntrusionDetection_MainWindow() {}
+
+  void IntrusionDetection_MainWindow::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  IVMS4200TitleBar_Widget* IntrusionDetection_MainWindow::titleBar() const {
+    return dynamic_cast<IVMS4200TitleBar_Widget*>(mTitleBar);
+  }
+
+  IVMS4200Menubar_Widget* IntrusionDetection_MainWindow::menuBar() const {
+    return dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar);
+  }
+
+  IVMS4200ContentArea_Widget* IntrusionDetection_MainWindow::contentArea() const {
+    return dynamic_cast<IVMS4200ContentArea_Widget*>(mContentArea);
+  }
+
+  IVMS4200StatusBar_Widget* IntrusionDetection_MainWindow::statusBar() const {
+    return dynamic_cast<IVMS4200StatusBar_Widget*>(mStatusBar);
+  }
+
+  void IntrusionDetection_MainWindow::addMenuFront(IVMS4200Menu_Widget* menu) {
+    dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar)->addMenuFront(menu);
+  }
+
+  void IntrusionDetection_MainWindow::insertMenu(const int index, IVMS4200Menu_Widget* menu) {
+
+  }
+
+  // protected
+  void IntrusionDetection_MainWindow::setMenuBar(Widget *menuBar) {
+    mMenuLayout->addWidget(menuBar);
+  }
+
+  void IntrusionDetection_MainWindow::setTitleBar(Widget *titleBar) {
+    mTitleLayout->addWidget(titleBar);
+  }
+
+  void IntrusionDetection_MainWindow::setContentArea(Widget* contentArea) {
+    mContentLayout->addWidget(contentArea);
+  }
+
+  void IntrusionDetection_MainWindow::setStatusBar(Widget* statusBar) {
+    mStatusBarLayout->addWidget(statusBar);
+  }
+
+  void IntrusionDetection_MainWindow::initWindow() {
+    setWindowFlag(Qt::FramelessWindowHint);
+    setMinimumSize(QSize(1000, 800));
+  }
+
+  void IntrusionDetection_MainWindow::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mTitleLayout = new QHBoxLayout;
+    mMenuLayout = new QHBoxLayout;
+    mContentLayout = new QHBoxLayout;
+    mStatusBarLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mTitleLayout);
+    mMainLayout->addLayout(mMenuLayout);
+    mMainLayout->addLayout(mContentLayout);
+    mMainLayout->addLayout(mStatusBarLayout);
+
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mTitleLayout->setContentsMargins(0, 0, 0, 0);
+    mMenuLayout->setContentsMargins(0, 0, 0, 0);
+    mStatusBarLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void IntrusionDetection_MainWindow::init() {
+    mTitleBar = new IVMS4200TitleBar_Widget;
+    mTitleBar->setupUi(QSharedPointer<const Protocol>());
+    mMenuBar = new IVMS4200Menubar_Widget;
+    mMenuBar ->setupUi(QSharedPointer<const Protocol>());
+    mContentArea = new IVMS4200ContentArea_Widget;
+    mContentArea->setupUi(QSharedPointer<const Protocol>());
+    mStatusBar = new IVMS4200StatusBar_Widget;
+    mStatusBar->setupUi(QSharedPointer<const Protocol>());
+
+    setTitleBar(mTitleBar);
+    setMenuBar(mMenuBar);
+    setContentArea(mContentArea);
+    setStatusBar(mStatusBar);
+  }
+
+  /*
+   * IVMS4200TitleBar_Widget
+   */
+  // cotr
+  IVMS4200TitleBar_Widget::IVMS4200TitleBar_Widget(QWidget* parent)
+    :Widget(parent) {
+    initWindow();
+  }
+
+  IVMS4200TitleBar_Widget::~IVMS4200TitleBar_Widget() {}
+
+  void IVMS4200TitleBar_Widget::initWindow() {
+    setFixedHeight(40);
+  }
+
+  /*
+   * IVMS4200ContentArea_Widget
+   */
+  // cotr
+  IVMS4200ContentArea_Widget::IVMS4200ContentArea_Widget(QWidget* parent) {
+  }
+
+  IVMS4200ContentArea_Widget::~IVMS4200ContentArea_Widget() {}
+
+  /*
+   * IVMS4200StatusBar_Widget
+   */
+  // cotr
+  IVMS4200StatusBar_Widget::IVMS4200StatusBar_Widget(QWidget* parent) {
+    void initWindow();
+  }
+
+  IVMS4200StatusBar_Widget::~IVMS4200StatusBar_Widget() {}
+
+  void IVMS4200StatusBar_Widget::initWindow() {
+    setFixedHeight(50);
+  }
+
+  /*
+   * IVMSMenuBarMainBtn
+   */
+  // cotr
+  IVMS4200MenuBarMainBtn_Widget::IVMS4200MenuBarMainBtn_Widget(QWidget* parent)
+    :Widget(parent) {}
+
+  IVMS4200MenuBarMainBtn_Widget::~IVMS4200MenuBarMainBtn_Widget() {}
+
+  /*
+   * IVMS4200MenuBarSeparator_Widget
+   */
+  // cotr
+  IVMS4200MenuBarSeparator_Widget::IVMS4200MenuBarSeparator_Widget(QWidget* parent)
+    :Widget(parent) {
+
+  }
+
+  IVMS4200MenuBarSeparator_Widget::~IVMS4200MenuBarSeparator_Widget() {}
+
+  void IVMS4200MenuBarSeparator_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  // protected
+  void IVMS4200MenuBarSeparator_Widget::initWindow() {
+    setFixedWidth(5);
+  }
+
+  void IVMS4200MenuBarSeparator_Widget::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void IVMS4200MenuBarSeparator_Widget::init() {
+    mLabel = new Label;
+    mLabel->setFixedHeight(20);
+    mLabel->setStyleSheet(QString("background-color:green"));
+    mMainLayout->addWidget(mLabel);
+    mMainLayout->addStretch();
   }
 
 }

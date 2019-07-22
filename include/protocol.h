@@ -1,6 +1,8 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
+#include "global.h"
+
 #include <QString>
 #include <QHash>
 #include <QVector>
@@ -20,14 +22,14 @@ namespace Jinhui {
   /*
    * 协议
    */
-  struct Protocol {
+  struct EXPORT Protocol {
     ProType proType;
   };
 
   /*
    * 协议 高铁线路缺陷识别系统
    */
-  typedef struct GTXLQX_Protocol : public Protocol {
+  typedef struct EXPORT GTXLQX_Protocol : public Protocol {
     /*
      * 菜单
      */
@@ -154,7 +156,7 @@ namespace Jinhui {
   /*
    * 协议 配置文件
    */
-  typedef struct Config_Protocol : public Protocol {
+  typedef struct EXPORT Config_Protocol : public Protocol {
     /*
      * 语言
      */
@@ -194,7 +196,7 @@ namespace Jinhui {
   /*
    * 不同数据库数据表每条记录类型
    */
-  struct RecordType {
+  struct EXPORT RecordType {
     DatabaseTable_Type type;
   };
 
@@ -221,7 +223,7 @@ namespace Jinhui {
   /*
    * 行列
    */
-  struct RowsColumns {
+  struct EXPORT RowsColumns {
     int rows;
     int columns;
   };
@@ -232,7 +234,7 @@ namespace Jinhui {
   /*
    * 高铁线路缺陷数据表记录类型
    */
-  struct GTXLQX_Record : public RecordType {
+  struct EXPORT GTXLQX_Record : public RecordType {
     int index;
     QString lineName;
     QString lineDirection;

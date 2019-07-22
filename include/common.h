@@ -10,6 +10,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include "global.h"
 #include "protocol.h"
 
 #include <QString>
@@ -117,10 +118,10 @@ namespace Jinhui {
     RowsColumns rowsColumns;
     switch (splitScreen) {
       case THIRTYTWO:
-        //rowsColumns.rows = 8;
-        //rowsColumns.columns = 4;
-        rowsColumns.rows = 1;
-        rowsColumns.columns = 1;
+        rowsColumns.rows = 8;
+        rowsColumns.columns = 4;
+        //rowsColumns.rows = 1;
+        //rowsColumns.columns = 1;
         break;
     }
     return rowsColumns;

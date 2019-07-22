@@ -1,6 +1,8 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include "global.h"
+
 #include <QObject>
 #include <QMutex>
 #include <QCoreApplication>
@@ -11,7 +13,7 @@ namespace Jinhui {
   /*
    * Qt自家的日志处理系统
    */
-  class Log :public QObject {
+  class EXPORT Log :public QObject {
   public:
     /*
      * 日志等级
@@ -39,7 +41,9 @@ namespace Jinhui {
   private:
     static QMutex mMutex;
 
-    static const QString mInfo, mWarn, mFatal;
+    static const QString mInfo;
+    static const QString mWarn;
+    static const QString mFatal;
   };
 }
 
