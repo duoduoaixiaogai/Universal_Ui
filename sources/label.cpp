@@ -27,6 +27,10 @@ namespace Jinhui {
     mMainWindow = mainWindow;
   }
 
+  void Label::setMainWindow_Widget(QSharedPointer<Widget> mainWindow_Widget) {
+    mMainWindow_Widget = mainWindow_Widget;
+  }
+
   void Label::setMousetrackingWidget() {}
 
   void Label::setMinSizeWidget() {}
@@ -35,11 +39,31 @@ namespace Jinhui {
 
   void Label::setMouseInWidgetPicture() {}
 
+  // protected
   void Label::setPicture(int width, int height, const QString& fileName) {
     QPixmap originalPixmap(fileName);
     QPixmap scaledPixmap = originalPixmap.scaled(width, height);
     setPixmap(scaledPixmap);
   }
+
+  //void Label::mouseMoveEvent(QMouseEvent *event) {
+  //  event->accept();
+  //  emit mouseMove(event);
+  //  return;
+  //}
+
+  //void Label::mousePressEvent(QMouseEvent *event) {
+  //  event->accept();
+  //  emit mousePress(event);
+  //  return;
+  //}
+
+  //void Label::mouseReleaseEvent(QMouseEvent *event) {
+  //  event->accept();
+  //  emit mouseRelease(event);
+  //  return;
+  //}
+
 
   /*
    * MinWindow_Label
@@ -599,4 +623,52 @@ namespace Jinhui {
 
     ev->ignore();
   }
+
+  /*
+   * MinimizeMainWindow_Label
+   */
+  // cotr
+  MinimizeMainWindow_Label::MinimizeMainWindow_Label(QWidget* parent)
+    :Label(parent) {}
+
+  MinimizeMainWindow_Label::~MinimizeMainWindow_Label() {}
+  // protected
+  void MinimizeMainWindow_Label::mouseReleaseEvent(QMouseEvent *event) {
+    event->accept();
+    mMainWindow_Widget->showMinimized();
+    return;
+  }
+
+  /*
+   * MaximizeMainWindow_Label
+   */
+  // cotr
+  MaximizeMainWindow_Label::MaximizeMainWindow_Label(QWidget* parent)
+    :Label(parent) {}
+
+  MaximizeMainWindow_Label::~MaximizeMainWindow_Label() {}
+
+  // protected
+  void MaximizeMainWindow_Label::mouseReleaseEvent(QMouseEvent *event) {
+    event->accept();
+    mMainWindow_Widget->showMaximized();
+    return;
+  }
+
+  /*
+   * ShutDownMainWindow_Label
+   */
+  // cotr
+  ShutDownMainWindow_Label::ShutDownMainWindow_Label(QWidget* parent)
+    :Label(parent) {}
+
+  ShutDownMainWindow_Label::~ShutDownMainWindow_Label() {}
+
+  // protected
+  void ShutDownMainWindow_Label::mouseReleaseEvent(QMouseEvent *event) {
+    event->accept();
+    mMainWindow_Widget->close();
+    return;
+  }
+
 }
