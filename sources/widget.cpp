@@ -633,6 +633,7 @@ namespace Jinhui {
 
   void IVMS4200Menubar_Widget::initWindow() {
     setFixedHeight(30);
+    setStyleSheet(QString("background-color:black"));
   }
 
   void IVMS4200Menubar_Widget::initLayout() {
@@ -868,6 +869,10 @@ namespace Jinhui {
     return dynamic_cast<IVMS4200StatusBar_Widget*>(mStatusBar);
   }
 
+  IVMS4200ExpandStatusBar_Widget* IntrusionDetection_MainWindow::expandStatusBar() const {
+    return dynamic_cast<IVMS4200ExpandStatusBar_Widget*>(mExpandStatusBar);
+  }
+
   void IntrusionDetection_MainWindow::addMenuFront(IVMS4200Menu_Widget* menu) {
     dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar)->addMenuFront(menu);
   }
@@ -926,12 +931,20 @@ namespace Jinhui {
     mContentArea = new IVMS4200ContentArea_Widget;
     mContentArea->setupUi(QSharedPointer<const Protocol>());
     mStatusBar = new IVMS4200StatusBar_Widget;
+    mStatusBar->setMainWindow_Widget(QSharedPointer<Widget>(this));
     mStatusBar->setupUi(QSharedPointer<const Protocol>());
+    mExpandStatusBar = new IVMS4200ExpandStatusBar_Widget(this);
+    mExpandStatusBar->setupUi(QSharedPointer<const Protocol>());
+    mExpandStatusBar->hide();
 
-    setTitleBar(mTitleBar);
-    setMenuBar(mMenuBar);
-    setContentArea(mContentArea);
-    setStatusBar(mStatusBar);
+    //setTitleBar(mTitleBar);
+    //setMenuBar(mMenuBar);
+    //setContentArea(mContentArea);
+    //setStatusBar(mStatusBar);
+    setTitleBar(mMenuBar);
+    //setMenuBar(mMenuBar);
+    //setContentArea(mContentArea);
+    setStatusBar(mMenuBar);
   }
 
   /*
@@ -1126,14 +1139,97 @@ namespace Jinhui {
    * IVMS4200StatusBar_Widget
    */
   // cotr
-  IVMS4200StatusBar_Widget::IVMS4200StatusBar_Widget(QWidget* parent) {
-    void initWindow();
-  }
+  IVMS4200StatusBar_Widget::IVMS4200StatusBar_Widget(QWidget* parent) {}
 
   IVMS4200StatusBar_Widget::~IVMS4200StatusBar_Widget() {}
 
+  void IVMS4200StatusBar_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label0() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel0);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label1() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel1);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label2() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel2);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label3() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel3);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label4() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel4);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label5() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel5);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label6() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel6);
+  }
+
+  DealWithMouseEvent_Label* IVMS4200StatusBar_Widget::label7() const {
+    return dynamic_cast<DealWithMouseEvent_Label*>(mLabel7);
+  }
+
+  // protected
   void IVMS4200StatusBar_Widget::initWindow() {
-    setFixedHeight(50);
+    setFixedHeight(30);
+    setStyleSheet(QString("background-color:black"));
+  }
+
+  void IVMS4200StatusBar_Widget::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mHLayout0 = new QHBoxLayout;
+    mHLayout1 = new QHBoxLayout;
+    mHLayout2 = new QHBoxLayout;
+    mHLayout3 = new QHBoxLayout;
+    mHLayout4 = new QHBoxLayout;
+    mHLayout5 = new QHBoxLayout;
+    mHLayout6 = new QHBoxLayout;
+    mHLayout7 = new QHBoxLayout;
+
+    mMainLayout->addLayout(mHLayout0);
+    mMainLayout->addLayout(mHLayout1);
+    mMainLayout->addLayout(mHLayout2);
+    mMainLayout->addLayout(mHLayout3);
+    mMainLayout->addLayout(mHLayout4);
+    mMainLayout->addStretch();
+    mMainLayout->addLayout(mHLayout5);
+    mMainLayout->addLayout(mHLayout6);
+    mMainLayout->addLayout(mHLayout7);
+
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void IVMS4200StatusBar_Widget::init() {
+    mLabel0 = new DealWithMouseEvent_Label;
+    mLabel1 = new DealWithMouseEvent_Label;
+    mLabel2 = new DealWithMouseEvent_Label;
+    mLabel3 = new DealWithMouseEvent_Label;
+    mLabel4 = new DealWithMouseEvent_Label;
+    mLabel5 = new DealWithMouseEvent_Label;
+    mLabel6 = new DealWithMouseEvent_Label;
+    mLabel7 = new IVMS4200ExpandStatusBar_Label;
+    mLabel7->setMainWindow_Widget(mMainWindow_Widget);
+
+    mHLayout0->addWidget(mLabel0);
+    mHLayout1->addWidget(mLabel1);
+    mHLayout2->addWidget(mLabel2);
+    mHLayout3->addWidget(mLabel3);
+    mHLayout4->addWidget(mLabel4);
+    mHLayout5->addWidget(mLabel5);
+    mHLayout6->addWidget(mLabel6);
+    mHLayout7->addWidget(mLabel7);
   }
 
   /*
@@ -1392,6 +1488,56 @@ namespace Jinhui {
     mContentLayout->addWidget(mClose);
     mContentLayout->addStretch();
     mColorBarLayout->addWidget(mColorBar);
+  }
+
+  /*
+   * IVMS4200ExpandStatusBar_Widget
+   */
+  // cotr
+  IVMS4200ExpandStatusBar_Widget::IVMS4200ExpandStatusBar_Widget(QWidget* parent)
+    :Widget(parent) {}
+
+  IVMS4200ExpandStatusBar_Widget::~IVMS4200ExpandStatusBar_Widget() {}
+
+  void IVMS4200ExpandStatusBar_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  IVMS4200StatusBar_Widget* IVMS4200ExpandStatusBar_Widget::statusBar() const {
+    return dynamic_cast<IVMS4200StatusBar_Widget*>(mStatusBar);
+  }
+
+  Widget* IVMS4200ExpandStatusBar_Widget::contentArea() const {
+    return mContentArea;
+  }
+
+  // protected
+  void IVMS4200ExpandStatusBar_Widget::initWindow() {
+    setFixedHeight(300);
+    setStyleSheet(QString("background-color:black"));
+  }
+
+  void IVMS4200ExpandStatusBar_Widget::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mHLayout0 = new QHBoxLayout;
+    mHLayout1 = new QHBoxLayout;
+    mMainLayout->addLayout(mHLayout0);
+    mMainLayout->addLayout(mHLayout1);
+
+    mMainLayout->setContentsMargins(10, 0, 10, 10);
+    mMainLayout->setSpacing(0);
+  }
+
+  void IVMS4200ExpandStatusBar_Widget::init() {
+    mStatusBar = new IVMS4200StatusBar_Widget;
+    mStatusBar->setupUi(QSharedPointer<const Protocol>());
+    mContentArea = new Widget;
+    mContentArea->setStyleSheet(QString("background-color:gray"));
+    mContentArea->setupUi(QSharedPointer<const Protocol>());
+    mHLayout0->addWidget(mStatusBar);
+    mHLayout1->addWidget(mContentArea);
   }
 
 }

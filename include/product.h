@@ -75,6 +75,8 @@ namespace Jinhui {
   class IVMS4200DefShowMenu_Widget;
   class IVMS4200ClickShowMenu_Widget;
   class IVMS4200MoveShowMenu_Widget;
+  class IVMS4200ExpandStatusBar_Widget;
+  class DealWithMouseEvent_Label;
 
   /*******************************************************************************
    * 基类
@@ -1232,6 +1234,7 @@ namespace Jinhui {
     IVMS4200Menubar_Widget* menuBar() const;
     IVMS4200ContentArea_Widget* contentArea() const;
     IVMS4200StatusBar_Widget* statusBar() const;
+    IVMS4200ExpandStatusBar_Widget* expandStatusBar() const;
     void addMenuFront(IVMS4200Menu_Widget* menu);
     void insertMenu(const int index, IVMS4200Menu_Widget* menu);
   protected:
@@ -1254,6 +1257,7 @@ namespace Jinhui {
     Widget* mMenuBar;
     Widget* mContentArea;
     Widget* mStatusBar;
+    Widget* mExpandStatusBar;
   };
 
   /*
@@ -1333,8 +1337,39 @@ namespace Jinhui {
   public:
     IVMS4200StatusBar_Widget(QWidget* parent = nullptr);
     ~IVMS4200StatusBar_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    DealWithMouseEvent_Label* label0() const;
+    DealWithMouseEvent_Label* label1() const;
+    DealWithMouseEvent_Label* label2() const;
+    DealWithMouseEvent_Label* label3() const;
+    DealWithMouseEvent_Label* label4() const;
+    DealWithMouseEvent_Label* label5() const;
+    DealWithMouseEvent_Label* label6() const;
+    DealWithMouseEvent_Label* label7() const;
   protected:
     void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QHBoxLayout* mMainLayout;
+    QHBoxLayout* mHLayout0;
+    QHBoxLayout* mHLayout1;
+    QHBoxLayout* mHLayout2;
+    QHBoxLayout* mHLayout3;
+    QHBoxLayout* mHLayout4;
+    QHBoxLayout* mHLayout5;
+    QHBoxLayout* mHLayout6;
+    QHBoxLayout* mHLayout7;
+
+    Label* mLabel0;
+    Label* mLabel1;
+    Label* mLabel2;
+    Label* mLabel3;
+    Label* mLabel4;
+    Label* mLabel5;
+    Label* mLabel6;
+    Label* mLabel7;
   };
 
   /*
@@ -1483,6 +1518,63 @@ namespace Jinhui {
   public:
     ShutDownMainWindow_Label(QWidget* parent = nullptr);
     ~ShutDownMainWindow_Label();
+  protected:
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 带有处理鼠标事件的标签类
+   */
+  class EXPORT DealWithMouseEvent_Label : public Label {
+  public:
+    DealWithMouseEvent_Label(QWidget* parent = nullptr);
+    ~DealWithMouseEvent_Label();
+    void setDefPicture(const QString& picturePath);
+    void setMovePicture(const QString& picturePath);
+    void setClickPicture(const QString& picturePath);
+  protected:
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    // variable
+    QPixmap mDefPicture;
+    QPixmap mMovePicture;
+    QPixmap mClickPicture;
+  };
+
+  /*
+   * 子类 展开的状态栏(模仿IVMS4200展开的状态栏样式)类
+   */
+  class EXPORT IVMS4200ExpandStatusBar_Widget : public Widget {
+  public:
+    IVMS4200ExpandStatusBar_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ExpandStatusBar_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    IVMS4200StatusBar_Widget* statusBar() const;
+    Widget* contentArea() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QVBoxLayout* mMainLayout;
+    QHBoxLayout* mHLayout0;
+    QHBoxLayout* mHLayout1;
+    Widget* mStatusBar;
+    Widget* mContentArea;
+  };
+
+  /*
+   * 子类 展开状态栏标签类
+   */
+  class EXPORT IVMS4200ExpandStatusBar_Label : public DealWithMouseEvent_Label {
+  public:
+    IVMS4200ExpandStatusBar_Label(QWidget* parent = nullptr);
+    ~IVMS4200ExpandStatusBar_Label();
+
   protected:
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   };

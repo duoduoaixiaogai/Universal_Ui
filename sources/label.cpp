@@ -671,4 +671,84 @@ namespace Jinhui {
     return;
   }
 
+  /*
+   * DealWithMouseEvent_Label
+   */
+  // cotr
+  DealWithMouseEvent_Label::DealWithMouseEvent_Label(QWidget* parent)
+    :Label(parent) {
+    setMouseTracking(true);
+  }
+
+  DealWithMouseEvent_Label::~DealWithMouseEvent_Label() {}
+
+  void DealWithMouseEvent_Label::setDefPicture(const QString& picturePath) {
+    mDefPicture.load(picturePath);
+  }
+
+  void DealWithMouseEvent_Label::setMovePicture(const QString& picturePath) {
+    mMovePicture.load(picturePath);
+  }
+
+  void DealWithMouseEvent_Label::setClickPicture(const QString& picturePath) {
+    mClickPicture.load(picturePath);
+  }
+
+  // protected
+  void DealWithMouseEvent_Label::leaveEvent(QEvent *event) {
+    event->accept();
+    setPixmap(mDefPicture);
+    return;
+  }
+
+  void DealWithMouseEvent_Label::mouseMoveEvent(QMouseEvent *event) {
+    event->accept();
+    setPixmap(mMovePicture);
+    return;
+  }
+
+  void DealWithMouseEvent_Label::mousePressEvent(QMouseEvent *event) {
+    event->ignore();
+    return;
+  }
+
+  void DealWithMouseEvent_Label::mouseReleaseEvent(QMouseEvent *event) {
+    if (Qt::LeftButton ==event->button()) {
+      event->accept();
+      setPixmap(mClickPicture);
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
+  }
+
+  /*
+   * IVMS4200ExpandStatusBar_Label
+   */
+  // cotr
+  IVMS4200ExpandStatusBar_Label::IVMS4200ExpandStatusBar_Label(QWidget* parent)
+    :DealWithMouseEvent_Label(parent) {}
+
+  IVMS4200ExpandStatusBar_Label::~IVMS4200ExpandStatusBar_Label() {}
+
+  // protected
+  void IVMS4200ExpandStatusBar_Label::mouseReleaseEvent(QMouseEvent *event) {
+    DealWithMouseEvent_Label::mouseReleaseEvent(event);
+    if (Qt::LeftButton == event->button()) {
+      QRect mainWindowRect = mMainWindow_Widget->frameGeometry();
+      Widget* expandStatusBar = dynamic_cast<IntrusionDetection_MainWindow*>(mMainWindow_Widget.data())
+                                ->expandStatusBar();
+      expandStatusBar->setGeometry(mMainWindow_Widget->mapFromGlobal(mMainWindow_Widget->pos()).x()
+                                   ,mainWindowRect.height() - expandStatusBar->height()
+                                   ,mainWindowRect.width(), expandStatusBar->height());
+      expandStatusBar->show();
+      event->accept();
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
+  }
+
 }
