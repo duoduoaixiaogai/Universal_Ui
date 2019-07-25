@@ -77,6 +77,10 @@ namespace Jinhui {
   class IVMS4200MoveShowMenu_Widget;
   class IVMS4200ExpandStatusBar_Widget;
   class DealWithMouseEvent_Label;
+  class IVMS4200ContentAreaHomeLeft_Widget;
+  class IVMS4200ContentAreaHomeRight_Widget;
+  class IVMS4200ContentAreaHomeLeftWgt_Widget;
+  class IVMS4200ContentAreaHomeRightWgt_Widget;
 
   /*******************************************************************************
    * 基类
@@ -1288,6 +1292,7 @@ namespace Jinhui {
     void initWindow();
     void initLayout();
     void init();
+    void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -1328,6 +1333,16 @@ namespace Jinhui {
   public:
     IVMS4200ContentArea_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentArea_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    QStackedWidget* widgetsContainer() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QStackedWidget* mWidgets;
+    QHBoxLayout* mMainLayout;
   };
 
   /*
@@ -1579,6 +1594,112 @@ namespace Jinhui {
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 子类 内容区首页
+   */
+  class EXPORT IVMS4200ContentAreaHome_Widget : public Widget {
+  public:
+    IVMS4200ContentAreaHome_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaHome_Widget();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    //QSplitter* splitter() const;
+    IVMS4200ContentAreaHomeLeft_Widget* leftContentArea() const;
+    IVMS4200ContentAreaHomeRight_Widget* rightContentArea() const;
+    Label* separate() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QHBoxLayout* mMainLayout;
+    QHBoxLayout* mLeftContentAreaLayout;
+    QHBoxLayout* mSeparateLayout;
+    QHBoxLayout* mRightContentAreaLayout;
+    //QSplitter* mSplitter;
+    Widget* mLeftContentArea;
+    Label* mSeparate;
+    Widget* mRightContentArea;
+  };
+
+  /*
+   * 子类 内容区首页左边区域
+   */
+  class EXPORT IVMS4200ContentAreaHomeLeft_Widget : public Widget {
+  public:
+    IVMS4200ContentAreaHomeLeft_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaHomeLeft_Widget();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    QVBoxLayout* mainLayout() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QVBoxLayout* mMainLayout;
+  };
+
+  /*
+   * 子类 内容区首页左边区域小部件(每一行为一个小部件)
+   */
+  class EXPORT IVMS4200ContentAreaHomeLeftWgt_Widget : public Widget {
+  public:
+    IVMS4200ContentAreaHomeLeftWgt_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaHomeLeftWgt_Widget();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    QHBoxLayout* bottomLayout() const;
+    Label* titleLabel() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QVBoxLayout* mMainLayout;
+    QHBoxLayout* mTopLayout;
+    QHBoxLayout* mBottomLayout;
+    Label* mTitle;
+  };
+
+  /*
+   * 子类 内容区首页右边区域
+   */
+  class EXPORT IVMS4200ContentAreaHomeRight_Widget : public Widget {
+  public:
+    IVMS4200ContentAreaHomeRight_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaHomeRight_Widget();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    QVBoxLayout* mainLayout() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    // variable
+    QVBoxLayout* mMainLayout;
+  };
+
+  /*
+   * 子类 内容区首页右边区域小部件(每一行为一个小部件)
+   */
+  class EXPORT IVMS4200ContentAreaHomeRightWgt_Widget : public Widget {
+  public:
+    IVMS4200ContentAreaHomeRightWgt_Widget(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaHomeRightWgt_Widget();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    Label* titleLabel() const;
+    QVBoxLayout* bottomLayout() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QVBoxLayout* mMainLayout;
+    QVBoxLayout* mTopLayout;
+    QVBoxLayout* mBottomLayout;
+    Label* mTitle;
+  };
 }
 
 Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)

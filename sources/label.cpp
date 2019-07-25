@@ -634,9 +634,14 @@ namespace Jinhui {
   MinimizeMainWindow_Label::~MinimizeMainWindow_Label() {}
   // protected
   void MinimizeMainWindow_Label::mouseReleaseEvent(QMouseEvent *event) {
-    event->accept();
-    mMainWindow_Widget->showMinimized();
-    return;
+    if (Qt::LeftButton == event->button()) {
+      event->accept();
+      mMainWindow_Widget->showMinimized();
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
   }
 
   /*
@@ -650,9 +655,26 @@ namespace Jinhui {
 
   // protected
   void MaximizeMainWindow_Label::mouseReleaseEvent(QMouseEvent *event) {
-    event->accept();
-    mMainWindow_Widget->showMaximized();
-    return;
+    if (Qt::LeftButton == event->button()) {
+      event->accept();
+      if (mMainWindow) {
+        if (mMainWindow->isMaximized()) {
+          mMainWindow->showNormal();
+        } else {
+          mMainWindow->showMaximized();
+        }
+      } else if (mMainWindow_Widget) {
+        if (mMainWindow_Widget->isMaximized()) {
+          mMainWindow_Widget->showNormal();
+        } else {
+          mMainWindow_Widget->showMaximized();
+        }
+      }
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
   }
 
   /*
@@ -666,9 +688,14 @@ namespace Jinhui {
 
   // protected
   void ShutDownMainWindow_Label::mouseReleaseEvent(QMouseEvent *event) {
-    event->accept();
-    mMainWindow_Widget->close();
-    return;
+    if (Qt::LeftButton == event->button()) {
+      event->accept();
+      mMainWindow_Widget->close();
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
   }
 
   /*
