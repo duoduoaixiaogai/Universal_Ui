@@ -98,7 +98,8 @@ SOURCES += \
     sources/signalsrelay.cpp \
     sources/view.cpp \
     sources/widget.cpp \
-    sources/worker.cpp
+    sources/worker.cpp \
+    sources/file.cpp
 
 HEADERS += \
         #mainwindow.h \
@@ -140,7 +141,8 @@ DISTFILES += \
     xml/config.xml \
     xml/ui.xml \
     readme.txt \
-    translation_cn.ts
+    translation_cn.ts \
+    qss/IVMS4200.qss
 
 INCLUDEPATH += D:\opencv4.1.0\opencv\build\include\opencv2 \
                D:\opencv4.1.0\opencv\build\include

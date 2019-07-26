@@ -183,6 +183,11 @@ namespace Jinhui {
     QString tableName;
     QString userName;
     QString userPassword;
+
+    /*
+     * Qss
+     */
+    QString qssFileName;
   } ConfigPro;
 
   /*

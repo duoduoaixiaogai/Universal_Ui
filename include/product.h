@@ -27,6 +27,7 @@
 #include <QHash>
 #include <QPixmap>
 #include <QStack>
+#include <QFile>
 
 // ui
 #include <QComboBox>
@@ -173,7 +174,8 @@ namespace Jinhui {
   /*
    * MainWindow类的重新实现
    */
-  class EXPORT MainWindow : public Product, public QMainWindow {
+  class EXPORT MainWindow : public QMainWindow, public Product {
+    Q_OBJECT
   public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -225,7 +227,8 @@ namespace Jinhui {
   /*
    * 基类 小部件类
    */
-  class EXPORT Widget : public Product, public QWidget {
+  class EXPORT Widget : public QWidget, public Product {
+    Q_OBJECT
   public:
     Widget(QWidget* parent = nullptr);
     ~Widget() = default;
@@ -236,6 +239,8 @@ namespace Jinhui {
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
     virtual void setupUi();
   protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+  protected:
     QSharedPointer<MainWindow> mMainWindow;
     QSharedPointer<Widget> mMainWindow_Widget;
   };
@@ -243,7 +248,8 @@ namespace Jinhui {
   /*
    * 基类 按钮类
    */
-  class EXPORT PushButton : public Product, public QPushButton {
+  class EXPORT PushButton : public QPushButton, public Product {
+    Q_OBJECT
   public:
     PushButton(QWidget* parent = nullptr);
     PushButton(const QString& text, QWidget* parent = nullptr);
@@ -256,7 +262,8 @@ namespace Jinhui {
   /*
    * 基类 框架类
    */
-  class EXPORT Frame : public Product, public QFrame {
+  class EXPORT Frame : public QFrame, public Product {
+    Q_OBJECT
   public:
     Frame(QWidget* parent = nullptr);
     ~Frame() = default;
@@ -307,7 +314,8 @@ namespace Jinhui {
   /*
    * 基类 组合框类
    */
-  class EXPORT ComboBox : public Product, public QComboBox {
+  class EXPORT ComboBox : public QComboBox, public Product {
+    Q_OBJECT
   public:
     ComboBox(QWidget* parent = nullptr);
     ~ComboBox();
@@ -316,7 +324,8 @@ namespace Jinhui {
   /*
    * 基类 进度条类
    */
-  class EXPORT ProgressBar : public Product, public QProgressBar {
+  class EXPORT ProgressBar : public QProgressBar, public Product {
+    Q_OBJECT
   public:
     ProgressBar(QWidget* parent = nullptr);
     ~ProgressBar();
@@ -347,7 +356,7 @@ namespace Jinhui {
   /*
    * 基类 表视图类
    */
-  class EXPORT TableView : public View, public QTableView {
+  class EXPORT TableView : public QTableView, public View {
   public:
     TableView(QWidget* parent = nullptr);
     ~TableView();
@@ -356,7 +365,7 @@ namespace Jinhui {
   /*
    * 基类 图形视图类
    */
-  class EXPORT GraphicsView : public View, public QGraphicsView {
+  class EXPORT GraphicsView : public QGraphicsView, public View {
   public:
     GraphicsView(QWidget* parent = nullptr);
     ~GraphicsView();
@@ -371,7 +380,8 @@ namespace Jinhui {
   /*
    * 基类 模型类
    */
-  class EXPORT Model : public Product, public QAbstractItemModel {
+  class EXPORT Model : public QAbstractItemModel, public Product {
+    Q_OBJECT
   public:
     Model(QObject* parent = nullptr);
     ~Model();
@@ -399,7 +409,7 @@ namespace Jinhui {
   /*
    * 基类 图形项目基类
    */
-  class EXPORT GraphicsItem : public Product, public QGraphicsItem {
+  class EXPORT GraphicsItem : public QGraphicsItem, public Product {
   public:
     GraphicsItem();
     ~GraphicsItem();
@@ -410,7 +420,7 @@ namespace Jinhui {
   /*
    * 基类 图形场景基类
    */
-  class EXPORT GraphicsScene : public Product, public QGraphicsScene {
+  class EXPORT GraphicsScene : public QGraphicsScene, public Product {
   public:
     GraphicsScene(QObject* parent = nullptr);
     ~GraphicsScene();
@@ -419,7 +429,7 @@ namespace Jinhui {
   /*
    * 基类 像素图项目类
    */
-  class EXPORT GraphicsPixmapItem : public Product, public QGraphicsPixmapItem {
+  class EXPORT GraphicsPixmapItem : public QGraphicsPixmapItem, public Product {
   public:
     GraphicsPixmapItem(const QPixmap& pixmap);
     ~GraphicsPixmapItem();
@@ -446,6 +456,16 @@ namespace Jinhui {
   protected:
     QThread mWorkerThread;
     Worker* mWorker;
+  };
+
+  /*
+   * 基类 文件类
+   */
+  class EXPORT File : public QFile, public Product {
+  public:
+    File(QObject* parent = nullptr);
+    File(const QString& name);
+    ~File();
   };
 
   /*******************************************************************************
@@ -553,6 +573,7 @@ namespace Jinhui {
       UNIVERSAL,
       LANGUAGES,
       DATABASE,
+      QSS,
     } Label_Type;
   public:
     ConfigParser();
@@ -567,13 +588,15 @@ namespace Jinhui {
     void readUniversalModule(const QXmlStreamReader& reader);
     void readLanguagesModule(const QXmlStreamReader& reader);
     void readDatabaseModule(const QXmlStreamReader& reader);
+    void readQssModule(const QXmlStreamReader& reader);
     // 转换函数 元素标签的名称转换为元素标签的枚举类型
     Label_Type labelNameTolabelType(const QString& name);
 
 
   private:
     // 模块的名称
-    const QLatin1String mUniversalModule, mLanguagesModule, mDatabaseModule;
+    const QLatin1String mUniversalModule, mLanguagesModule, mDatabaseModule
+      ,mQssModule;
     // 语言的数量
     const int mLansCount;
   };
@@ -641,6 +664,7 @@ namespace Jinhui {
    * 子类 最小化窗口标签类
    */
   class EXPORT MinWindow_Label : public Label {
+    Q_OBJECT
   public:
     MinWindow_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~MinWindow_Label() = default;
@@ -659,6 +683,7 @@ namespace Jinhui {
    * 子类 最大化窗口标签类
    */
   class EXPORT MaxWindow_Label : public Label {
+    Q_OBJECT
   public:
     MaxWindow_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~MaxWindow_Label() = default;
@@ -684,6 +709,7 @@ namespace Jinhui {
    * 子类 关闭窗口标签类
    */
   class EXPORT ShutdownWindow_Label : public Label {
+    Q_OBJECT
   public:
     ShutdownWindow_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~ShutdownWindow_Label() = default;
@@ -701,6 +727,7 @@ namespace Jinhui {
    * 子类 标题栏标签类
    */
   class EXPORT Titlebar_Label : public Label {
+    Q_OBJECT
   public:
     Titlebar_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~Titlebar_Label() = default;
@@ -715,6 +742,7 @@ namespace Jinhui {
    * 子类 标题栏标签类(包含最小化、最大化、关闭按钮)
    */
   class EXPORT TitlebarMinMaxShut_Label : public Label {
+    Q_OBJECT
   protected:
     enum TitleButton {
       INVALID = 0x60,
@@ -757,6 +785,7 @@ namespace Jinhui {
    * 子类 门脸标签类
    */
   class EXPORT Doorface_Label : public Label {
+    Q_OBJECT
   public:
     Doorface_Label(QSharedPointer<const Protocol> protocol, QWidget* parent = nullptr);
     ~Doorface_Label() = default;
@@ -769,6 +798,7 @@ namespace Jinhui {
    * 子类 标题栏类
    */
   class EXPORT Titlebar final : public Widget {
+    Q_OBJECT
   public:
     Titlebar(QWidget* parent = nullptr);
     ~Titlebar() = default;
@@ -818,6 +848,7 @@ namespace Jinhui {
    * 子类 内容区类
    */
   class EXPORT ContentArea :public Widget {
+    Q_OBJECT
   public:
     ContentArea(QSharedPointer<const Protocol> configPro, QWidget* parent = nullptr);
     ~ContentArea() = default;
@@ -871,6 +902,7 @@ namespace Jinhui {
    * 子类 菜单项按钮类
    */
   class EXPORT MenuItem_PushButton : public PushButton {
+    Q_OBJECT
   public:
     MenuItem_PushButton(QSharedPointer<const Protocol> protocol, const QString& fileName, QWidget* parent = nullptr);
     ~MenuItem_PushButton() = default;
@@ -905,6 +937,7 @@ namespace Jinhui {
    * 四分屏类
    */
   class EXPORT QuadScreen : public Widget {
+    Q_OBJECT
   public:
     QuadScreen(QWidget* parent = nullptr);
     ~QuadScreen() = default;
@@ -1044,6 +1077,7 @@ namespace Jinhui {
    * 子类 单路显示类
    */
   class EXPORT Channel_Frame: public Frame {
+    Q_OBJECT
   public:
     Channel_Frame(QWidget* parent = nullptr);
     ~Channel_Frame();
@@ -1169,6 +1203,7 @@ namespace Jinhui {
     QStack<IVMS4200Menu_Widget*> mMenusStack;
     QHBoxLayout* mMainLayout;
     Widget* mCurrentMenu;
+    QPoint mActiveMenuPos;
   };
 
   /*
@@ -1183,6 +1218,7 @@ namespace Jinhui {
     IVMS4200DefShowMenu_Widget* defShowMenu() const;
     IVMS4200MoveShowMenu_Widget* moveShowMenu() const;
     IVMS4200ClickShowMenu_Widget* clickShowMenu() const;
+    void setMenuBar(Widget* menuBar);
     //Label* iconLabel() const;
     //Label* contentLabel() const;
     //Label* closeLabel() const;
@@ -1198,9 +1234,13 @@ namespace Jinhui {
     void initWindow();
     void initLayout();
     void init();
-    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    // Qt events
     void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
+    bool mouseInMenuBar(QPoint currentMousePos);
   protected:
     IVMS4200Menu_Widget* mPreItem;
     IVMS4200Menu_Widget* mNextItem;
@@ -1213,10 +1253,13 @@ namespace Jinhui {
     //Label* mContent;
     //Label* mClose;
     //Label* mColorBar;
+    Widget* mMenuBar;
     Widget* mDefShowMenu;
     Widget* mMoveShowMenu;
     Widget* mClickShowMenu;
     QStackedWidget* mWidgets;
+    Qt::MouseButton mCurrentBtn;
+    QPoint mPreviousMousePos;
   private:
     //void showClose();
     //void hideClose();
@@ -1230,6 +1273,7 @@ namespace Jinhui {
    * 子类 入侵检测主窗口类
    */
   class EXPORT IntrusionDetection_MainWindow : public Widget {
+    Q_OBJECT
   public:
     IntrusionDetection_MainWindow(QWidget* parent = nullptr);
     ~IntrusionDetection_MainWindow();
@@ -1330,6 +1374,7 @@ namespace Jinhui {
    * 子类 内容区类(模仿海康IVMS-4200内容区)
    */
   class EXPORT IVMS4200ContentArea_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ContentArea_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentArea_Widget();
@@ -1349,6 +1394,7 @@ namespace Jinhui {
    * 子类 状态栏类(模仿海康IVMS-4200状态栏样式)
    */
   class EXPORT IVMS4200StatusBar_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200StatusBar_Widget(QWidget* parent = nullptr);
     ~IVMS4200StatusBar_Widget();
@@ -1391,6 +1437,7 @@ namespace Jinhui {
    * 子类 菜单栏主按钮(模仿海康IVMS-4200菜单栏主按钮)
    */
   class EXPORT IVMS4200MenuBarMainBtn_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200MenuBarMainBtn_Widget(QWidget* parent = nullptr);
     ~IVMS4200MenuBarMainBtn_Widget();
@@ -1468,6 +1515,7 @@ namespace Jinhui {
    * 子类 鼠标移动默认展示菜单项小部件类
    */
   class EXPORT IVMS4200MoveShowMenu_Widget : public IVMS4200DefShowMenu_Widget {
+    Q_OBJECT
   public:
     IVMS4200MoveShowMenu_Widget(QWidget* parent = nullptr);
     ~IVMS4200MoveShowMenu_Widget();
@@ -1480,6 +1528,7 @@ namespace Jinhui {
    * 子类 鼠标点击展示菜单项小部件类
    */
   class EXPORT IVMS4200ClickShowMenu_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ClickShowMenu_Widget(QWidget* parent = nullptr);
     ~IVMS4200ClickShowMenu_Widget();
@@ -1506,6 +1555,7 @@ namespace Jinhui {
    * 子类 最小化主窗口标签类
    */
   class MinimizeMainWindow_Label : public Label {
+    Q_OBJECT
   public:
     MinimizeMainWindow_Label(QWidget* parent = nullptr);
     ~MinimizeMainWindow_Label();
@@ -1519,6 +1569,7 @@ namespace Jinhui {
    * 子类 最大化主窗口标签类
    */
   class MaximizeMainWindow_Label : public Label {
+    Q_OBJECT
   public:
     MaximizeMainWindow_Label(QWidget* parent = nullptr);
     ~MaximizeMainWindow_Label();
@@ -1530,6 +1581,7 @@ namespace Jinhui {
    * 子类 关闭主窗口标签类
    */
   class ShutDownMainWindow_Label : public Label {
+    Q_OBJECT
   public:
     ShutDownMainWindow_Label(QWidget* parent = nullptr);
     ~ShutDownMainWindow_Label();
@@ -1541,6 +1593,7 @@ namespace Jinhui {
    * 子类 带有处理鼠标事件的标签类
    */
   class EXPORT DealWithMouseEvent_Label : public Label {
+    Q_OBJECT
   public:
     DealWithMouseEvent_Label(QWidget* parent = nullptr);
     ~DealWithMouseEvent_Label();
@@ -1563,6 +1616,7 @@ namespace Jinhui {
    * 子类 展开的状态栏(模仿IVMS4200展开的状态栏样式)类
    */
   class EXPORT IVMS4200ExpandStatusBar_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ExpandStatusBar_Widget(QWidget* parent = nullptr);
     ~IVMS4200ExpandStatusBar_Widget();
@@ -1586,6 +1640,7 @@ namespace Jinhui {
    * 子类 展开状态栏标签类
    */
   class EXPORT IVMS4200ExpandStatusBar_Label : public DealWithMouseEvent_Label {
+    Q_OBJECT
   public:
     IVMS4200ExpandStatusBar_Label(QWidget* parent = nullptr);
     ~IVMS4200ExpandStatusBar_Label();
@@ -1598,6 +1653,7 @@ namespace Jinhui {
    * 子类 内容区首页
    */
   class EXPORT IVMS4200ContentAreaHome_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ContentAreaHome_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaHome_Widget();
@@ -1626,6 +1682,7 @@ namespace Jinhui {
    * 子类 内容区首页左边区域
    */
   class EXPORT IVMS4200ContentAreaHomeLeft_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ContentAreaHomeLeft_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaHomeLeft_Widget();
@@ -1644,6 +1701,7 @@ namespace Jinhui {
    * 子类 内容区首页左边区域小部件(每一行为一个小部件)
    */
   class EXPORT IVMS4200ContentAreaHomeLeftWgt_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ContentAreaHomeLeftWgt_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaHomeLeftWgt_Widget();
@@ -1666,6 +1724,7 @@ namespace Jinhui {
    * 子类 内容区首页右边区域
    */
   class EXPORT IVMS4200ContentAreaHomeRight_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ContentAreaHomeRight_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaHomeRight_Widget();
@@ -1684,6 +1743,7 @@ namespace Jinhui {
    * 子类 内容区首页右边区域小部件(每一行为一个小部件)
    */
   class EXPORT IVMS4200ContentAreaHomeRightWgt_Widget : public Widget {
+    Q_OBJECT
   public:
     IVMS4200ContentAreaHomeRightWgt_Widget(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaHomeRightWgt_Widget();

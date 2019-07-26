@@ -24,4 +24,8 @@
     <User_Name>root</User_Name>
     <User_Password>niuyiqun</User_Password>
   </Database_Module>
+  <!-- Qss模块 -->
+  <Qss_Module>
+    <Qss_FileName>IVMS4200.qss</Qss_FileName>
+  </Qss_Module>
 </Config>

@@ -78,6 +78,15 @@ namespace Jinhui {
         .append(filename);
   }
 
+  // 拼接指定目录与文件名，返回工作目录下拼接后的文件的绝对路径
+  static QString getCurrentDirFileName(const QString& dir, const QString& fileName) {
+    return QDir::currentPath()
+        .append('/')
+        .append(dir)
+        .append('/')
+        .append(fileName);
+  }
+
   /*
    * 字符串转对齐类型(字符串为: left, right, hCenter, top, bottom, vCenter)
    */

@@ -727,6 +727,7 @@ namespace Jinhui {
     ,mUniversalModule("Universal_Module")
     ,mLanguagesModule("Languages_Module")
     ,mDatabaseModule("Database_Module")
+    ,mQssModule("Qss_Module")
     ,mLansCount(1) {
     mProtocol = QSharedPointer<Protocol>(new ConfigPro);
   }
@@ -749,6 +750,9 @@ namespace Jinhui {
         break;
       case DATABASE:
         readDatabaseModule(reader);
+        break;
+      case QSS:
+        readQssModule(reader);
         break;
     }
   }
@@ -858,6 +862,32 @@ namespace Jinhui {
     }
   }
 
+  void ConfigParser::readQssModule(const QXmlStreamReader& reader) {
+    Q_ASSERT(reader.isStartElement() && mQssModule == reader.name());
+
+    QXmlStreamReader& xml = const_cast<QXmlStreamReader&>(reader);
+    QSharedPointer<ConfigPro> protocol = qSharedPointerCast<ConfigPro, Protocol>(mProtocol);
+    try {
+      if (!protocol) {
+        throw DowncastProtocolConversion();
+      }
+    } catch (ProtocolException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogError(msg);
+      ex.showMessage(nullptr, MessageLevel::ERROR, msg);
+      return;
+    }
+
+    protocol->proType = CONFIG;
+    while (xml.readNextStartElement()) {
+      QStringRef name = reader.name();
+      if (QLatin1String("Qss_FileName") == name) {
+        protocol->qssFileName = xml.readElementText();
+        break;
+      }
+    }
+  }
+
   // label name to label type
   ConfigParser::Label_Type ConfigParser::labelNameTolabelType(const QString& name) {
     Label_Type labelType = INVALID;
@@ -868,6 +898,8 @@ namespace Jinhui {
       labelType = LANGUAGES;
     } else if (mDatabaseModule == name) {
       labelType = DATABASE;
+    } else if (mQssModule == name) {
+      labelType = QSS;
     }
 
     return labelType;

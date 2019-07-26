@@ -41,6 +41,14 @@ namespace Jinhui {
 
   void Widget::setupUi() {}
 
+  // protected
+  void Widget::paintEvent(QPaintEvent *event) {
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+  }
+
   /*
    * Titlebar
    */
@@ -565,6 +573,7 @@ namespace Jinhui {
   }
 
   void IVMS4200Menubar_Widget::addMenuFront(IVMS4200Menu_Widget* menu) {
+    menu->setMenuBar(this);
     addMenuStack(menu);
     connect(menu, SIGNAL(currentMenuChanged(Widget*))
             ,this, SLOT(changeCurrentMenu(Widget*)));
@@ -606,6 +615,8 @@ namespace Jinhui {
       dynamic_cast<IVMS4200Menu_Widget*>(mCurrentMenu)->restoreDefShowMenu();
     }
     mCurrentMenu = menu;
+    // 记录当前活动的(鼠标单击的菜单项)菜单项的位置
+    mActiveMenuPos = mCurrentMenu->pos();
   }
 
   // protected
@@ -671,6 +682,10 @@ namespace Jinhui {
 
   IVMS4200ClickShowMenu_Widget* IVMS4200Menu_Widget::clickShowMenu() const {
     return dynamic_cast<IVMS4200ClickShowMenu_Widget*>(mClickShowMenu);
+  }
+
+  void IVMS4200Menu_Widget::setMenuBar(Widget* menuBar) {
+    mMenuBar = menuBar;
   }
 
   //Label* IVMS4200Menu_Widget::iconLabel() const {
@@ -769,6 +784,7 @@ namespace Jinhui {
         mWidgets->setCurrentWidget(mClickShowMenu);
         emit currentMenuChanged(this);
       }
+      mCurrentBtn = Qt::NoButton;
       return;
     } else {
       event->ignore();
@@ -785,8 +801,18 @@ namespace Jinhui {
     //  event->ignore();
     //  return;
     //}
-    event->ignore();
-    return;
+    if (Qt::LeftButton == mCurrentBtn) {
+      event->accept();
+      if (mouseInMenuBar(event->pos())) {
+
+      } else {
+
+      }
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
   }
 
 
@@ -799,6 +825,24 @@ namespace Jinhui {
       event->ignore();
       return;
     }
+  }
+
+  void IVMS4200Menu_Widget::mouseDoubleClickEvent(QMouseEvent *event) {
+    if (Qt::LeftButton == event->button())  {
+      event->accept();
+      mCurrentBtn = event->button();
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
+  }
+
+  bool IVMS4200Menu_Widget::mouseInMenuBar(QPoint currentMousePos) {
+    if (mMenuBar->frameGeometry().contains(currentMousePos)) {
+      return true;
+    }
+    return false;
   }
 
   // private
@@ -1516,6 +1560,7 @@ namespace Jinhui {
     mIcon = new Label;
     mClose = new Label;
     mColorBar = new Label;
+    mColorBar->setObjectName("clickShowMenu_ColorBar");
     mColorBar->setFixedHeight(3);
     //mColorBar->setStyleSheet(QString("background-color:red"));
     mContent = new Label;

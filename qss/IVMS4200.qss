@@ -1,0 +1,19 @@
+Jinhui--IntrusionDetection_MainWindow {
+  background: black;
+}
+
+Jinhui--IVMS4200ContentAreaHome_Widget {
+  background: gray;
+}
+
+Jinhui--IVMS4200MoveShowMenu_Widget {
+  background: gray;
+}
+
+Jinhui--IVMS4200ClickShowMenu_Widget {
+  background: gray;
+}
+
+Jinhui--Label#clickShowMenu_ColorBar {
+  background: red;
+}
