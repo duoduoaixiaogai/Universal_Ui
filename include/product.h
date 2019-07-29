@@ -48,6 +48,7 @@ class QStackedWidget;
 class QDateTimeEdit;
 class QSplitter;
 class QSqlTableModel;
+class QBoxLayout;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -68,6 +69,7 @@ namespace Jinhui {
   class GraphicsPixmapItem;
   class Channel32_Controller;
   class IVMS4200Menu_Widget;
+  class IVMS4200MenuEx_Widget;
   class IVMS4200TitleBar_Widget;
   class IVMS4200ContentArea_Widget;
   class IVMS4200StatusBar_Widget;
@@ -1182,6 +1184,7 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     // 前序添加菜单
     void addMenuFront(IVMS4200Menu_Widget* menu);
+    void addMenuFront(IVMS4200MenuEx_Widget* menu);
     // 设置菜单栏主按钮
     void setMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
     // 取消菜单栏主按钮
@@ -1189,17 +1192,21 @@ namespace Jinhui {
     void cancelMenuBarMainButton(const int index = 0);
   Q_SIGNALS:
     void addMenuFront_Signal();
+    void addMenuExFront_Signal();
     void restoreLastMenuDefShow();
   public Q_SLOTS:
     void addMenuFront_Slot();
+    void addMenuExFront_Slot();
     void changeCurrentMenu(Widget* menu);
   protected:
     // 添加菜单
     void addMenuStack(IVMS4200Menu_Widget* menu);
+    void addMenuStack(IVMS4200MenuEx_Widget* menu);
     void initWindow();
     void initLayout();
   protected:
     // variable
+    QStack<IVMS4200MenuEx_Widget*> mMenuExsStack;
     QStack<IVMS4200Menu_Widget*> mMenusStack;
     QHBoxLayout* mMainLayout;
     Widget* mCurrentMenu;
@@ -1270,6 +1277,61 @@ namespace Jinhui {
   };
 
   /*
+   * 子类 菜单类(模仿海康IVMS-4200菜单样式)是上一个菜单类的扩展(上一个菜单类实现的不够好)
+   */
+  class EXPORT IVMS4200MenuEx_Widget : public Frame {
+  //class EXPORT IVMS4200MenuEx_Widget : public Widget {
+    Q_OBJECT
+  public:
+    IVMS4200MenuEx_Widget(QWidget* parent = nullptr);
+    ~IVMS4200MenuEx_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void setMenuBar(Widget* menuBar);
+    Label* iconLabel() const;
+    Label* contentLabel() const;
+    Label* closeLabel() const;
+    Label* colorBarLabel() const;
+  Q_SIGNALS:
+    void currentMenuChanged(Widget* menu);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+    // Qt events
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
+    bool mouseInMenuBar(QPoint currentMousePos);
+  protected:
+    IVMS4200MenuEx_Widget* mPreItem;
+    IVMS4200MenuEx_Widget* mNextItem;
+    IVMS4200MenuBarSeparator_Widget* mPreSeparator;
+    IVMS4200MenuBarSeparator_Widget* mNextSeparator;
+    QBoxLayout* mMainLayout;
+    QHBoxLayout* mContentLayout;
+    QHBoxLayout* mIconLayout;
+    QHBoxLayout* mTextLayout;
+    QHBoxLayout* mCloseLayout;
+    QHBoxLayout* mColorBarLayout;
+    Label* mIcon;
+    Label* mContent;
+    Label* mClose;
+    Label* mColorBar;
+    Widget* mMenuBar;
+    Qt::MouseButton mCurrentBtn;
+    QPoint mPreviousMousePos;
+  private:
+    void showClose();
+    void hideClose();
+    void showColorBar();
+    void hideColorBar();
+  private:
+    friend class IVMS4200Menubar_Widget;
+  };
+
+  /*
    * 子类 入侵检测主窗口类
    */
   class EXPORT IntrusionDetection_MainWindow : public Widget {
@@ -1284,6 +1346,7 @@ namespace Jinhui {
     IVMS4200StatusBar_Widget* statusBar() const;
     IVMS4200ExpandStatusBar_Widget* expandStatusBar() const;
     void addMenuFront(IVMS4200Menu_Widget* menu);
+    void addMenuFront(IVMS4200MenuEx_Widget* menu);
     void insertMenu(const int index, IVMS4200Menu_Widget* menu);
   protected:
     void initWindow();
@@ -1759,6 +1822,58 @@ namespace Jinhui {
     QVBoxLayout* mTopLayout;
     QVBoxLayout* mBottomLayout;
     Label* mTitle;
+  };
+
+  /*
+   * 子类 IVMS4200图标类(模仿海康IVMS4200客户端标签样式，带有文字和图片，可以调整图片的摆放位置(左、上、右、下)，显示/隐藏图片，
+   * 显示/隐藏文本内容。
+   */
+  // 上下摆放位置
+  class EXPORT IVMS4200UpDownIcon_Widget : public Widget {
+  public:
+    enum Direction {
+      UP = 0xA0,
+      DOWN,
+      LEFT,
+      RIGHT,
+    };
+  public:
+    IVMS4200UpDownIcon_Widget(QWidget* parent = nullptr);
+    IVMS4200UpDownIcon_Widget(Direction direction, QWidget* parent = nullptr);
+    ~IVMS4200UpDownIcon_Widget();
+    void setDirection(Direction direction);
+    void setTextAlignment(Qt::Alignment alignment);
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* picture() const;
+    Label* text() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    QBoxLayout* mMainLayout;
+    QHBoxLayout* mPictureLayout;
+    QHBoxLayout* mTextLayout;
+    Label* mPicture;
+    Label* mText;
+  };
+
+  /*
+   * 子类 IVMS4200图标类
+   */
+  // 左右摆放位置
+  class EXPORT IVMS4200LeftRightIcon_Widget : public IVMS4200UpDownIcon_Widget {
+  public:
+    IVMS4200LeftRightIcon_Widget(Direction direction = LEFT, QWidget* parent = nullptr);
+    ~IVMS4200LeftRightIcon_Widget();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void setDirection(Direction direction);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   };
 }
 

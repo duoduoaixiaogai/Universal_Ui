@@ -1,5 +1,7 @@
 Jinhui--IntrusionDetection_MainWindow {
   background: black;
+  min-width: 1280;
+  min-height: 800;
 }
 
 Jinhui--IVMS4200ContentAreaHome_Widget {
@@ -16,4 +18,343 @@ Jinhui--IVMS4200ClickShowMenu_Widget {
 
 Jinhui--Label#clickShowMenu_ColorBar {
   background: red;
+}
+
+Jinhui--Label#homeLeftWgt0TitleText {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt0Label0 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt0Label0:hover {
+  background: black;
+  /*
+  border-width: 1px;
+  */
+  border-radius: 10px;
+  /*
+  border-color: black;
+  */
+}
+
+Jinhui--Label#homeLeftWgt0Label0Picture {
+  background-image: url(:/icon/homeleft1_1_1.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt0Label0Text {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt0Label1 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt0Label1:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#homeLeftWgt0Label1Picture {
+  background-image: url(:/icon/homeleft1_2_2.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt0Label1Text {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt0Label2 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt0Label2:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#homeLeftWgt0Label2Picture {
+  background-image: url(:/icon/homeleft1_3_3.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt0Label2Text {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt0Label3 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt0Label3:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#homeLeftWgt0Label3Picture {
+  background-image: url(:/icon/homeleft1_4_4.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt0Label3Text {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt0Label4 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt0Label4:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#homeLeftWgt0Label4Picture {
+  background-image: url(:/icon/homeleft1_5_5.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt0Label4Text {
+  color: white;
+}
+
+Jinhui--Label#homeLeftWgt2TitleText {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt2Label0 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt2Label0:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#homeLeftWgt2Label0Picture {
+  background-image: url(:/icon/homeleft3_1_1.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt2Label0Text {
+  color: white;
+}
+
+Jinhui--Widget#homeLeftWgt2Label1 {
+  background: gray;
+}
+
+Jinhui--Widget#homeLeftWgt2Label1:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#homeLeftWgt2Label1Picture {
+  background-image: url(:/icon/homeleft3_2_2.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#homeLeftWgt2Label1Text {
+  color: white;
+}
+
+Jinhui--Label#homeRightWgt0TitleText {
+  color: white;
+}
+
+Jinhui--Label#homeRightWgt0Label0Picture {
+  background-image: url(:/icon/homeright1_1_1.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt0Label0Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt0Label0:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt0Label1Picture {
+  background-image: url(:/icon/homeright1_2_2.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt0Label1Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt0Label1:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt0Label2Picture {
+  background-image: url(:/icon/homeright1_3_3.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt0Label2Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt0Label2:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt0Label3Picture {
+  background-image: url(:/icon/homeright1_4_4.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt0Label3Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt0Label3:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt0Label4Picture {
+  background-image: url(:/icon/homeright1_5_5.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt0Label4Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt0Label4:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt0Label5Picture {
+  background-image: url(:/icon/homeright1_6_6.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt0Label5Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt0Label5:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt1TitleText {
+  color: white;
+}
+
+Jinhui--Label#homeRightWgt1Label0Picture {
+  background-image: url(:/icon/homeright2_1_1.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt1Label0Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt1Label0:hover {
+  background: black;
+}
+
+Jinhui--Label#homeRightWgt1Label1Picture {
+  background-image: url(:/icon/homeright2_2_2.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#homeRightWgt1Label1Text {
+  color: white;
+}
+
+Jinhui--Widget#homeRightWgt1Label1:hover {
+  background: black;
+}
+
+/*
+ * 菜单栏(菜单)
+ */
+Jinhui--Widget#menu1 {
+/*
+  min-width: 170;
+  */
+  max-width: 170;
+}
+
+Jinhui--Frame#menu1:hover {
+  background: gray;
+}
+
+Jinhui--Frame#menu1:pressed {
+  background: green;
+}
+
+Jinhui--Label#menu1Icon {
+  background-image: url(:/icon/menu1.png);
+  min-width: 38;
+  min-height: 20;
+  max-width: 38;
+  max-height: 20;
+}
+
+Jinhui--Label#menu1Content {
+  min-height: 20;
+  color: white;
+}
+
+Jinhui--Label#menu1Close{
+  background-image: url(:/icon/menu1close.png);
+  max-width: 28;
+  min-width: 28;
+}
+
+Jinhui--Label#menu1ColorBar {
+  background-color: red;
+  max-height: 3;
 }
