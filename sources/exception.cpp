@@ -124,6 +124,13 @@ namespace Jinhui {
   }
 
   /*
+   * TypeConvertException
+   */
+  const QString TypeConvertException::what() const {
+    return QObject::tr("Type convert error!");
+  }
+
+  /*
    * ParserExceptionXml
    */
   const QString ParserExceptionXml::what() const {
@@ -227,6 +234,35 @@ namespace Jinhui {
    */
   const QString ContainerItemsNumIncorrect::what() const {
     return QObject::tr("The number of items in the container is incorrect!");
+  }
+
+
+  /*
+   * PointerIsNull_Exception
+   */
+  const QString PointerIsNull_Exception::what() const {
+    return QObject::tr("Pointer is null!");
+  }
+
+  /*
+   * Dynamic_cast_Exception
+   */
+  const QString Dynamic_cast_Exception::what() const {
+    return QObject::tr("Failed dynamic_cast type convert!");
+  }
+
+  /*
+   * Dynamic_cast_Up_Exception
+   */
+  const QString Dynamic_cast_Up_Exception::what() const {
+    return QObject::tr("Failed dynamic_cast derive class to parent class type convert!");
+  }
+
+  /*
+   * Dynamic_cast_Down_Exception
+   */
+  const QString Dynamic_cast_Down_Exception::what() const {
+    return QObject::tr("Failed dynamic_cast parent class to derive class type convert!");
   }
 
 }

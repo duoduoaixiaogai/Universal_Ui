@@ -32,6 +32,7 @@
 // ui
 #include <QComboBox>
 #include <QProgressBar>
+#include <QLineEdit>
 
 // database
 #include <QSqlQuery>
@@ -69,7 +70,7 @@ namespace Jinhui {
   class GraphicsPixmapItem;
   class Channel32_Controller;
   class IVMS4200Menu_Widget;
-  class IVMS4200MenuEx_Widget;
+  class IVMS4200MenuEx_Frame;
   class IVMS4200TitleBar_Widget;
   class IVMS4200ContentArea_Widget;
   class IVMS4200StatusBar_Widget;
@@ -84,6 +85,13 @@ namespace Jinhui {
   class IVMS4200ContentAreaHomeRight_Widget;
   class IVMS4200ContentAreaHomeLeftWgt_Widget;
   class IVMS4200ContentAreaHomeRightWgt_Widget;
+  class TreeTopLevelItem_Label;
+  class TreeChildLevelItem_Label;
+  class IVMS4200MainPreviewLeftWgt_Frame;
+  class IVMS4200MainPreviewMidWgt_Frame;
+  class IVMS4200MainPreviewRightWgt_Frame;
+  class IVMS4200TitleWgt_Frame;
+  class SingleLabel_Frame;
 
   /*******************************************************************************
    * 基类
@@ -101,6 +109,10 @@ namespace Jinhui {
         obj = nullptr;
       }
     }
+    void setProductName(QString name);
+    QString productName() const;
+  protected:
+    QString mName;
   };
 
   /*
@@ -334,6 +346,15 @@ namespace Jinhui {
   };
 
   /*
+   * 基类 编译框类
+   */
+  class LineEdit : public QLineEdit, public Product {
+  public:
+    LineEdit(QWidget* parent = nullptr);
+    ~LineEdit();
+  };
+
+  /*
    * 子类 数据库连接类
    */
   class EXPORT Database_Connection : public Connection {
@@ -470,6 +491,41 @@ namespace Jinhui {
     ~File();
   };
 
+  /*
+   * 基类 树控件类
+   */
+  class EXPORT Tree : public Frame {
+    Q_OBJECT
+  public:
+    Tree(QWidget* parent = nullptr);
+    ~Tree();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addTopLevelItem(Frame* topLevelItem);
+    void addChildLevelItem(const QString topLevelItem, Frame* childLevelItem);
+    void delTopLevelItem(const QString topLevelItem);
+    void delChildLevelItem(const QString topLevelItem, const QString childLevelItem);
+    QVBoxLayout* mainLayout() const;
+  public Q_SLOTS:
+    void addTopLevelItem_Slot(const QString name);
+    void addChildLevelItem_Slot(const QString topName, const QString childName);
+    void delTopLevelItem_Slot(const QString name);
+    void delChildLevelItem_Slot(const QString topName, const QString childName);
+  Q_SIGNALS:
+    void addTopLevelItem_Signal(const QString name);
+    void addChildLevelItem_Signal(const QString topName, const QString childName);
+    void delTopLevelItem_Signal(const QString name);
+    void delChildLevelItem_Signal(const QString topName, const QString name);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    typedef QHash<const QString, QVector<Frame*> > ChildItems;
+    QHash<const QString, ChildItems> mTopLevelItems;
+    QBoxLayout* mMainLayout;
+    QVector<Frame*> mChildItems;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -598,7 +654,7 @@ namespace Jinhui {
   private:
     // 模块的名称
     const QLatin1String mUniversalModule, mLanguagesModule, mDatabaseModule
-      ,mQssModule;
+    ,mQssModule;
     // 语言的数量
     const int mLansCount;
   };
@@ -1184,7 +1240,7 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     // 前序添加菜单
     void addMenuFront(IVMS4200Menu_Widget* menu);
-    void addMenuFront(IVMS4200MenuEx_Widget* menu);
+    void addMenuExFront(IVMS4200MenuEx_Frame* menu);
     // 设置菜单栏主按钮
     void setMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
     // 取消菜单栏主按钮
@@ -1194,22 +1250,26 @@ namespace Jinhui {
     void addMenuFront_Signal();
     void addMenuExFront_Signal();
     void restoreLastMenuDefShow();
+    void currentMenuExChanged(const QString);
+    void menuBarMainBtnClicked(const QString);
   public Q_SLOTS:
     void addMenuFront_Slot();
     void addMenuExFront_Slot();
     void changeCurrentMenu(Widget* menu);
+    void changeCurrentMenuEx(Frame* menu);
   protected:
     // 添加菜单
     void addMenuStack(IVMS4200Menu_Widget* menu);
-    void addMenuStack(IVMS4200MenuEx_Widget* menu);
+    void addMenuExStack(IVMS4200MenuEx_Frame* menu);
     void initWindow();
     void initLayout();
   protected:
     // variable
-    QStack<IVMS4200MenuEx_Widget*> mMenuExsStack;
+    QStack<IVMS4200MenuEx_Frame*> mMenuExsStack;
     QStack<IVMS4200Menu_Widget*> mMenusStack;
     QHBoxLayout* mMainLayout;
     Widget* mCurrentMenu;
+    Frame* mCurrentMenuEx;
     QPoint mActiveMenuPos;
   };
 
@@ -1279,20 +1339,27 @@ namespace Jinhui {
   /*
    * 子类 菜单类(模仿海康IVMS-4200菜单样式)是上一个菜单类的扩展(上一个菜单类实现的不够好)
    */
-  class EXPORT IVMS4200MenuEx_Widget : public Frame {
-  //class EXPORT IVMS4200MenuEx_Widget : public Widget {
+  // 问题： 用PushButton Qss 必须设置一个最小的宽度，才能显示，用Frame和Widget不用设置最小宽度，
+  // 会自动适应大小(这为后期留了一个坑，如果后期中没有字或者图标什么的会造成空间的浪费，显示的也不好看)。
+  class EXPORT IVMS4200MenuEx_Frame : public Frame {
+    //class EXPORT IVMS4200MenuEx_Frame : public Widget {
     Q_OBJECT
   public:
-    IVMS4200MenuEx_Widget(QWidget* parent = nullptr);
-    ~IVMS4200MenuEx_Widget();
+    IVMS4200MenuEx_Frame(QWidget* parent = nullptr);
+    ~IVMS4200MenuEx_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     void setMenuBar(Widget* menuBar);
+    void setTextAlignment(Qt::Alignment alignment);
     Label* iconLabel() const;
     Label* contentLabel() const;
     Label* closeLabel() const;
     Label* colorBarLabel() const;
+  public Q_SLOTS:
+    void restoreDefShowMenu();
   Q_SIGNALS:
-    void currentMenuChanged(Widget* menu);
+    //void currentMenuChanged(Widget* menu);
+    void currentMenuExChanged(Frame* menu);
+    void currentMenuExChanged(const QString);
   protected:
     void initWindow();
     void initLayout();
@@ -1305,8 +1372,8 @@ namespace Jinhui {
 
     bool mouseInMenuBar(QPoint currentMousePos);
   protected:
-    IVMS4200MenuEx_Widget* mPreItem;
-    IVMS4200MenuEx_Widget* mNextItem;
+    IVMS4200MenuEx_Frame* mPreItem;
+    IVMS4200MenuEx_Frame* mNextItem;
     IVMS4200MenuBarSeparator_Widget* mPreSeparator;
     IVMS4200MenuBarSeparator_Widget* mNextSeparator;
     QBoxLayout* mMainLayout;
@@ -1346,7 +1413,7 @@ namespace Jinhui {
     IVMS4200StatusBar_Widget* statusBar() const;
     IVMS4200ExpandStatusBar_Widget* expandStatusBar() const;
     void addMenuFront(IVMS4200Menu_Widget* menu);
-    void addMenuFront(IVMS4200MenuEx_Widget* menu);
+    void addMenuExFront(IVMS4200MenuEx_Frame* menu);
     void insertMenu(const int index, IVMS4200Menu_Widget* menu);
   protected:
     void initWindow();
@@ -1443,6 +1510,9 @@ namespace Jinhui {
     ~IVMS4200ContentArea_Widget();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     QStackedWidget* widgetsContainer() const;
+    void addWidget(Frame* widget);
+  public Q_SLOTS:
+    void changeCurrentContentArea(const QString name);
   protected:
     void initWindow();
     void initLayout();
@@ -1451,6 +1521,7 @@ namespace Jinhui {
     // variable
     QStackedWidget* mWidgets;
     QHBoxLayout* mMainLayout;
+    QHash<const QString, Frame*> mWgtsHash;
   };
 
   /*
@@ -1508,6 +1579,8 @@ namespace Jinhui {
     Label* mainBtn() const;
     void setDefPixmap(const QString& pixmapPath);
     void setMovePixmap(const QString& pixmapPath);
+  Q_SIGNALS:
+    void menuBarMainBtnClicked(const QString);
   protected:
     void initWindow();
     void initLayout();
@@ -1515,6 +1588,7 @@ namespace Jinhui {
     // 疑问：为什么明明是子小部件要接受事件的，但是写到父小部件中也能实现相同的效果？
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   protected:
     // variable
     QVBoxLayout* mMainLayout;
@@ -1663,6 +1737,8 @@ namespace Jinhui {
     void setDefPicture(const QString& picturePath);
     void setMovePicture(const QString& picturePath);
     void setClickPicture(const QString& picturePath);
+  Q_SIGNALS:
+    void leftButtonReleased();
   protected:
     void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -1673,6 +1749,25 @@ namespace Jinhui {
     QPixmap mDefPicture;
     QPixmap mMovePicture;
     QPixmap mClickPicture;
+  };
+
+  /*
+   * 子类 带有处理鼠标事件的标签类(不自动更改图片)
+   */
+  class EXPORT DealWithMouseEventEx_Label : public Label {
+    Q_OBJECT
+  public:
+    DealWithMouseEventEx_Label(QWidget* parent = nullptr);
+    ~DealWithMouseEventEx_Label();
+  Q_SIGNALS:
+    void leftButtonReleased();
+  protected:
+    //void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    //void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    //void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    // variable
   };
 
   /*
@@ -1715,11 +1810,12 @@ namespace Jinhui {
   /*
    * 子类 内容区首页
    */
-  class EXPORT IVMS4200ContentAreaHome_Widget : public Widget {
+  class EXPORT IVMS4200ContentAreaHome_Frame : public Frame {
+  //class EXPORT IVMS4200ContentAreaHome_Widget : public Widget {
     Q_OBJECT
   public:
-    IVMS4200ContentAreaHome_Widget(QWidget* parent = nullptr);
-    ~IVMS4200ContentAreaHome_Widget();
+    IVMS4200ContentAreaHome_Frame(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaHome_Frame();
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
     //QSplitter* splitter() const;
     IVMS4200ContentAreaHomeLeft_Widget* leftContentArea() const;
@@ -1875,7 +1971,438 @@ namespace Jinhui {
     void init();
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   };
+
+  /*
+   * 子类 通用标签类(组合的形式，把需要的小部件组合成一个新的展示类，抽象为标签类)
+   */
+  class EXPORT UniversalLabel_Frame : public Frame {
+  public:
+    UniversalLabel_Frame(QWidget* parent = nullptr);
+    ~UniversalLabel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    QHBoxLayout* layout() const;
+  Q_SIGNALS:
+    void leftButtonReleased(const QString productName);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    QBoxLayout* mMainLayout;
+  };
+
+  /*
+   * 子类 单一标签类(IVMS4200主预览窗口左边小部件标题栏中显示的单一标签类)
+   */
+  class EXPORT SingleLabel_Frame : public UniversalLabel_Frame {
+  public:
+    SingleLabel_Frame(QWidget* parent = nullptr);
+    ~SingleLabel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    DealWithMouseEventEx_Label* label() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Label* mLabel;
+  };
+
+  /*
+   * 子类 清除输入控件内容类
+   */
+  class ClearContentWidget_Label : public DealWithMouseEvent_Label {
+  public:
+    ClearContentWidget_Label(Product* widget, QWidget* parent = nullptr);
+    ~ClearContentWidget_Label();
+  protected:
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    Product* mWidget;
+  };
+
+  /*
+   * 子类 搜索按钮类
+   */
+  class Search_Label : public DealWithMouseEvent_Label {
+  public:
+    Search_Label(QWidget* parent = nullptr);
+    ~Search_Label();
+  protected:
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 搜索框
+   */
+  class Search_Frame : public Frame {
+    Q_OBJECT
+  public:
+    Search_Frame(QWidget* parent = nullptr);
+    ~Search_Frame();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    QLineEdit* content() const;
+    DealWithMouseEvent_Label* close() const;
+    DealWithMouseEvent_Label* search() const;
+  public Q_SLOTS:
+    void contentEdited(const QString& text);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    LineEdit* mContent;
+    DealWithMouseEvent_Label* mClose;
+    DealWithMouseEvent_Label* mSearch;
+  };
+
+  /*
+   * 子类 响应鼠标事件的标签的集合展示小部件类
+   */
+  class OperatorsHorizontal_Frame : public Frame {
+  public:
+    OperatorsHorizontal_Frame(QWidget* parent = nullptr);
+    ~OperatorsHorizontal_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    QHBoxLayout* mainLayout() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+  };
+
+  /*
+   * 子类 树控件顶级项目标签类(树控件顶级项目标签类把顶级项目的展示抽象为标签表达)
+   */
+  class TreeTopLevelItem_Label : public UniversalLabel_Frame {
+  public:
+    TreeTopLevelItem_Label(QWidget* parent = nullptr);
+    ~TreeTopLevelItem_Label();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    DealWithMouseEvent_Label* collapseExpand() const;
+    Label* icon() const;
+    Label* content() const;
+    OperatorsHorizontal_Frame* operating() const;
+    QHBoxLayout* mainLayout() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mCollapseExpand;
+    Label* mIcon;
+    Label* mContent;
+    Frame* mOperating;
+  };
+
+  /*
+   * 子类 树控件子项目标签类
+   */
+  class TreeChildLevelItem_Label : public TreeTopLevelItem_Label {
+  public:
+    TreeChildLevelItem_Label(QWidget* parent = nullptr);
+    ~TreeChildLevelItem_Label();
+    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  };
+
+  /*
+   * 子类 内容区样式模板1
+   */
+  class EXPORT IVMS4200ContentAreaStyleModel_Frame : public Frame {
+    Q_OBJECT
+  public:
+    IVMS4200ContentAreaStyleModel_Frame(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaStyleModel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    IVMS4200MainPreviewLeftWgt_Frame* leftWgt() const;
+    IVMS4200MainPreviewMidWgt_Frame* midWgt() const;
+    IVMS4200MainPreviewRightWgt_Frame* rightWgt() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mLeftWgt;
+    Frame* mMidWgt;
+    Frame* mRightWgt;
+  };
+
+  /*
+   * 子类 主预览窗口左边小部件类
+   */
+  class EXPORT IVMS4200MainPreviewLeftWgt_Frame : public Frame {
+    Q_OBJECT
+  public:
+    IVMS4200MainPreviewLeftWgt_Frame(QWidget* parent = nullptr);
+    ~IVMS4200MainPreviewLeftWgt_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    IVMS4200TitleWgt_Frame* title() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mTitle;
+    QStackedWidget* mContentArea;
+  };
+
+  /*
+   * 子类 IVMS4200主预览窗口中左边小部件中的标题类
+   */
+  class EXPORT IVMS4200TitleWgt_Frame : public Frame {
+    Q_OBJECT
+  public:
+    IVMS4200TitleWgt_Frame(QWidget* parent = nullptr);
+    ~IVMS4200TitleWgt_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    QHBoxLayout* mainLayout() const;
+    SingleLabel_Frame* title1() const;
+    SingleLabel_Frame* title2() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    UniversalLabel_Frame* mTitle1;
+    UniversalLabel_Frame* mTitle2;
+  };
+
+  /*
+   * 子类 格子视图
+   */
+  class EXPORT LatticeView_Frame : public Frame {
+    Q_OBJECT
+  public:
+    LatticeView_Frame(QWidget* parent = nullptr);
+    ~LatticeView_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    QStackedWidget* widgets() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QStackedWidget* mWgts;
+  };
+
+  /*
+   * 子类 IVMS4200主预览窗口右边窗口底边的状态栏
+   */
+  class EXPORT IVMS4200MainPreviewStatusBar_Frame : public Frame {
+    Q_OBJECT
+  public:
+    IVMS4200MainPreviewStatusBar_Frame(QWidget* parent = nullptr);
+    ~IVMS4200MainPreviewStatusBar_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* label1() const;
+    Label* label2() const;
+    Label* label3() const;
+    Label* label4() const;
+    Label* label5() const;
+    Label* label6() const;
+    Label* label7() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mLabel1;
+    Label* mLabel2;
+    Label* mLabel3;
+    Label* mLabel4;
+    Label* mLabel5;
+    Label* mLabel6;
+    Label* mLabel7;
+  };
+
+  /*
+   * 子类 IVMS4200主预览窗口中间小部件类(那个可以隐藏左这显示区域的按钮)
+   */
+  class EXPORT IVMS4200MainPreviewMidWgt_Frame : public Frame {
+    Q_OBJECT
+  public:
+    IVMS4200MainPreviewMidWgt_Frame(QWidget* parent = nullptr);
+    ~IVMS4200MainPreviewMidWgt_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* label() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mLabel;
+  };
+
+  /*
+   * 子类 IVMS4200主预览窗口右边小部件类
+   */
+  class EXPORT IVMS4200MainPreviewRightWgt_Frame : public Frame {
+    Q_OBJECT
+  public:
+    IVMS4200MainPreviewRightWgt_Frame(QWidget* parent = nullptr);
+    ~IVMS4200MainPreviewRightWgt_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    LatticeView_Frame* contentArea() const;
+    IVMS4200MainPreviewStatusBar_Frame* statusBar() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mContentArea;
+    Frame* mStatusBar;
+  };
+
+  /*
+   * 子类 视频展示类
+   */
+  class EXPORT VideoShow_Frame : public Frame {
+    Q_OBJECT
+  public:
+    VideoShow_Frame(QWidget* parent = nullptr);
+    ~VideoShow_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  };
+
+  /*
+   * 子类 宫格展示
+   */
+  class EXPORT Lattice_Frame : public Frame {
+    Q_OBJECT
+  public:
+    Lattice_Frame(const int row, const int column, QWidget* parent = nullptr);
+    ~Lattice_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QLayout* mMainLayout;
+    QHash<const QString, Frame*> mWgts;
+    const int mRow;
+    const int mColumn;
+  };
+
+
+  /*
+   * 子类 目录项目类
+   */
+  class DirectoryItem_Frame : public UniversalLabel_Frame {
+  public:
+    DirectoryItem_Frame(QWidget* parent = nullptr);
+    ~DirectoryItem_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  Q_SIGNALS:
+    void directoryItemClicked();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Label* mLabel;
+  };
+
+  /*
+   * 子类 目录控件类(模仿IVMS4200客户端目录控件)
+   */
+  class DirectoryControl_Frame : public Frame {
+  public:
+    DirectoryControl_Frame(QWidget* parent = nullptr);
+    ~DirectoryControl_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    // 如果已经添加过目录项目，必须先删除然后才能再次添加。
+    void setDirectoryItem(DirectoryItem_Frame* item);
+    DirectoryItem_Frame* directoryItem() const;
+    void delDirectoryItem();
+    void addItem(Frame* item);
+    void delItem(Frame* item);
+    Frame* item(const QString name) const;
+  public Q_SLOTS:
+    void directoryItemClicked();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QHash<const QString, Frame*> mItems;
+    DirectoryItem_Frame* mDirectoryItem;
+  };
+
+  /*
+   * 子类 目录标签类
+   */
+  class DirectoryLabel_Frame : public UniversalLabel_Frame {
+    Q_OBJECT
+  public:
+    DirectoryLabel_Frame(QWidget* parent = nullptr);
+    ~DirectoryLabel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Label* mIcon;
+    Label* mContent;
+  };
+
+  /*
+   * 子类 目录标签类(带有子级标签)
+   */
+  class DirectoryLabelEx_Frame : public DirectoryLabel_Frame {
+  public:
+    DirectoryLabelEx_Frame(QWidget* parent = nullptr);
+    ~DirectoryLabelEx_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Label* mExpand;
+  };
+
+  /*
+   * 子类 目录标签类(只显示内容)
+   */
+  class DirectoryLabelContent_Frame : public UniversalLabel_Frame {
+  public:
+    DirectoryLabelContent_Frame(QWidget* parent = nullptr);
+    ~DirectoryLabelContent_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Label* mContent;
+  };
+
 }
+
+
 
 Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)
 

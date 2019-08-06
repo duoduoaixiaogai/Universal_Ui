@@ -136,6 +136,12 @@ namespace Jinhui {
     return rowsColumns;
   }
 
+  /*
+   * Qss
+   */
+  static QString ivms4200MenuEx_FrameClickBackground("Jinhui--IVMS4200MenuEx_Frame {background: gray}");
+  static QString ivms4200MenuEx_FrameBackground("Jinhui--IVMS4200MenuEx_Frame {background: black}");
+
 }
 
 #endif // COMMON_H

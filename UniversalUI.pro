@@ -99,7 +99,8 @@ SOURCES += \
     sources/view.cpp \
     sources/widget.cpp \
     sources/worker.cpp \
-    sources/file.cpp
+    sources/file.cpp \
+    sources/lineedit.cpp
 
 HEADERS += \
         #mainwindow.h \

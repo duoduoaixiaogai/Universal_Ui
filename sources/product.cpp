@@ -8,7 +8,16 @@ namespace Jinhui {
   /*
    * Product
    */
+  // cotr
   Product::Product() {}
+
+  void Product::setProductName(QString name) {
+    mName = name;
+  }
+
+  QString Product::productName() const {
+    return mName;
+  }
 
   /*
    * Parser

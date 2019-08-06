@@ -561,7 +561,8 @@ namespace Jinhui {
   // cotr
   IVMS4200Menubar_Widget::IVMS4200Menubar_Widget(QWidget* parent)
     :Widget(parent)
-    ,mCurrentMenu(nullptr) {
+    ,mCurrentMenu(nullptr)
+    ,mCurrentMenuEx(nullptr) {
     connect(this, SIGNAL(addMenuFront_Signal()), this, SLOT(addMenuFront_Slot()));
     connect(this, SIGNAL(addMenuExFront_Signal()), this, SLOT(addMenuExFront_Slot()));
   }
@@ -581,16 +582,20 @@ namespace Jinhui {
     emit addMenuFront_Signal();
   }
 
-  void IVMS4200Menubar_Widget::addMenuFront(IVMS4200MenuEx_Widget* menu) {
+  void IVMS4200Menubar_Widget::addMenuExFront(IVMS4200MenuEx_Frame* menu) {
     menu->setMenuBar(this);
-    addMenuStack(menu);
-    connect(menu, SIGNAL(currentMenuChanged(Widget*))
-            ,this, SLOT(changeCurrentMenu(Widget*)));
+    addMenuExStack(menu);
+    connect(menu, SIGNAL(currentMenuExChanged(Frame*))
+            ,this, SLOT(changeCurrentMenuEx(Frame*)));
+    connect(menu, SIGNAL(currentMenuExChanged(const QString))
+            ,this, SIGNAL(currentMenuExChanged(const QString)));
     emit addMenuExFront_Signal();
   }
 
   void IVMS4200Menubar_Widget::setMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn) {
     mMainLayout->insertWidget(0, mainBtn);
+    connect(mainBtn, SIGNAL(menuBarMainBtnClicked(const QString))
+            ,this, SIGNAL(menuBarMainBtnClicked(const QString)));
   }
 
   void IVMS4200Menubar_Widget::cancelMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn) {
@@ -619,7 +624,7 @@ namespace Jinhui {
   }
 
   void IVMS4200Menubar_Widget::addMenuExFront_Slot() {
-    IVMS4200MenuEx_Widget* menu = mMenuExsStack.pop();
+    IVMS4200MenuEx_Frame* menu = mMenuExsStack.pop();
     // 首元素
     if (mMenusStack.isEmpty()) {
       menu->mPreSeparator->setupUi(QSharedPointer<const Protocol>());
@@ -642,6 +647,13 @@ namespace Jinhui {
     mCurrentMenu = menu;
     // 记录当前活动的(鼠标单击的菜单项)菜单项的位置
     mActiveMenuPos = mCurrentMenu->pos();
+  }
+
+  void IVMS4200Menubar_Widget::changeCurrentMenuEx(Frame* menu) {
+    if (mCurrentMenuEx) {
+      dynamic_cast<IVMS4200MenuEx_Frame*>(mCurrentMenuEx)->restoreDefShowMenu();
+    }
+    mCurrentMenuEx = menu;
   }
 
   // protected
@@ -667,7 +679,7 @@ namespace Jinhui {
     mMenusStack.push(menu);
   }
 
-  void IVMS4200Menubar_Widget::addMenuStack(IVMS4200MenuEx_Widget* menu) {
+  void IVMS4200Menubar_Widget::addMenuExStack(IVMS4200MenuEx_Frame* menu) {
     // 首元素
     if (mMenuExsStack.isEmpty()) {
       menu->mPreItem = nullptr;
@@ -675,7 +687,7 @@ namespace Jinhui {
       menu->mPreSeparator = new IVMS4200MenuBarSeparator_Widget;
       menu->mNextSeparator = new IVMS4200MenuBarSeparator_Widget;
     } else {
-      IVMS4200MenuEx_Widget* lastMenu = mMenuExsStack.pop();
+      IVMS4200MenuEx_Frame* lastMenu = mMenuExsStack.pop();
       menu->mPreItem = nullptr;
       menu->mNextItem = lastMenu;
       menu->mPreSeparator = new IVMS4200MenuBarSeparator_Widget;
@@ -929,121 +941,6 @@ namespace Jinhui {
   //  //}
   //}
 
-  /*
-   * IVMS4200MenuEx_Widget
-   */
-  // cotr
-  IVMS4200MenuEx_Widget::IVMS4200MenuEx_Widget(QWidget* parent)
-    :Frame(parent)
-    //:Widget(parent)
-    ,mPreItem(nullptr)
-    ,mNextItem(nullptr) {}
-
-  IVMS4200MenuEx_Widget::~IVMS4200MenuEx_Widget() {}
-
-  void IVMS4200MenuEx_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
-    initWindow();
-    initLayout();
-    init();
-  }
-
-  void IVMS4200MenuEx_Widget::setMenuBar(Widget* menuBar) {
-    mMenuBar = menuBar;
-  }
-
-  Label* IVMS4200MenuEx_Widget::iconLabel() const {
-    return mIcon;
-  }
-
-  Label* IVMS4200MenuEx_Widget::contentLabel() const {
-    return mContent;
-  }
-
-  Label* IVMS4200MenuEx_Widget::closeLabel() const {
-    return mClose;
-  }
-
-  Label* IVMS4200MenuEx_Widget::colorBarLabel() const {
-    return mColorBar;
-  }
-
-  // protected
-  void IVMS4200MenuEx_Widget::initWindow() {
-  }
-
-  void IVMS4200MenuEx_Widget::initLayout() {
-    mMainLayout = new QVBoxLayout(this);
-    mContentLayout = new QHBoxLayout;
-    mIconLayout = new QHBoxLayout;
-    mTextLayout = new QHBoxLayout;
-    mCloseLayout = new QHBoxLayout;
-    mColorBarLayout = new QHBoxLayout;
-    mMainLayout->addLayout(mContentLayout);
-    mMainLayout->addLayout(mColorBarLayout);
-    mMainLayout->setSpacing(0);
-    mMainLayout->setContentsMargins(0, 0, 0, 0);
-    mContentLayout->addLayout(mIconLayout);
-    mContentLayout->addLayout(mTextLayout);
-    mContentLayout->addLayout(mCloseLayout);
-    mContentLayout->setSpacing(10);
-    mContentLayout->setContentsMargins(10, 4, 4, 4);
-    mColorBarLayout->setContentsMargins(0, 0, 0, 0);
-  }
-
-  void IVMS4200MenuEx_Widget::init() {
-    mIcon = new Label;
-    mContent = new Label;
-    mClose = new Label;
-    mColorBar = new Label;
-    //mContentLayout->addStretch();
-    //mContentLayout->addWidget(mIcon);
-    mIconLayout->addWidget(mIcon);
-    //mContentLayout->addStretch();
-    //mContentLayout->addWidget(mContent);
-    mTextLayout->addWidget(mContent);
-    //mContentLayout->addStretch();
-    //mContentLayout->addWidget(mClose);
-    mCloseLayout->addWidget(mClose);
-    //mContentLayout->addStretch();
-    mColorBarLayout->addWidget(mColorBar);
-  }
-
-  void IVMS4200MenuEx_Widget::leaveEvent(QEvent *event) {
-
-  }
-
-  void IVMS4200MenuEx_Widget::mouseDoubleClickEvent(QMouseEvent *event) {
-  }
-
-  void IVMS4200MenuEx_Widget::mouseMoveEvent(QMouseEvent *event) {
-  }
-
-  void IVMS4200MenuEx_Widget::mouseReleaseEvent(QMouseEvent *event) {
-  }
-
-  bool IVMS4200MenuEx_Widget::mouseInMenuBar(QPoint currentMousePos) {
-    if (mMenuBar->frameGeometry().contains(currentMousePos)) {
-      return true;
-    }
-    return false;
-  }
-
-  // private
-  void IVMS4200MenuEx_Widget::showClose() {
-    mClose->show();
-  }
-
-  void IVMS4200MenuEx_Widget::hideClose() {
-    mClose->hide();
-  }
-
-  void IVMS4200MenuEx_Widget::showColorBar() {
-    mColorBar->show();
-  }
-
-  void IVMS4200MenuEx_Widget::hideColorBar() {
-    mColorBar->hide();
-  }
 
   /*
    * IntrusionDetection_Window
@@ -1084,8 +981,8 @@ namespace Jinhui {
     dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar)->addMenuFront(menu);
   }
 
-  void IntrusionDetection_MainWindow::addMenuFront(IVMS4200MenuEx_Widget* menu) {
-    dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar)->addMenuFront(menu);
+  void IntrusionDetection_MainWindow::addMenuExFront(IVMS4200MenuEx_Frame* menu) {
+    dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar)->addMenuExFront(menu);
   }
 
   void IntrusionDetection_MainWindow::insertMenu(const int index, IVMS4200Menu_Widget* menu) {
@@ -1154,6 +1051,11 @@ namespace Jinhui {
     setMenuBar(mMenuBar);
     setContentArea(mContentArea);
     setStatusBar(mStatusBar);
+
+    connect(mMenuBar, SIGNAL(currentMenuExChanged(const QString))
+            ,mContentArea, SLOT(changeCurrentContentArea(const QString)));
+    connect(mMenuBar, SIGNAL(menuBarMainBtnClicked(const QString))
+            ,mContentArea, SLOT(changeCurrentContentArea(const QString)));
   }
 
   /*
@@ -1369,6 +1271,20 @@ namespace Jinhui {
     return mWidgets;
   }
 
+  void IVMS4200ContentArea_Widget::addWidget(Frame* widget) {
+    mWidgets->addWidget(widget);
+    const QString productName = widget->productName();
+    mWgtsHash[productName] = widget;
+  }
+
+  // public slots
+  void IVMS4200ContentArea_Widget::changeCurrentContentArea(const QString name) {
+    if (mWgtsHash.contains(name)) {
+      Frame* wgt = mWgtsHash.value(name);
+      mWidgets->setCurrentWidget(wgt);
+    }
+  }
+
   // protected
   void IVMS4200ContentArea_Widget::initWindow(){
     //setStyleSheet(QString("background-color:black"));
@@ -1536,6 +1452,17 @@ namespace Jinhui {
     mMainBtn->setPixmap(mDefPixmap);
     event->accept();
     return;
+  }
+
+  void IVMS4200MenuBarMainBtn_Widget::mouseReleaseEvent(QMouseEvent *event) {
+    if (Qt::LeftButton == event->button()) {
+      event->accept();
+      emit menuBarMainBtnClicked(this->productName());
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
   }
 
   /*
@@ -1795,39 +1722,39 @@ namespace Jinhui {
    * IVMS4200ContentAreaHome_Widget
    */
   // cotr
-  IVMS4200ContentAreaHome_Widget::IVMS4200ContentAreaHome_Widget(QWidget* parent)
-    :Widget(parent) {}
+  IVMS4200ContentAreaHome_Frame::IVMS4200ContentAreaHome_Frame(QWidget* parent)
+    :Frame(parent) {}
 
-  IVMS4200ContentAreaHome_Widget::~IVMS4200ContentAreaHome_Widget() {}
+  IVMS4200ContentAreaHome_Frame::~IVMS4200ContentAreaHome_Frame() {}
 
-  void IVMS4200ContentAreaHome_Widget::setupUi(QSharedPointer<const Protocol> protocol) {
+  void IVMS4200ContentAreaHome_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
     initWindow();
     initLayout();
     init();
   }
 
-  //QSplitter* IVMS4200ContentAreaHome_Widget::splitter() const {
+  //QSplitter* IVMS4200ContentAreaHome_Frame::splitter() const {
   //  return mSplitter;
   //}
 
-  IVMS4200ContentAreaHomeLeft_Widget* IVMS4200ContentAreaHome_Widget::leftContentArea() const {
+  IVMS4200ContentAreaHomeLeft_Widget* IVMS4200ContentAreaHome_Frame::leftContentArea() const {
     return dynamic_cast<IVMS4200ContentAreaHomeLeft_Widget*>(mLeftContentArea);
   }
 
-  IVMS4200ContentAreaHomeRight_Widget* IVMS4200ContentAreaHome_Widget::rightContentArea() const {
+  IVMS4200ContentAreaHomeRight_Widget* IVMS4200ContentAreaHome_Frame::rightContentArea() const {
     return dynamic_cast<IVMS4200ContentAreaHomeRight_Widget*>(mRightContentArea);
   }
 
-  Label* IVMS4200ContentAreaHome_Widget::separate() const {
+  Label* IVMS4200ContentAreaHome_Frame::separate() const {
     return mSeparate;
   }
 
   // protected
-  void IVMS4200ContentAreaHome_Widget::initWindow() {
+  void IVMS4200ContentAreaHome_Frame::initWindow() {
     //setStyleSheet(QString("background-color:rgb(42, 42, 47)"));
   }
 
-  void IVMS4200ContentAreaHome_Widget::initLayout() {
+  void IVMS4200ContentAreaHome_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
     mLeftContentAreaLayout = new QHBoxLayout;
     mSeparateLayout = new QHBoxLayout;
@@ -1842,7 +1769,7 @@ namespace Jinhui {
     mRightContentAreaLayout->setContentsMargins(0, 0, 0, 0);
   }
 
-  void IVMS4200ContentAreaHome_Widget::init() {
+  void IVMS4200ContentAreaHome_Frame::init() {
     //mSplitter = new QSplitter;
     //mMainLayout->addWidget(mSplitter);
     mLeftContentArea = new IVMS4200ContentAreaHomeLeft_Widget;

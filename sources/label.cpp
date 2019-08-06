@@ -7,6 +7,7 @@
 ******************************************************************************/
 #include "include/product.h"
 #include "include/common.h"
+#include "include/exception.h"
 
 #include <QMouseEvent>
 #include <QPainter>
@@ -743,6 +744,37 @@ namespace Jinhui {
     if (Qt::LeftButton ==event->button()) {
       event->accept();
       setPixmap(mClickPicture);
+      emit leftButtonReleased();
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
+  }
+
+  /*
+   * DealWithMouseEventEx_Label
+   */
+  // cotr
+  DealWithMouseEventEx_Label::DealWithMouseEventEx_Label(QWidget* parent)
+    :Label(parent) {}
+
+  DealWithMouseEventEx_Label::~DealWithMouseEventEx_Label() {}
+
+  // protected
+  //void DealWithMouseEventEx_Label::leaveEvent(QEvent *event) {
+  //}
+
+  //void DealWithMouseEventEx_Label::mouseMoveEvent(QMouseEvent *event) {
+  //}
+
+  //void DealWithMouseEventEx_Label::mousePressEvent(QMouseEvent *event) {
+  //}
+
+  void DealWithMouseEventEx_Label::mouseReleaseEvent(QMouseEvent *event) {
+    if (Qt::LeftButton ==event->button()) {
+      event->accept();
+      emit leftButtonReleased();
       return;
     } else {
       event->ignore();
@@ -778,4 +810,54 @@ namespace Jinhui {
     }
   }
 
+  /*
+   * ClearContentLineEdit_Label
+   */
+  // cotr
+  ClearContentWidget_Label::ClearContentWidget_Label(Product *widget, QWidget* parent)
+    :DealWithMouseEvent_Label(parent)
+  ,mWidget(widget) {}
+
+  ClearContentWidget_Label::~ClearContentWidget_Label() {}
+
+  //protected
+  void ClearContentWidget_Label::mousePressEvent(QMouseEvent *event) {
+    try {
+    if (mWidget) {
+      throw PointerIsNull_Exception();
+    }
+    } catch (ParameterException& ex) {
+      const QString msg = ex.what();
+      ex.writeLogWarn(msg);
+      ex.showMessage(nullptr, MessageLevel::WARN, msg);
+      return;
+    }
+
+    try {
+      LineEdit* wgt = dynamic_cast<LineEdit*>(mWidget);
+      if (!wgt) {
+        throw Dynamic_cast_Down_Exception();
+      }
+      wgt->clear();
+    } catch (Dynamic_cast_Exception& ex) {
+      const QString msg = ex.what();
+      ex.writeLogWarn(msg);
+      ex.showMessage(nullptr, MessageLevel::WARN, msg);
+      return;
+    }
+  }
+
+  /*
+   * Search_Label
+   */
+  // cotr
+  Search_Label::Search_Label(QWidget* parent)
+    :DealWithMouseEvent_Label(parent) {}
+
+  Search_Label::~Search_Label() {}
+
+  // protected
+  void Search_Label::mousePressEvent(QMouseEvent *event) {
+
+  }
 }

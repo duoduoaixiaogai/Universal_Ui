@@ -4,7 +4,48 @@ Jinhui--IntrusionDetection_MainWindow {
   min-height: 800;
 }
 
-Jinhui--IVMS4200ContentAreaHome_Widget {
+Jinhui--IVMS4200ContentAreaStyleModel_Frame {
+  background: gray;
+}
+
+Jinhui--IVMS4200MainPreviewLeftWgt_Frame {
+  max-width: 300;
+  background: gray;
+}
+
+Jinhui--IVMS4200TitleWgt_Frame {
+  max-height: 70;
+}
+
+Jinhui--VideoShow_Frame {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+
+Jinhui--VideoShow_Frame:hover {
+  border-color: red;
+}
+
+Jinhui--Frame#MainPreviewTitle1:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#MainPreviewLabelTitle1 {
+  color: white;
+}
+
+Jinhui--IVMS4200MainPreviewMidWgt_Frame {
+  max-width: 28;
+}
+
+Jinhui--Label#MainPreviewMid {
+  min-height: 60;
+  background-image: url(:/icon/mid.png);
+}
+
+Jinhui--IVMS4200ContentAreaHome_Frame {
   background: gray;
 }
 
@@ -320,19 +361,56 @@ Jinhui--Widget#homeRightWgt1Label1:hover {
 /*
  * 菜单栏(菜单)
  */
-Jinhui--Widget#menu1 {
-/*
-  min-width: 170;
-  */
+Jinhui--Frame#menu1 {
   max-width: 170;
+  background: black;
+  border-bottom: 3px;
+  border-style: solid;
+  border-bottom-color: red;
 }
 
 Jinhui--Frame#menu1:hover {
   background: gray;
 }
 
-Jinhui--Frame#menu1:pressed {
-  background: green;
+Jinhui--Label#menuIcon {
+  background-image: url(:/icon/menu1.png);
+  min-width: 38;
+  min-height: 20;
+  max-width: 38;
+  max-height: 20;
+}
+
+Jinhui--Label#menuContent {
+  min-height: 20;
+  color: white;
+}
+
+Jinhui--Label#menuClose{
+  background-image: url(:/icon/menu1close.png);
+  max-width: 28;
+  min-width: 28;
+}
+
+/*
+Jinhui--Label#menuColorBar {
+  background-color: red;
+  max-height: 3;
+}
+*/
+
+Jinhui--PushButton#menu1 {
+  min-width: 170;
+  max-width: 170;
+  background: black;
+}
+
+Jinhui--PushButton#menu1:hover {
+  background: gray;
+}
+
+Jinhui--PushButton#menu1:pressed {
+  background: gray;
 }
 
 Jinhui--Label#menu1Icon {
@@ -357,4 +435,50 @@ Jinhui--Label#menu1Close{
 Jinhui--Label#menu1ColorBar {
   background-color: red;
   max-height: 3;
+}
+
+Jinhui--Frame#MainPreviewStatusBar {
+  background: black;
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel1 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status1.png);
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel2 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status2.png);
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel3 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status3.png);
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel4 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status4.png);
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel5 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status5.png);
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel6 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status6.png);
+}
+
+Jinhui--Label#MainPreviewStatusBarLabel7 {
+  min-width: 40;
+  min-height: 35;
+  background-image: url(:/icon/status7.png);
 }

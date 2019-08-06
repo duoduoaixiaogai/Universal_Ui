@@ -114,6 +114,16 @@ namespace Jinhui {
     const QString what() const Q_DECL_OVERRIDE;
   };
 
+  /*
+   * 基类 类型之间转换异常类
+   */
+  class EXPORT TypeConvertException : public Exception {
+  public:
+    TypeConvertException() = default;
+    ~TypeConvertException() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
   /*******************************************************************************
    * 子类
    ******************************************************************************/
@@ -289,6 +299,45 @@ namespace Jinhui {
     const QString what() const Q_DECL_OVERRIDE;
   };
 
+  /*
+   *子类 指针值为空异常类
+   */
+  class EXPORT PointerIsNull_Exception : public ParameterException {
+  public:
+    PointerIsNull_Exception() = default;
+    ~PointerIsNull_Exception() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 dynamic_cast类型转换异常类
+   */
+  class EXPORT Dynamic_cast_Exception : public TypeConvertException {
+  public:
+    Dynamic_cast_Exception() = default;
+    ~Dynamic_cast_Exception() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 dynamic_cast子类向父类转换异常类
+   */
+  class EXPORT Dynamic_cast_Up_Exception : public Dynamic_cast_Exception {
+  public:
+    Dynamic_cast_Up_Exception() = default;
+    ~Dynamic_cast_Up_Exception() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
+
+  /*
+   * 子类 dynamic_cast父类向子类转换异常类
+   */
+  class EXPORT Dynamic_cast_Down_Exception : public Dynamic_cast_Exception {
+  public:
+    Dynamic_cast_Down_Exception() = default;
+    ~Dynamic_cast_Down_Exception() = default;
+    const QString what() const Q_DECL_OVERRIDE;
+  };
 }
 
 #endif // EXCEPTION_H
