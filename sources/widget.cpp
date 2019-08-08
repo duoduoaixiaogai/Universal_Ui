@@ -49,6 +49,18 @@ namespace Jinhui {
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
   }
 
+
+  void Widget::mouseReleaseEvent(QMouseEvent *event) {
+    if (Qt::LeftButton == event->button()) {
+      event->accept();
+      emit leftButtonClicked();
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
+  }
+
   /*
    * Titlebar
    */
@@ -589,6 +601,8 @@ namespace Jinhui {
             ,this, SLOT(changeCurrentMenuEx(Frame*)));
     connect(menu, SIGNAL(currentMenuExChanged(const QString))
             ,this, SIGNAL(currentMenuExChanged(const QString)));
+    connect(menu, SIGNAL(closeMenu(Frame*))
+            ,this, SLOT(closeMenu(Frame*)));
     emit addMenuExFront_Signal();
   }
 
@@ -596,6 +610,10 @@ namespace Jinhui {
     mMainLayout->insertWidget(0, mainBtn);
     connect(mainBtn, SIGNAL(menuBarMainBtnClicked(const QString))
             ,this, SIGNAL(menuBarMainBtnClicked(const QString)));
+  }
+
+  IVMS4200MenuBarMainBtn_Widget* IVMS4200Menubar_Widget::getMenuBarMainButton() const {
+    return dynamic_cast<IVMS4200MenuBarMainBtn_Widget*>(mMainLayout->itemAt(0)->widget());
   }
 
   void IVMS4200Menubar_Widget::cancelMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn) {
@@ -626,12 +644,12 @@ namespace Jinhui {
   void IVMS4200Menubar_Widget::addMenuExFront_Slot() {
     IVMS4200MenuEx_Frame* menu = mMenuExsStack.pop();
     // 首元素
-    if (mMenusStack.isEmpty()) {
+    if (mMenuExsStack.isEmpty()) {
       menu->mPreSeparator->setupUi(QSharedPointer<const Protocol>());
-      mMainLayout->insertWidget(0, menu->mPreSeparator);
-      mMainLayout->insertWidget(0, menu);
+      mMainLayout->insertWidget(1, menu->mPreSeparator);
+      mMainLayout->insertWidget(1, menu);
       menu->mNextSeparator->setupUi(QSharedPointer<const Protocol>());
-      mMainLayout->insertWidget(0, menu->mNextSeparator);
+      mMainLayout->insertWidget(1, menu->mNextSeparator);
     } else {
       mMainLayout->insertWidget(1, menu);
       mMainLayout->insertWidget(1, menu->mPreSeparator);
@@ -654,6 +672,26 @@ namespace Jinhui {
       dynamic_cast<IVMS4200MenuEx_Frame*>(mCurrentMenuEx)->restoreDefShowMenu();
     }
     mCurrentMenuEx = menu;
+  }
+
+  void IVMS4200Menubar_Widget::closeMenu(Frame* menu) {
+    IVMS4200MenuEx_Frame* pMenu = dynamic_cast<IVMS4200MenuEx_Frame*>(menu);
+    int index = mMenuExsStack.indexOf(pMenu);
+    mMenuExsStack.remove(index);
+    IVMS4200MenuEx_Frame* menuPre = pMenu->mPreItem;
+    IVMS4200MenuEx_Frame* menuNext = pMenu->mNextItem;
+    if (menuPre) {
+      menuPre->mNextItem = menuNext;
+    }
+
+    if (menuNext) {
+      menuNext->mPreItem = menuPre;
+    }
+
+    mMainLayout->removeWidget(pMenu->mPreSeparator);
+    mMainLayout->removeWidget(pMenu->mNextSeparator);
+    mMainLayout->removeWidget(pMenu);
+    pMenu->hide();
   }
 
   // protected
@@ -1275,6 +1313,14 @@ namespace Jinhui {
     mWidgets->addWidget(widget);
     const QString productName = widget->productName();
     mWgtsHash[productName] = widget;
+  }
+
+  Frame* IVMS4200ContentArea_Widget::getContentAreaWidget(const QString productName) const {
+    Frame* wgt = nullptr;
+    if (mWgtsHash.contains(productName)) {
+      wgt = mWgtsHash.value(productName);
+    }
+    return wgt;
   }
 
   // public slots
@@ -2003,10 +2049,6 @@ namespace Jinhui {
     mText = new Label;
     mPictureLayout->addWidget(mPicture);
     mTextLayout->addWidget(mText);
-  }
-
-  void IVMS4200UpDownIcon_Widget::mouseReleaseEvent(QMouseEvent *event) {
-
   }
 
   /*

@@ -50,6 +50,7 @@ class QDateTimeEdit;
 class QSplitter;
 class QSqlTableModel;
 class QBoxLayout;
+class QDateTimeEdit;
 QT_END_NAMESPACE
 
 namespace Jinhui {
@@ -92,6 +93,7 @@ namespace Jinhui {
   class IVMS4200MainPreviewRightWgt_Frame;
   class IVMS4200TitleWgt_Frame;
   class SingleLabel_Frame;
+  class DirectoryLabelContent_Frame;
 
   /*******************************************************************************
    * 基类
@@ -252,8 +254,11 @@ namespace Jinhui {
     // 设置自定义界面
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
     virtual void setupUi();
+  Q_SIGNALS:
+    void leftButtonClicked();
   protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   protected:
     QSharedPointer<MainWindow> mMainWindow;
     QSharedPointer<Widget> mMainWindow_Widget;
@@ -349,6 +354,7 @@ namespace Jinhui {
    * 基类 编译框类
    */
   class LineEdit : public QLineEdit, public Product {
+    Q_OBJECT
   public:
     LineEdit(QWidget* parent = nullptr);
     ~LineEdit();
@@ -1243,6 +1249,7 @@ namespace Jinhui {
     void addMenuExFront(IVMS4200MenuEx_Frame* menu);
     // 设置菜单栏主按钮
     void setMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
+    IVMS4200MenuBarMainBtn_Widget* getMenuBarMainButton() const;
     // 取消菜单栏主按钮
     void cancelMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
     void cancelMenuBarMainButton(const int index = 0);
@@ -1257,6 +1264,7 @@ namespace Jinhui {
     void addMenuExFront_Slot();
     void changeCurrentMenu(Widget* menu);
     void changeCurrentMenuEx(Frame* menu);
+    void closeMenu(Frame* menu);
   protected:
     // 添加菜单
     void addMenuStack(IVMS4200Menu_Widget* menu);
@@ -1356,10 +1364,14 @@ namespace Jinhui {
     Label* colorBarLabel() const;
   public Q_SLOTS:
     void restoreDefShowMenu();
+    void getNextActiveMenu();
+    void closeMenu();
   Q_SIGNALS:
     //void currentMenuChanged(Widget* menu);
     void currentMenuExChanged(Frame* menu);
     void currentMenuExChanged(const QString);
+    void activeMenuEx(const QString);
+    void closeMenu(Frame* menu);
   protected:
     void initWindow();
     void initLayout();
@@ -1511,6 +1523,7 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     QStackedWidget* widgetsContainer() const;
     void addWidget(Frame* widget);
+    Frame* getContentAreaWidget(const QString productName) const;
   public Q_SLOTS:
     void changeCurrentContentArea(const QString name);
   protected:
@@ -1811,7 +1824,7 @@ namespace Jinhui {
    * 子类 内容区首页
    */
   class EXPORT IVMS4200ContentAreaHome_Frame : public Frame {
-  //class EXPORT IVMS4200ContentAreaHome_Widget : public Widget {
+    //class EXPORT IVMS4200ContentAreaHome_Widget : public Widget {
     Q_OBJECT
   public:
     IVMS4200ContentAreaHome_Frame(QWidget* parent = nullptr);
@@ -1946,7 +1959,6 @@ namespace Jinhui {
     void initWindow();
     void initLayout();
     void init();
-    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   protected:
     QBoxLayout* mMainLayout;
     QHBoxLayout* mPictureLayout;
@@ -1976,6 +1988,7 @@ namespace Jinhui {
    * 子类 通用标签类(组合的形式，把需要的小部件组合成一个新的展示类，抽象为标签类)
    */
   class EXPORT UniversalLabel_Frame : public Frame {
+    Q_OBJECT
   public:
     UniversalLabel_Frame(QWidget* parent = nullptr);
     ~UniversalLabel_Frame();
@@ -1996,6 +2009,7 @@ namespace Jinhui {
    * 子类 单一标签类(IVMS4200主预览窗口左边小部件标题栏中显示的单一标签类)
    */
   class EXPORT SingleLabel_Frame : public UniversalLabel_Frame {
+    Q_OBJECT
   public:
     SingleLabel_Frame(QWidget* parent = nullptr);
     ~SingleLabel_Frame();
@@ -2012,7 +2026,8 @@ namespace Jinhui {
   /*
    * 子类 清除输入控件内容类
    */
-  class ClearContentWidget_Label : public DealWithMouseEvent_Label {
+  class EXPORT ClearContentWidget_Label : public DealWithMouseEvent_Label {
+    Q_OBJECT
   public:
     ClearContentWidget_Label(Product* widget, QWidget* parent = nullptr);
     ~ClearContentWidget_Label();
@@ -2025,7 +2040,8 @@ namespace Jinhui {
   /*
    * 子类 搜索按钮类
    */
-  class Search_Label : public DealWithMouseEvent_Label {
+  class EXPORT Search_Label : public DealWithMouseEvent_Label {
+    Q_OBJECT
   public:
     Search_Label(QWidget* parent = nullptr);
     ~Search_Label();
@@ -2036,13 +2052,13 @@ namespace Jinhui {
   /*
    * 子类 搜索框
    */
-  class Search_Frame : public Frame {
+  class EXPORT Search_Frame : public Frame {
     Q_OBJECT
   public:
     Search_Frame(QWidget* parent = nullptr);
     ~Search_Frame();
     virtual void setupUi(QSharedPointer<const Protocol> protocol);
-    QLineEdit* content() const;
+    LineEdit* content() const;
     DealWithMouseEvent_Label* close() const;
     DealWithMouseEvent_Label* search() const;
   public Q_SLOTS:
@@ -2061,7 +2077,8 @@ namespace Jinhui {
   /*
    * 子类 响应鼠标事件的标签的集合展示小部件类
    */
-  class OperatorsHorizontal_Frame : public Frame {
+  class EXPORT OperatorsHorizontal_Frame : public Frame {
+    Q_OBJECT
   public:
     OperatorsHorizontal_Frame(QWidget* parent = nullptr);
     ~OperatorsHorizontal_Frame();
@@ -2078,7 +2095,8 @@ namespace Jinhui {
   /*
    * 子类 树控件顶级项目标签类(树控件顶级项目标签类把顶级项目的展示抽象为标签表达)
    */
-  class TreeTopLevelItem_Label : public UniversalLabel_Frame {
+  class EXPORT TreeTopLevelItem_Label : public UniversalLabel_Frame {
+   Q_OBJECT
   public:
     TreeTopLevelItem_Label(QWidget* parent = nullptr);
     ~TreeTopLevelItem_Label();
@@ -2103,7 +2121,8 @@ namespace Jinhui {
   /*
    * 子类 树控件子项目标签类
    */
-  class TreeChildLevelItem_Label : public TreeTopLevelItem_Label {
+  class EXPORT TreeChildLevelItem_Label : public TreeTopLevelItem_Label {
+    Q_OBJECT
   public:
     TreeChildLevelItem_Label(QWidget* parent = nullptr);
     ~TreeChildLevelItem_Label();
@@ -2123,18 +2142,20 @@ namespace Jinhui {
     IVMS4200ContentAreaStyleModel_Frame(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaStyleModel_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
-    IVMS4200MainPreviewLeftWgt_Frame* leftWgt() const;
+    QStackedWidget* leftWgt() const;
     IVMS4200MainPreviewMidWgt_Frame* midWgt() const;
-    IVMS4200MainPreviewRightWgt_Frame* rightWgt() const;
+    QStackedWidget* rightWgt() const;
   protected:
     void initWindow();
     void initLayout();
     void init();
   protected:
     QBoxLayout* mMainLayout;
-    Frame* mLeftWgt;
+    QStackedWidget* mLeftWgt;
     Frame* mMidWgt;
-    Frame* mRightWgt;
+    QStackedWidget* mRightWgt;
+    QHash<const QString, Frame*> mLeftwgts();
+    QHash<const QString, Frame*> mRightwgts();
   };
 
   /*
@@ -2308,11 +2329,13 @@ namespace Jinhui {
   /*
    * 子类 目录项目类
    */
-  class DirectoryItem_Frame : public UniversalLabel_Frame {
+  class EXPORT DirectoryItem_Frame : public UniversalLabel_Frame {
+    Q_OBJECT
   public:
     DirectoryItem_Frame(QWidget* parent = nullptr);
     ~DirectoryItem_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    DealWithMouseEventEx_Label* label() const;
   Q_SIGNALS:
     void directoryItemClicked();
   protected:
@@ -2326,7 +2349,8 @@ namespace Jinhui {
   /*
    * 子类 目录控件类(模仿IVMS4200客户端目录控件)
    */
-  class DirectoryControl_Frame : public Frame {
+  class EXPORT DirectoryControl_Frame : public Frame {
+    Q_OBJECT
   public:
     DirectoryControl_Frame(QWidget* parent = nullptr);
     ~DirectoryControl_Frame();
@@ -2337,7 +2361,12 @@ namespace Jinhui {
     void delDirectoryItem();
     void addItem(Frame* item);
     void delItem(Frame* item);
+    void addStretch();
     Frame* item(const QString name) const;
+    // 目录折叠(把子条目折叠起来，只显示图标，详情见IVMS4200客户端远程回放页面左边目录)
+    bool isExpand() const;
+    void expand();
+    void shrink();
   public Q_SLOTS:
     void directoryItemClicked();
   protected:
@@ -2348,17 +2377,20 @@ namespace Jinhui {
     QBoxLayout* mMainLayout;
     QHash<const QString, Frame*> mItems;
     DirectoryItem_Frame* mDirectoryItem;
+    bool mIsExpand;
   };
 
   /*
    * 子类 目录标签类
    */
-  class DirectoryLabel_Frame : public UniversalLabel_Frame {
+  class EXPORT DirectoryLabel_Frame : public UniversalLabel_Frame {
     Q_OBJECT
   public:
     DirectoryLabel_Frame(QWidget* parent = nullptr);
     ~DirectoryLabel_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* icon() const;
+    Label* content() const;
   protected:
     void initWindow();
     void initLayout();
@@ -2371,11 +2403,13 @@ namespace Jinhui {
   /*
    * 子类 目录标签类(带有子级标签)
    */
-  class DirectoryLabelEx_Frame : public DirectoryLabel_Frame {
+  class EXPORT DirectoryLabelEx_Frame : public DirectoryLabel_Frame {
+    Q_OBJECT
   public:
     DirectoryLabelEx_Frame(QWidget* parent = nullptr);
     ~DirectoryLabelEx_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addChildItem(DirectoryLabelContent_Frame* item);
   protected:
     void initWindow();
     void initLayout();
@@ -2387,7 +2421,8 @@ namespace Jinhui {
   /*
    * 子类 目录标签类(只显示内容)
    */
-  class DirectoryLabelContent_Frame : public UniversalLabel_Frame {
+  class EXPORT DirectoryLabelContent_Frame : public UniversalLabel_Frame {
+    Q_OBJECT
   public:
     DirectoryLabelContent_Frame(QWidget* parent = nullptr);
     ~DirectoryLabelContent_Frame();
@@ -2400,10 +2435,95 @@ namespace Jinhui {
     Label* mContent;
   };
 
+  /*
+   * 子类 目录标签类(管理父、子标签)
+   */
+  class EXPORT DirectoryLabelParentChild_Frame : public Frame {
+    Q_OBJECT
+  public:
+    DirectoryLabelParentChild_Frame(QWidget* parent = nullptr);
+    ~DirectoryLabelParentChild_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addParentItem(DirectoryLabelEx_Frame* item);
+    void addChildItem(DirectoryLabelContent_Frame* item);
+    void delParentItem();
+    void delChildItem(const QString productName);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    DirectoryLabelEx_Frame* mParentItem;
+    QHash<const QString, DirectoryLabelContent_Frame*> mItems;
+  };
+
+  /*
+   * 子类 模板样式2(带有目录的模板样式1)
+   */
+  class EXPORT IVMS4200ContentAreaStyleModel1_Frame : public Frame {
+   Q_OBJECT
+  public:
+    IVMS4200ContentAreaStyleModel1_Frame(QWidget* parent = nullptr);
+    ~IVMS4200ContentAreaStyleModel1_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    DirectoryControl_Frame* directory() const;
+    IVMS4200ContentAreaStyleModel_Frame* styleModel1() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mDirectory;
+    Frame* mStyleModel1;
+  };
+
+  /*
+   * 子类 远程回放模块功能区样式模板
+   */
+  class EXPORT RemotePlaybackFeaturesStyleModel_Frame : public Frame {
+    Q_OBJECT
+  public:
+    RemotePlaybackFeaturesStyleModel_Frame(QWidget* parent = nullptr);
+    ~RemotePlaybackFeaturesStyleModel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* title() const;
+    QDateTimeEdit* time() const;
+    void addStretch();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mTitle;
+    QDateTimeEdit* mTime;
+  };
+
+  /*
+   * 子类 远程回放模块监控点功能类
+   */
+  class EXPORT RemotePlaybackMonitorFeature_Frame : public RemotePlaybackFeaturesStyleModel_Frame {
+    Q_OBJECT
+  public:
+    RemotePlaybackMonitorFeature_Frame(QWidget* parent = nullptr);
+    ~RemotePlaybackMonitorFeature_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* label() const;
+    Search_Frame* search() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Label* mLabel;
+    Frame* mSearch;
+  };
 }
 
 
 
-Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)
+  Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)
 
 #endif // PARSER_H

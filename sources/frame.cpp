@@ -10,6 +10,7 @@
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QStackedWidget>
+#include <QDateTimeEdit>
 
 namespace Jinhui {
   /*
@@ -104,6 +105,24 @@ namespace Jinhui {
     //setStyleSheet(ivms4200MenuEx_FrameBackground);
   }
 
+  void IVMS4200MenuEx_Frame::getNextActiveMenu() {
+    QString activeMenu;
+    if (mPreItem) {
+      activeMenu = mPreItem->productName();
+    } else if (mNextItem) {
+      activeMenu = mNextItem->productName();
+    } else {
+      activeMenu = dynamic_cast<IVMS4200Menubar_Widget*>(mMenuBar)->getMenuBarMainButton()->productName();
+    }
+
+    emit activeMenuEx(activeMenu);
+  }
+
+  void IVMS4200MenuEx_Frame::closeMenu() {
+    emit closeMenu(this);
+    getNextActiveMenu();
+  }
+
   // protected
   void IVMS4200MenuEx_Frame::initWindow() {
   }
@@ -130,7 +149,7 @@ namespace Jinhui {
   void IVMS4200MenuEx_Frame::init() {
     mIcon = new Label;
     mContent = new Label;
-    mClose = new Label;
+    mClose = new DealWithMouseEventEx_Label;
     mColorBar = new Label;
     //mContentLayout->addStretch();
     //mContentLayout->addWidget(mIcon);
@@ -143,6 +162,9 @@ namespace Jinhui {
     mCloseLayout->addWidget(mClose);
     //mContentLayout->addStretch();
     mColorBarLayout->addWidget(mColorBar);
+
+    connect(mClose, SIGNAL(leftButtonReleased())
+            ,this, SLOT(closeMenu()));
   }
 
   void IVMS4200MenuEx_Frame::leaveEvent(QEvent *event) {
@@ -282,7 +304,7 @@ namespace Jinhui {
     init();
   }
 
-  QLineEdit* Search_Frame::content() const {
+  LineEdit* Search_Frame::content() const {
     return mContent;
   }
 
@@ -310,6 +332,7 @@ namespace Jinhui {
   void Search_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
     mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setSpacing(0);
   }
 
   void Search_Frame::init() {
@@ -320,7 +343,7 @@ namespace Jinhui {
     mMainLayout->addWidget(mClose);
     mMainLayout->addWidget(mSearch);
 
-    mContent->setText(tr("Search..."));
+    //mContent->setText(tr("Search..."));
     mClose->hide();
 
     connect(mContent, SIGNAL(textEdited(const QString&)), this, SLOT(contentEdited(const QString&)));
@@ -530,16 +553,16 @@ namespace Jinhui {
     init();
   }
 
-  IVMS4200MainPreviewLeftWgt_Frame* IVMS4200ContentAreaStyleModel_Frame::leftWgt() const {
-    return dynamic_cast<IVMS4200MainPreviewLeftWgt_Frame*>(mLeftWgt);
+  QStackedWidget* IVMS4200ContentAreaStyleModel_Frame::leftWgt() const {
+    return mLeftWgt;
   }
 
   IVMS4200MainPreviewMidWgt_Frame* IVMS4200ContentAreaStyleModel_Frame::midWgt() const {
     return dynamic_cast<IVMS4200MainPreviewMidWgt_Frame*>(mMidWgt);
   }
 
-  IVMS4200MainPreviewRightWgt_Frame* IVMS4200ContentAreaStyleModel_Frame::rightWgt() const {
-    return dynamic_cast<IVMS4200MainPreviewRightWgt_Frame*>(mRightWgt);
+  QStackedWidget* IVMS4200ContentAreaStyleModel_Frame::rightWgt() const {
+    return mRightWgt;
   }
 
   // protected
@@ -553,12 +576,10 @@ namespace Jinhui {
   }
 
   void IVMS4200ContentAreaStyleModel_Frame::init() {
-    mLeftWgt = new IVMS4200MainPreviewLeftWgt_Frame;
-    mLeftWgt->setupUi(QSharedPointer<const Protocol>());
+    mLeftWgt = new QStackedWidget;
     mMidWgt = new IVMS4200MainPreviewMidWgt_Frame;
     mMidWgt->setupUi(QSharedPointer<const Protocol>());
-    mRightWgt = new IVMS4200MainPreviewRightWgt_Frame;
-    mRightWgt->setupUi(QSharedPointer<const Protocol>());
+    mRightWgt = new QStackedWidget;
     mMainLayout->addWidget(mLeftWgt);
     mMainLayout->addWidget(mMidWgt);
     mMainLayout->addWidget(mRightWgt);
@@ -904,6 +925,10 @@ namespace Jinhui {
     init();
   }
 
+  DealWithMouseEventEx_Label *DirectoryItem_Frame::label() const {
+    return dynamic_cast<DealWithMouseEventEx_Label*>(mLabel);
+  }
+
   // protected
   void DirectoryItem_Frame::initWindow() {
   }
@@ -915,7 +940,7 @@ namespace Jinhui {
   void DirectoryItem_Frame::init() {
     mLabel = new DealWithMouseEventEx_Label;
     mMainLayout->addWidget(mLabel);
-    mMainLayout->addStretch();
+    //mMainLayout->addStretch();
 
     connect(dynamic_cast<DealWithMouseEventEx_Label*>(mLabel), SIGNAL(leftButtonReleased())
             ,this, SIGNAL(directoryItemClicked()));
@@ -927,7 +952,8 @@ namespace Jinhui {
   // cotr
   DirectoryControl_Frame::DirectoryControl_Frame(QWidget* parent)
     :Frame(parent)
-  ,mDirectoryItem(nullptr) {}
+    ,mDirectoryItem(nullptr)
+    ,mIsExpand(true) {}
 
   DirectoryControl_Frame::~DirectoryControl_Frame() {}
 
@@ -965,8 +991,32 @@ namespace Jinhui {
     mMainLayout->removeWidget(item);
   }
 
+  void DirectoryControl_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
   Frame* DirectoryControl_Frame::item(const QString name) const {
     return mItems.value(name);
+  }
+
+  bool DirectoryControl_Frame::isExpand() const {
+    return mIsExpand;
+  }
+
+  void DirectoryControl_Frame::expand() {
+    auto it = mItems.begin();
+    for (it; it != mItems.end(); ++it) {
+      dynamic_cast<DirectoryLabel_Frame*>(it.value())->content()->show();
+    }
+    mIsExpand = true;
+  }
+
+  void DirectoryControl_Frame::shrink() {
+    auto it = mItems.begin();
+    for (; it != mItems.end(); ++it) {
+      dynamic_cast<DirectoryLabel_Frame*>(it.value())->content()->hide();
+    }
+    mIsExpand = false;
   }
 
   // public slots
@@ -980,6 +1030,8 @@ namespace Jinhui {
 
   void DirectoryControl_Frame::initLayout() {
     mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setSpacing(0);
   }
 
   void DirectoryControl_Frame::init() {
@@ -1001,6 +1053,14 @@ namespace Jinhui {
     init();
   }
 
+  Label* DirectoryLabel_Frame::icon() const {
+    return mIcon;
+  }
+
+  Label* DirectoryLabel_Frame::content() const {
+    return mContent;
+  }
+
   // protected
   void DirectoryLabel_Frame::initWindow() {
   }
@@ -1014,7 +1074,7 @@ namespace Jinhui {
     mContent = new Label;
     mMainLayout->addWidget(mIcon);
     mMainLayout->addWidget(mContent);
-    mMainLayout->addStretch();
+    //mMainLayout->addStretch();
   }
 
   /*
@@ -1059,6 +1119,199 @@ namespace Jinhui {
     initWindow();
     initLayout();
     init();
+  }
+
+  // protected
+  void DirectoryLabelContent_Frame::initWindow() {
+
+  }
+
+  void DirectoryLabelContent_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+  }
+
+  void DirectoryLabelContent_Frame::init() {
+    mContent = new Label;
+    mMainLayout->addStretch();
+    mMainLayout->addWidget(mContent);
+    mMainLayout->addStretch(1);
+  }
+
+  /*
+   * DirectoryLabelParentChild_Frame
+   */
+  // cotr
+  DirectoryLabelParentChild_Frame::DirectoryLabelParentChild_Frame(QWidget* parent)
+    :Frame(parent)
+    ,mParentItem(nullptr) {}
+
+  DirectoryLabelParentChild_Frame::~DirectoryLabelParentChild_Frame() {}
+
+  void DirectoryLabelParentChild_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void DirectoryLabelParentChild_Frame::addParentItem(DirectoryLabelEx_Frame* item) {
+    if (!mParentItem) {
+      mParentItem = item;
+      mMainLayout->insertWidget(0, mParentItem);
+    }
+  }
+
+  void DirectoryLabelParentChild_Frame::addChildItem(DirectoryLabelContent_Frame* item) {
+    mItems[item->productName()] = item;
+    mMainLayout->addWidget(item);
+  }
+
+  void DirectoryLabelParentChild_Frame::delParentItem() {
+    mMainLayout->removeWidget(mParentItem);
+  }
+
+  void DirectoryLabelParentChild_Frame::delChildItem(const QString productName) {
+    if (mItems.contains(productName)) {
+      DirectoryLabelContent_Frame* item = mItems.value(productName);
+      mItems.remove(productName);
+      mMainLayout->removeWidget(item);
+    }
+
+  }
+
+  // protected
+  void DirectoryLabelParentChild_Frame::initWindow() {
+  }
+
+  void DirectoryLabelParentChild_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void DirectoryLabelParentChild_Frame::init() {
+
+  }
+
+  /*
+   * RemotePlaybackFeaturesStyleModel_Frame
+   */
+  // cotr
+  RemotePlaybackFeaturesStyleModel_Frame::RemotePlaybackFeaturesStyleModel_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  RemotePlaybackFeaturesStyleModel_Frame::~RemotePlaybackFeaturesStyleModel_Frame() {}
+
+  void RemotePlaybackFeaturesStyleModel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* RemotePlaybackFeaturesStyleModel_Frame::title() const {
+    return mTitle;
+  }
+
+  QDateTimeEdit* RemotePlaybackFeaturesStyleModel_Frame::time() const {
+    return mTime;
+  }
+
+  void RemotePlaybackFeaturesStyleModel_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  // protected
+  void RemotePlaybackFeaturesStyleModel_Frame::initWindow() {
+  }
+
+  void RemotePlaybackFeaturesStyleModel_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void RemotePlaybackFeaturesStyleModel_Frame::init() {
+    mTitle = new Label;
+    mTime = new QDateTimeEdit;
+    mMainLayout->addWidget(mTitle);
+    mMainLayout->addWidget(mTime);
+  }
+
+  /*
+   * RemotePlaybackMonitorFeature_Frame
+   */
+  // cotr
+  RemotePlaybackMonitorFeature_Frame::RemotePlaybackMonitorFeature_Frame(QWidget* parent)
+    :RemotePlaybackFeaturesStyleModel_Frame(parent) {}
+
+  RemotePlaybackMonitorFeature_Frame::~RemotePlaybackMonitorFeature_Frame() {}
+
+  void RemotePlaybackMonitorFeature_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    RemotePlaybackFeaturesStyleModel_Frame::setupUi(protocol);
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* RemotePlaybackMonitorFeature_Frame::label() const {
+    return mLabel;
+  }
+
+  Search_Frame* RemotePlaybackMonitorFeature_Frame::search() const {
+    return dynamic_cast<Search_Frame*>(mSearch);
+  }
+
+  // protected
+  void RemotePlaybackMonitorFeature_Frame::initWindow() {
+  }
+
+  void RemotePlaybackMonitorFeature_Frame::initLayout() {
+  }
+
+  void RemotePlaybackMonitorFeature_Frame::init() {
+    mLabel = new Label;
+    mSearch = new Search_Frame;
+    mSearch->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addWidget(mLabel);
+    mMainLayout->addWidget(mSearch);
+  }
+
+  /*
+   * IVMS4200ContentAreaStyleModel1_Frame
+   */
+  // cotr
+  IVMS4200ContentAreaStyleModel1_Frame::IVMS4200ContentAreaStyleModel1_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  IVMS4200ContentAreaStyleModel1_Frame::~IVMS4200ContentAreaStyleModel1_Frame() {}
+
+  void IVMS4200ContentAreaStyleModel1_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  DirectoryControl_Frame* IVMS4200ContentAreaStyleModel1_Frame::directory() const {
+    return dynamic_cast<DirectoryControl_Frame*>(mDirectory);
+  }
+
+  IVMS4200ContentAreaStyleModel_Frame* IVMS4200ContentAreaStyleModel1_Frame::styleModel1() const {
+    return dynamic_cast<IVMS4200ContentAreaStyleModel_Frame*>(mStyleModel1);
+  }
+
+  // protected
+  void IVMS4200ContentAreaStyleModel1_Frame::initWindow() {
+  }
+
+  void IVMS4200ContentAreaStyleModel1_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setSpacing(0);
+  }
+
+  void IVMS4200ContentAreaStyleModel1_Frame::init() {
+    mDirectory = new DirectoryControl_Frame;
+    mDirectory->setupUi(QSharedPointer<const Protocol>());
+    mStyleModel1 = new IVMS4200ContentAreaStyleModel_Frame;
+    mStyleModel1->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addWidget(mDirectory);
+    mMainLayout->addWidget(mStyleModel1);
   }
 
 }

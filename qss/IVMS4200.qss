@@ -1,367 +1,119 @@
+/*
+  主窗口
+*/
 Jinhui--IntrusionDetection_MainWindow {
   background: black;
   min-width: 1280;
   min-height: 800;
 }
-
-Jinhui--IVMS4200ContentAreaStyleModel_Frame {
-  background: gray;
-}
-
-Jinhui--IVMS4200MainPreviewLeftWgt_Frame {
-  max-width: 300;
-  background: gray;
-}
-
+/*
+  标题栏
+*/
 Jinhui--IVMS4200TitleWgt_Frame {
   max-height: 70;
 }
 
-Jinhui--VideoShow_Frame {
-  border-width: 1px;
-  border-color: black;
-  border-style: solid;
-}
-
-Jinhui--VideoShow_Frame:hover {
-  border-color: red;
-}
-
-Jinhui--Frame#MainPreviewTitle1:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#MainPreviewLabelTitle1 {
-  color: white;
-}
-
-Jinhui--IVMS4200MainPreviewMidWgt_Frame {
-  max-width: 28;
-}
-
-Jinhui--Label#MainPreviewMid {
-  min-height: 60;
-  background-image: url(:/icon/mid.png);
-}
-
-Jinhui--IVMS4200ContentAreaHome_Frame {
-  background: gray;
-}
-
-Jinhui--IVMS4200MoveShowMenu_Widget {
-  background: gray;
-}
-
-Jinhui--IVMS4200ClickShowMenu_Widget {
-  background: gray;
-}
-
-Jinhui--Label#clickShowMenu_ColorBar {
-  background: red;
-}
-
-Jinhui--Label#homeLeftWgt0TitleText {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt0Label0 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt0Label0:hover {
-  background: black;
-  /*
-  border-width: 1px;
-  */
-  border-radius: 10px;
-  /*
-  border-color: black;
-  */
-}
-
-Jinhui--Label#homeLeftWgt0Label0Picture {
-  background-image: url(:/icon/homeleft1_1_1.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt0Label0Text {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt0Label1 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt0Label1:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#homeLeftWgt0Label1Picture {
-  background-image: url(:/icon/homeleft1_2_2.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt0Label1Text {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt0Label2 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt0Label2:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#homeLeftWgt0Label2Picture {
-  background-image: url(:/icon/homeleft1_3_3.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt0Label2Text {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt0Label3 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt0Label3:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#homeLeftWgt0Label3Picture {
-  background-image: url(:/icon/homeleft1_4_4.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt0Label3Text {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt0Label4 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt0Label4:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#homeLeftWgt0Label4Picture {
-  background-image: url(:/icon/homeleft1_5_5.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt0Label4Text {
-  color: white;
-}
-
-Jinhui--Label#homeLeftWgt2TitleText {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt2Label0 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt2Label0:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#homeLeftWgt2Label0Picture {
-  background-image: url(:/icon/homeleft3_1_1.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt2Label0Text {
-  color: white;
-}
-
-Jinhui--Widget#homeLeftWgt2Label1 {
-  background: gray;
-}
-
-Jinhui--Widget#homeLeftWgt2Label1:hover {
-  background: black;
-  border-radius: 10px;
-}
-
-Jinhui--Label#homeLeftWgt2Label1Picture {
-  background-image: url(:/icon/homeleft3_2_2.png);
-  min-width: 92;
-  min-height: 76;
-  max-width: 92;
-  max-height: 76;
-}
-
-Jinhui--Label#homeLeftWgt2Label1Text {
-  color: white;
-}
-
-Jinhui--Label#homeRightWgt0TitleText {
-  color: white;
-}
-
-Jinhui--Label#homeRightWgt0Label0Picture {
-  background-image: url(:/icon/homeright1_1_1.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt0Label0Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt0Label0:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt0Label1Picture {
-  background-image: url(:/icon/homeright1_2_2.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt0Label1Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt0Label1:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt0Label2Picture {
-  background-image: url(:/icon/homeright1_3_3.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt0Label2Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt0Label2:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt0Label3Picture {
-  background-image: url(:/icon/homeright1_4_4.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt0Label3Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt0Label3:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt0Label4Picture {
-  background-image: url(:/icon/homeright1_5_5.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt0Label4Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt0Label4:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt0Label5Picture {
-  background-image: url(:/icon/homeright1_6_6.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt0Label5Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt0Label5:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt1TitleText {
-  color: white;
-}
-
-Jinhui--Label#homeRightWgt1Label0Picture {
-  background-image: url(:/icon/homeright2_1_1.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt1Label0Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt1Label0:hover {
-  background: black;
-}
-
-Jinhui--Label#homeRightWgt1Label1Picture {
-  background-image: url(:/icon/homeright2_2_2.png);
-  min-width: 40;
-  min-height: 34;
-  max-width: 40;
-  max-height: 34;
-}
-
-Jinhui--Label#homeRightWgt1Label1Text {
-  color: white;
-}
-
-Jinhui--Widget#homeRightWgt1Label1:hover {
-  background: black;
+Jinhui--Label#TitleIcon {
+  background-image: url(:/titleicon.jpg);
+  min-width: 145;
+  min-height: 32;
+  max-width: 145;
+  max-height: 32;
+}
+
+Jinhui--Label#TitleLogin {
+  background-image: url(:/title1.jpg);
+  min-width: 93;
+  min-height: 33;
+  max-width: 93;
+  max-height: 33;
+}
+
+Jinhui--Label#TitleMenu {
+  background-image: url(:/title2.jpg);
+  min-width: 21;
+  min-height: 26;
+  max-width: 21;
+  max-height: 26;
+}
+
+Jinhui--Label#TitleResource {
+  background-image: url(:/title3.jpg);
+  min-width: 32;
+  min-height: 27;
+  max-width: 32;
+  max-height: 27;
+}
+
+Jinhui--Label#TitleConvenience {
+  background-image: url(:/title4.jpg);
+  min-width: 20;
+  min-height: 27;
+  max-width: 20;
+  max-height: 27;
+}
+
+Jinhui--Label#TitleSeprator {
+  background-image: url(:/title5.jpg);
+  min-width: 19;
+  min-height: 30;
+  max-width: 19;
+  max-height: 30;
+}
+
+Jinhui--Label#TitleLock {
+  background-image: url(:/title6.jpg);
+  min-width: 26;
+  min-height: 29;
+  max-width: 26;
+  max-height: 29;
+}
+
+Jinhui--Label#TitleMinimize {
+  background-image: url(:/title7.jpg);
+  min-width: 33;
+  min-height: 35;
+  max-width: 33;
+  max-height: 35;
+}
+
+Jinhui--Label#TitleMaximize {
+  background-image: url(:/title8.jpg);
+  min-width: 34;
+  min-height: 30;
+  max-width: 34;
+  max-height: 30;
+}
+
+Jinhui--Label#TitleShutDown {
+  background-image: url(:/title9.jpg);
+  min-width: 27;
+  min-height: 30;
+  max-width: 27;
+  max-height: 30;
 }
 
 /*
- * 菜单栏(菜单)
- */
-Jinhui--Frame#menu1 {
+  菜单栏
+*/
+Jinhui--Widget#MenuBarMainBtn {
+  background-image: url(:/menubarmainbtn.jpg);
+  min-width: 45;
+  min-height: 35;
+  max-width: 45;
+  max-height: 35;
+}
+
+Jinhui--Widget#MenuBarMainBtn:hover {
+  background-image: url(:/menubarmainbtnmove.jpg);
+}
+/*
+  菜单
+*/
+/*
+  主预览
+*/
+Jinhui--Frame#MainPreviewMenu {
   max-width: 170;
   background: black;
   border-bottom: 3px;
@@ -369,51 +121,47 @@ Jinhui--Frame#menu1 {
   border-bottom-color: red;
 }
 
-Jinhui--Frame#menu1:hover {
+Jinhui--Frame#MainPreviewMenu:hover {
   background: gray;
 }
 
-Jinhui--Label#menuIcon {
-  background-image: url(:/icon/menu1.png);
+Jinhui--Label#MainPreviewMenuIcon {
+  background-image: url(:/icon/menu.png);
   min-width: 38;
   min-height: 20;
   max-width: 38;
   max-height: 20;
 }
 
-Jinhui--Label#menuContent {
+Jinhui--Label#MainPreviewMenuText {
   min-height: 20;
   color: white;
 }
 
-Jinhui--Label#menuClose{
+Jinhui--Label#MainPreviewMenuClose {
   background-image: url(:/icon/menu1close.png);
   max-width: 28;
+  max-height: 20;
   min-width: 28;
+  min-height: 20;
 }
-
 /*
-Jinhui--Label#menuColorBar {
-  background-color: red;
-  max-height: 3;
-}
+  远程回放
 */
-
-Jinhui--PushButton#menu1 {
+Jinhui--Frame#RemotePlaybackMenu {
   min-width: 170;
   max-width: 170;
   background: black;
+  border-bottom: 3px;
+  border-style: solid;
+  border-bottom-color: red;
 }
 
-Jinhui--PushButton#menu1:hover {
+Jinhui--Frame#RemotePlaybackMenu:hover {
   background: gray;
 }
 
-Jinhui--PushButton#menu1:pressed {
-  background: gray;
-}
-
-Jinhui--Label#menu1Icon {
+Jinhui--Label#RemotePlaybackMenuIcon {
   background-image: url(:/icon/menu1.png);
   min-width: 38;
   min-height: 20;
@@ -421,21 +169,19 @@ Jinhui--Label#menu1Icon {
   max-height: 20;
 }
 
-Jinhui--Label#menu1Content {
+Jinhui--Label#RemotePlaybackMenuText {
   min-height: 20;
   color: white;
 }
 
-Jinhui--Label#menu1Close{
+Jinhui--Label#RemotePlaybackMenuClose {
   background-image: url(:/icon/menu1close.png);
   max-width: 28;
+  max-height: 20;
   min-width: 28;
+  min-height: 20;
 }
 
-Jinhui--Label#menu1ColorBar {
-  background-color: red;
-  max-height: 3;
-}
 
 Jinhui--Frame#MainPreviewStatusBar {
   background: black;
@@ -482,3 +228,503 @@ Jinhui--Label#MainPreviewStatusBarLabel7 {
   min-height: 35;
   background-image: url(:/icon/status7.png);
 }
+
+/*
+  内容区 home页面
+*/
+Jinhui--IVMS4200ContentAreaHome_Frame {
+  background: gray;
+}
+
+/*
+Jinhui--IVMS4200MainPreviewLeftWgt_Frame {
+  max-width: 300;
+  background: dark;
+}
+*/
+/*
+  视频应用
+*/
+Jinhui--Label#VideoApplication {
+  color: white;
+}
+/*
+  主预览
+*/
+Jinhui--Widget#MainPreview {
+  background: gray;
+}
+
+Jinhui--Widget#MainPreview:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#MainPreviewIcon {
+  background-image: url(:/icon/homeleft1_1_1.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#MainPreviewText {
+  color: white;
+}
+/*
+  远程回放
+*/
+Jinhui--Widget#RemotePlayback {
+  background: gray;
+}
+
+Jinhui--Widget#RemotePlayback:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#RemotePlaybackIcon {
+  background-image: url(:/icon/homeleft1_2_2.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#RemotePlaybackText {
+  color: white;
+}
+/*
+  数据检索
+*/
+Jinhui--Widget#DataRetrieval {
+  background: gray;
+}
+
+Jinhui--Widget#DataRetrieval:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#DataRetrievalIcon {
+  background-image: url(:/icon/homeleft1_3_3.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#DataRetrievalText {
+  color: white;
+}
+/*
+  数据统计
+*/
+Jinhui--Widget#DataStatistics {
+  background: gray;
+}
+
+Jinhui--Widget#DataStatistics:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#DataStatisticsIcon {
+  background-image: url(:/icon/homeleft1_4_4.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#DataStatisticsText {
+  color: white;
+}
+/*
+  公共应用
+*/
+Jinhui--Label#PublicApplication {
+  color: white;
+}
+/*
+  电子地图
+*/
+Jinhui--Widget#DigitalMap {
+  background: gray;
+}
+
+Jinhui--Widget#DigitalMap:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#DigitalMapIcon {
+  background-image: url(:/icon/homeleft3_1_1.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#DigitalMapText {
+  color: white;
+}
+/*
+  事件中心
+*/
+Jinhui--Widget#EventCenter {
+  background: gray;
+}
+
+Jinhui--Widget#EventCenter:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#EventCenterIcon {
+  background-image: url(:/icon/homeleft3_2_2.png);
+  min-width: 92;
+  min-height: 76;
+  max-width: 92;
+  max-height: 76;
+}
+
+Jinhui--Label#EventCenterText {
+  color: white;
+}
+/*
+  维护与管理
+*/
+Jinhui--Label#MaintenanceAndManagement {
+  color: white;
+}
+/*
+  设备管理
+*/
+Jinhui--Widget#EquipmentManagement:hover {
+  background: black;
+}
+
+Jinhui--Label#EquipmentManagementIcon {
+  background-image: url(:/icon/homeright1_1_1.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#EquipmentManagementText {
+  color: white;
+}
+/*
+  事件管理
+*/
+Jinhui--Widget#EventManagement:hover {
+  background: black;
+}
+
+Jinhui--Label#EventManagementIcon {
+  background-image: url(:/icon/homeright1_2_2.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#EventManagementText {
+  color: white;
+}
+/*
+  存储计划
+*/
+Jinhui--Widget#StoragePlan:hover {
+  background: black;
+}
+
+Jinhui--Label#StoragePlanIcon {
+  background-image: url(:/icon/homeright1_3_3.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#StoragePlanText {
+  color: white;
+}
+/*
+  用户管理
+*/
+Jinhui--Widget#UserManagement:hover {
+  background: black;
+}
+
+Jinhui--Label#UserManagementIcon {
+  background-image: url(:/icon/homeright1_4_4.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#UserManagementText {
+  color: white;
+}
+/*
+  系统配置
+*/
+Jinhui--Widget#SystemConfig:hover {
+  background: black;
+}
+
+Jinhui--Label#SystemConfigIcon {
+  background-image: url(:/icon/homeright1_5_5.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#SystemConfigText {
+  color: white;
+}
+/*
+  系统日志
+*/
+Jinhui--Widget#SystemLog:hover {
+  background: black;
+}
+
+Jinhui--Label#SystemLogIcon {
+  background-image: url(:/icon/homeright1_6_6.png);
+  min-width: 40;
+  min-height: 34;
+  max-width: 40;
+  max-height: 34;
+}
+
+Jinhui--Label#SystemLogText {
+  color: white;
+}
+/*
+  状态栏
+*/
+Jinhui--Label#StatusLabel0 {
+  background-image: url(:/statusbar1.jpg);
+  min-width: 32;
+  min-height: 29;
+  max-width: 32;
+  max-height: 29;
+}
+
+Jinhui--Label#StatusLabel1 {
+  background-image: url(:/status2.jpg);
+  min-width: 29;
+  min-height: 31;
+  max-width: 29;
+  max-height: 31;
+}
+
+Jinhui--Label#StatusLabel2 {
+  background-image: url(:/status3.jpg);
+  min-width: 32;
+  min-height: 28;
+  max-width: 32;
+  max-height: 28;
+}
+
+Jinhui--Label#StatusLabel3 {
+  background-image: url(:/status4.jpg);
+  min-width: 20;
+  min-height: 27;
+  max-width: 20;
+  max-height: 27;
+}
+
+Jinhui--Label#StatusLabel4 {
+  background-image: url(:/status5.jpg);
+  min-width: 101;
+  min-height: 31;
+  max-width: 101;
+  max-height: 31;
+}
+
+Jinhui--Label#StatusLabel5 {
+  background-image: url(:/status6.jpg);
+  min-width: 29;
+  min-height: 32;
+  max-width: 29;
+  max-height: 32;
+}
+
+Jinhui--Label#StatusLabel6 {
+  background-image: url(:/status7.jpg);
+  min-width: 28;
+  min-height: 31;
+  max-width: 28;
+  max-height: 31;
+}
+
+Jinhui--Label#StatusLabel7 {
+  background-image: url(:/status8.jpg);
+  min-width: 32;
+  min-height: 30;
+  max-width: 32;
+  max-height: 30;
+}
+
+/*
+  内容区
+*/
+Jinhui--IVMS4200ContentAreaStyleModel_Frame {
+  background: gray;
+}
+
+Jinhui--Label#Search {
+  background-image: url(:/icon/search.png);
+  min-width: 30;
+  max-width: 30;
+}
+
+Jinhui--LineEdit#SearchContent {
+  background-image: url(:/icon/searchbackground.png);
+  border-style: none;
+}
+
+Jinhui--Frame#SearchFrame {
+  border-style: solid;
+  border-width: 1px;
+  border-color: dark;
+}
+
+Jinhui--Frame#SearchFrame:hover {
+  border-style: solid;
+  border-width: 2px;
+  border-color: white;
+}
+
+Jinhui--Label#Mid {
+  background-image: url(:/icon/mid.png);
+  min-height: 60;
+  max-height: 60;
+}
+/*
+  主预览页面
+*/
+Jinhui--Frame#MainPreviewTitle1:hover {
+  background: black;
+  border-radius: 10px;
+}
+
+Jinhui--Label#MainPreviewLabelTitle1 {
+  color: white;
+}
+/*
+  远程回放页面
+*/
+Jinhui--DirectoryControl_Frame {
+  background: drak;
+  max-width: 300;
+}
+
+Jinhui--RemotePlaybackMonitorFeature_Frame {
+  max-width: 300;
+}
+
+
+Jinhui--Frame#MonitorPlaybackItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#EventPlaybackItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#PosPlaybackItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#AtmPlaybackItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Label#RemotePlaybackDirectoryItem {
+  background-image: url(:/icon/directoryitem.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#monitorPlaybackItem {
+  background-image: url(:/icon/monitorplayback.jpg);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#eventPlaybackItem {
+  background-image: url(:/icon/eventplayback.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#posPlaybackItem {
+  background-image: url(:/icon/posplayback.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#atmPlaybackItem {
+  background-image: url(:/icon/atmplayback.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#MonitorPlaybackContent {
+  color: white;
+}
+
+Jinhui--Label#EventPlaybackContent {
+  color: white;
+}
+
+Jinhui--Label#POSPlaybackContent {
+  color: white;
+}
+
+Jinhui--Label#ATMPlaybackContent {
+  color: white;
+}
+
+
+
+Jinhui--VideoShow_Frame {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+
+Jinhui--VideoShow_Frame:hover {
+  border-color: red;
+}
+
