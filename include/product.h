@@ -1253,6 +1253,8 @@ namespace Jinhui {
     // 取消菜单栏主按钮
     void cancelMenuBarMainButton(IVMS4200MenuBarMainBtn_Widget* mainBtn);
     void cancelMenuBarMainButton(const int index = 0);
+    // 返回值： nullptr 菜单不存在 不为空则菜单存在
+    Frame* menuExExists(const QString proName) const;
   Q_SIGNALS:
     void addMenuFront_Signal();
     void addMenuExFront_Signal();
@@ -1939,6 +1941,7 @@ namespace Jinhui {
    */
   // 上下摆放位置
   class EXPORT IVMS4200UpDownIcon_Widget : public Widget {
+    Q_OBJECT
   public:
     enum Direction {
       UP = 0xA0,
@@ -1972,6 +1975,7 @@ namespace Jinhui {
    */
   // 左右摆放位置
   class EXPORT IVMS4200LeftRightIcon_Widget : public IVMS4200UpDownIcon_Widget {
+    Q_OBJECT
   public:
     IVMS4200LeftRightIcon_Widget(Direction direction = LEFT, QWidget* parent = nullptr);
     ~IVMS4200LeftRightIcon_Widget();
@@ -1981,7 +1985,6 @@ namespace Jinhui {
     void initWindow();
     void initLayout();
     void init();
-    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   };
 
   /*
@@ -2360,6 +2363,7 @@ namespace Jinhui {
     DirectoryItem_Frame* directoryItem() const;
     void delDirectoryItem();
     void addItem(Frame* item);
+    void addItemEx(Frame* item);
     void delItem(Frame* item);
     void addStretch();
     Frame* item(const QString name) const;
@@ -2391,6 +2395,8 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     Label* icon() const;
     Label* content() const;
+    bool hasChild() const;
+    void setHasChild(bool);
   protected:
     void initWindow();
     void initLayout();
@@ -2398,6 +2404,7 @@ namespace Jinhui {
   protected:
     Label* mIcon;
     Label* mContent;
+    bool mHasChild;
   };
 
   /*
@@ -2410,12 +2417,19 @@ namespace Jinhui {
     ~DirectoryLabelEx_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     void addChildItem(DirectoryLabelContent_Frame* item);
+    Label* expand() const;
+    QHash<const QString, Frame*> subItems() const;
   protected:
     void initWindow();
     void initLayout();
     void init();
+
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   protected:
     Label* mExpand;
+    //QBoxLayout* mLayout;
+    bool mVisibleChild;
+    QHash<const QString, Frame*> mSubItems;
   };
 
   /*
@@ -2427,6 +2441,7 @@ namespace Jinhui {
     DirectoryLabelContent_Frame(QWidget* parent = nullptr);
     ~DirectoryLabelContent_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* content() const;
   protected:
     void initWindow();
     void initLayout();

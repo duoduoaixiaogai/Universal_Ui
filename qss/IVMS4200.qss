@@ -181,6 +181,114 @@ Jinhui--Label#RemotePlaybackMenuClose {
   min-width: 28;
   min-height: 20;
 }
+/*
+  数据检索
+*/
+Jinhui--Frame#DataRetrievalMenu {
+  min-width: 170;
+  max-width: 170;
+  background: black;
+  border-bottom: 3px;
+  border-style: solid;
+  border-bottom-color: red;
+}
+
+Jinhui--Frame#DataRetrievalMenu:hover {
+  background: gray;
+}
+
+Jinhui--Label#DataRetrievalMenuIcon {
+  background-image: url(:/icon/dataretrieval.png);
+  min-width: 38;
+  min-height: 20;
+  max-width: 38;
+  max-height: 20;
+}
+
+Jinhui--Label#DataRetrievalMenuText {
+  min-height: 20;
+  color: white;
+}
+
+Jinhui--Label#DataRetrievalMenuClose {
+  background-image: url(:/icon/menu1close.png);
+  max-width: 28;
+  max-height: 20;
+  min-width: 28;
+  min-height: 20;
+}
+/*
+  数据统计
+*/
+Jinhui--Frame#DataStatisticsMenu {
+  min-width: 170;
+  max-width: 170;
+  background: black;
+  border-bottom: 3px;
+  border-style: solid;
+  border-bottom-color: red;
+}
+
+Jinhui--Frame#DataStatisticsMenu:hover {
+  background: gray;
+}
+
+Jinhui--Label#DataStatisticsMenuIcon {
+  background-image: url(:/icon/datastatistics.png);
+  min-width: 38;
+  min-height: 20;
+  max-width: 38;
+  max-height: 20;
+}
+
+Jinhui--Label#DataStatisticsMenuText {
+  min-height: 20;
+  color: white;
+}
+
+Jinhui--Label#DataStatisticsMenuClose {
+  background-image: url(:/icon/menu1close.png);
+  max-width: 28;
+  max-height: 20;
+  min-width: 28;
+  min-height: 20;
+}
+/*
+  维护与管理
+*/
+Jinhui--Frame#MaintenanceAndManagementMenu {
+  min-width: 170;
+  max-width: 170;
+  background: black;
+  border-bottom: 3px;
+  border-style: solid;
+  border-bottom-color: red;
+}
+
+Jinhui--Frame#MaintenanceAndManagementMenu:hover {
+  background: gray;
+}
+
+Jinhui--Label#MaintenanceAndManagementMenuIcon {
+  background-image: url(:/icon/datastatistics.png);
+  min-width: 38;
+  min-height: 20;
+  max-width: 38;
+  max-height: 20;
+}
+
+Jinhui--Label#MaintenanceAndManagementMenuText {
+  min-height: 20;
+  color: white;
+}
+
+Jinhui--Label#MaintenanceAndManagementMenuClose {
+  background-image: url(:/icon/menu1close.png);
+  max-width: 28;
+  max-height: 20;
+  min-width: 28;
+  min-height: 20;
+}
 
 
 Jinhui--Frame#MainPreviewStatusBar {
@@ -660,7 +768,7 @@ Jinhui--Frame#AtmPlaybackItemFrame:hover {
   border-left-color: red;
 }
 
-Jinhui--Label#RemotePlaybackDirectoryItem {
+Jinhui--Label#RemotePlaybackDirectoryItemIcon {
   background-image: url(:/icon/directoryitem.png);
   min-width: 39;
   min-height: 35;
@@ -668,7 +776,7 @@ Jinhui--Label#RemotePlaybackDirectoryItem {
   max-height: 35;
 }
 
-Jinhui--Label#monitorPlaybackItem {
+Jinhui--Label#monitorPlaybackItemIcon {
   background-image: url(:/icon/monitorplayback.jpg);
   min-width: 39;
   min-height: 35;
@@ -676,7 +784,7 @@ Jinhui--Label#monitorPlaybackItem {
   max-height: 35;
 }
 
-Jinhui--Label#eventPlaybackItem {
+Jinhui--Label#eventPlaybackItemIcon {
   background-image: url(:/icon/eventplayback.png);
   min-width: 39;
   min-height: 35;
@@ -684,7 +792,7 @@ Jinhui--Label#eventPlaybackItem {
   max-height: 35;
 }
 
-Jinhui--Label#posPlaybackItem {
+Jinhui--Label#posPlaybackItemIcon {
   background-image: url(:/icon/posplayback.png);
   min-width: 39;
   min-height: 35;
@@ -692,7 +800,7 @@ Jinhui--Label#posPlaybackItem {
   max-height: 35;
 }
 
-Jinhui--Label#atmPlaybackItem {
+Jinhui--Label#atmPlaybackItemIcon {
   background-image: url(:/icon/atmplayback.png);
   min-width: 39;
   min-height: 35;
@@ -700,22 +808,435 @@ Jinhui--Label#atmPlaybackItem {
   max-height: 35;
 }
 
-Jinhui--Label#MonitorPlaybackContent {
+Jinhui--Label#MonitorPlaybackItemContent {
   color: white;
 }
 
-Jinhui--Label#EventPlaybackContent {
+Jinhui--Label#EventPlaybackItemContent {
   color: white;
 }
 
-Jinhui--Label#POSPlaybackContent {
+Jinhui--Label#POSPlaybackItemContent {
   color: white;
 }
 
-Jinhui--Label#ATMPlaybackContent {
+Jinhui--Label#ATMPlaybackItemContent {
+  color: white;
+}
+/*
+  数据检索页面
+*/
+Jinhui--Frame#FaceSearchItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#HumanRetrievalItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#BehaviorAnalysisItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#VehicleSearchItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Label#DataRetrievalDirectoryItemIcon {
+  background-image: url(:/icon/directoryitem.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#FaceSearchItemIcon {
+  background-image: url(:/icon/facesearch.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#HumanRetrievalItemIcon {
+  background-image: url(:/icon/humanretrieval.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#BehaviorAnalysisItemIcon {
+  background-image: url(:/icon/behavioranalysis.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#VehicleSearchItemIcon {
+  background-image: url(:/icon/vehiclesearch.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#FaceSearchItemContent {
   color: white;
 }
 
+Jinhui--Label#HumanRetrievalItemContent {
+  color: white;
+}
+
+Jinhui--Label#BehaviorAnalysisItemContent {
+  color: white;
+}
+
+Jinhui--Label#VehicleSearchItemContent {
+  color: white;
+}
+/*
+  数据统计页面
+*/
+Jinhui--Frame#TrafficStatisticsItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#IntersectionAnalysisItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#RegionalAttentionItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#HeatMapItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#RegionalDemographicsItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#WaitingTimeStatisticsItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Label#DataStatisticsDirectoryItemIcon {
+  background-image: url(:/icon/directoryitem.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#TrafficStatisticsItemIcon {
+  background-image: url(:/icon/trafficstatistics.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#IntersectionAnalysisItemIcon {
+  background-image: url(:/icon/intersectionanalysis.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#RegionalAttentionItemIcon {
+  background-image: url(:/icon/regonalattention.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#RegonalAttentionItemExpand {
+  background-image: url(:/icon/expand.png);
+  min-width: 22;
+  min-height: 22;
+  max-width: 22;
+  max-height: 22;
+}
+
+Jinhui--Label#RegonalAttentionItemExpand:hover {
+  background-image: url(:/icon/shrink.png);
+  min-width: 22;
+  min-height: 22;
+  max-width: 22;
+  max-height: 22;
+}
+
+Jinhui--Label#HeatMapItemIcon {
+  background-image: url(:/icon/heatmap.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#TrafficStatisticsItemContent {
+  color: white;
+}
+
+Jinhui--Label#IntersectionAnalysisItemContent {
+  color: white;
+}
+
+Jinhui--Label#RegonalAttentionItemContent {
+  color: white;
+}
+
+Jinhui--Label#HeatMapItemContent {
+  color: white;
+}
+
+Jinhui--Label#RegionalDemographicsItemContent {
+  color: white;
+}
+
+Jinhui--Label#WaitingTimeStatisticsItemContent {
+  color: white;
+}
+/*
+  维护与管理
+*/
+
+Jinhui--Frame#EquipmentManagementItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#DeviceItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#GroupingItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#EventManagementItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#DeviceEventItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#AccessControlEventItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#AlarmHostEventItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#StoragePlanItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#UserManagementItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigurationItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemLogItemFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: red;
+}
+
+Jinhui--Label#EquipmentManagementItemIcon {
+  background-image: url(:/icon/devicemanagement.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#EventManagementItemIcon {
+  background-image: url(:/icon/eventmanagement.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#StoragePlanItemIcon {
+  background-image: url(:/icon/storageplan.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#UserManagementItemIcon {
+  background-image: url(:/icon/usermanagement.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#SystemLogItemIcon {
+  background-image: url(:/icon/systemlog.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#SystemConfigurationItemIcon {
+  background-image: url(:/icon/systemconfiguration.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#MaintainAndManageDirectoryItemIcon {
+  background-image: url(:/icon/directoryitem.png);
+  min-width: 39;
+  min-height: 35;
+  max-width: 39;
+  max-height: 35;
+}
+
+Jinhui--Label#EquipmentManagementItemExpand {
+  background-image: url(:/icon/expand.png);
+  min-width: 22;
+  min-height: 22;
+  max-width: 22;
+  max-height: 22;
+}
+
+Jinhui--Label#EventManagementItemExpand {
+  background-image: url(:/icon/expand.png);
+  min-width: 22;
+  min-height: 22;
+  max-width: 22;
+  max-height: 22;
+}
+
+Jinhui--Label#EventManagementItemExpand:hover {
+  background-image: url(:/icon/shrink.png);
+  min-width: 22;
+  min-height: 22;
+  max-width: 22;
+  max-height: 22;
+}
+
+Jinhui--Label#EquipmentManagementItemContent {
+  color: white;
+}
+
+Jinhui--Label#DeviceItemContent {
+  color: white;
+}
+
+Jinhui--Label#GroupingItemContent {
+  color: white;
+}
+
+Jinhui--Label#EventManagementItemContent {
+  color: white;
+}
+
+Jinhui--Label#DeviceEventItemContent {
+  color: white;
+}
+
+Jinhui--Label#AccessControlEventItemContent {
+  color: white;
+}
+
+Jinhui--Label#AlarmHostEventItemContent {
+  color: white;
+}
+
+Jinhui--Label#StoragePlanItemContent {
+  color: white;
+}
+
+Jinhui--Label#UserManagementItemContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigurationItemItemContent {
+  color: white;
+}
+
+Jinhui--Label#SystemLogItemItemContent {
+  color: white;
+}
 
 
 Jinhui--VideoShow_Frame {

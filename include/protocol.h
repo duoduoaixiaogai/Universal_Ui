@@ -249,8 +249,38 @@ namespace Jinhui {
     QString picturePath;
   };
 
-
-
+  /*
+   * 子类 目录协议类(IVMS4200目录控件数据结构)
+   */
+  struct EXPORT Directory_Protocol {
+    // 目录项目类
+    struct EXPORT DirectoryItem_Protocol {
+      QString itemObjName;
+      QString itemProName;
+      QString itemIconObjName;
+      QString itemContentObjName;
+      QString itemContentText;
+    };
+    // 子目录项目类
+    struct EXPORT DirectorySubItem_Protocol {
+      QString itemObjName;
+      QString itemProName;
+      QString itemContentObjName;
+      QString itemContentText;
+    };
+    // 目录项目类(包含子目录项目)
+    struct EXPORT DirectoryItemEx_Protocol {
+      DirectoryItem_Protocol item;
+      QString itemExpandObjName;
+      QVector<DirectorySubItem_Protocol> subItems;
+      bool hasChild;
+    };
+    // 目录顶层项目
+    QString dirItemObjName;
+    QString dirItemIconObjName;
+    // 目录项目
+    QVector<DirectoryItemEx_Protocol> items;
+  };
 
 }
 

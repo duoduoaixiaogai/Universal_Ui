@@ -624,6 +624,17 @@ namespace Jinhui {
     mMainLayout->removeWidget(mMainLayout->itemAt(index)->widget());
   }
 
+  Frame* IVMS4200Menubar_Widget::menuExExists(const QString proName) const {
+    auto it = mMenuExsStack.begin();
+    auto end = mMenuExsStack.end();
+    for (; it != end; ++it) {
+      if (proName == (*it)->productName()) {
+        return *it;
+      }
+    }
+    return nullptr;
+  }
+
   // public slots
   void IVMS4200Menubar_Widget::addMenuFront_Slot() {
     IVMS4200Menu_Widget* menu = mMenusStack.pop();
@@ -2098,7 +2109,4 @@ namespace Jinhui {
     mTextLayout->addWidget(mText);
   }
 
-  void IVMS4200LeftRightIcon_Widget::mouseReleaseEvent(QMouseEvent *event) {
-
-  }
 }

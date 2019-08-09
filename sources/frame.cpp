@@ -939,7 +939,7 @@ namespace Jinhui {
 
   void DirectoryItem_Frame::init() {
     mLabel = new DealWithMouseEventEx_Label;
-    mMainLayout->addWidget(mLabel);
+    mMainLayout->addWidget(mLabel, 0, Qt::AlignLeft);
     //mMainLayout->addStretch();
 
     connect(dynamic_cast<DealWithMouseEventEx_Label*>(mLabel), SIGNAL(leftButtonReleased())
@@ -986,6 +986,21 @@ namespace Jinhui {
     mMainLayout->addWidget(item);
   }
 
+  void DirectoryControl_Frame::addItemEx(Frame* item) {
+    addItem(item);
+    DirectoryLabel_Frame* pItem = dynamic_cast<DirectoryLabel_Frame*>(item);
+    if (pItem->hasChild()) {
+      DirectoryLabelEx_Frame* itemEx = dynamic_cast<DirectoryLabelEx_Frame*>(pItem);
+      QHash<const QString, Frame*> subItems = itemEx->subItems();
+      auto it = subItems.begin();
+      auto end = subItems.end();
+      for (; it != end; ++it) {
+        mMainLayout->addSpacing(5);
+        mMainLayout->addWidget(it.value());
+      }
+    }
+  }
+
   void DirectoryControl_Frame::delItem(Frame* item) {
     mItems.remove(item->productName());
     mMainLayout->removeWidget(item);
@@ -1005,7 +1020,11 @@ namespace Jinhui {
 
   void DirectoryControl_Frame::expand() {
     auto it = mItems.begin();
-    for (it; it != mItems.end(); ++it) {
+    for (; it != mItems.end(); ++it) {
+      DirectoryLabel_Frame* item = dynamic_cast<DirectoryLabel_Frame*>(it.value());
+      if (item->hasChild()) {
+        dynamic_cast<DirectoryLabelEx_Frame*>(it.value())->expand()->show();
+      }
       dynamic_cast<DirectoryLabel_Frame*>(it.value())->content()->show();
     }
     mIsExpand = true;
@@ -1014,6 +1033,10 @@ namespace Jinhui {
   void DirectoryControl_Frame::shrink() {
     auto it = mItems.begin();
     for (; it != mItems.end(); ++it) {
+      DirectoryLabel_Frame* item = dynamic_cast<DirectoryLabel_Frame*>(it.value());
+      if (item->hasChild()) {
+        dynamic_cast<DirectoryLabelEx_Frame*>(it.value())->expand()->hide();
+      }
       dynamic_cast<DirectoryLabel_Frame*>(it.value())->content()->hide();
     }
     mIsExpand = false;
@@ -1043,7 +1066,8 @@ namespace Jinhui {
    */
   // cotr
   DirectoryLabel_Frame::DirectoryLabel_Frame(QWidget* parent)
-    :UniversalLabel_Frame(parent) {}
+    :UniversalLabel_Frame(parent)
+    ,mHasChild(false) {}
 
   DirectoryLabel_Frame::~DirectoryLabel_Frame() {}
 
@@ -1059,6 +1083,14 @@ namespace Jinhui {
 
   Label* DirectoryLabel_Frame::content() const {
     return mContent;
+  }
+
+  bool DirectoryLabel_Frame::hasChild() const {
+    return mHasChild;
+  }
+
+  void DirectoryLabel_Frame::setHasChild(bool hasChild) {
+    mHasChild = hasChild;
   }
 
   // protected
@@ -1082,7 +1114,8 @@ namespace Jinhui {
    */
   // cotr
   DirectoryLabelEx_Frame::DirectoryLabelEx_Frame(QWidget* parent)
-    :DirectoryLabel_Frame(parent) {}
+    :DirectoryLabel_Frame(parent)
+    ,mVisibleChild(false) {}
 
   DirectoryLabelEx_Frame::~DirectoryLabelEx_Frame() {}
 
@@ -1090,6 +1123,21 @@ namespace Jinhui {
     initWindow();
     initLayout();
     init();
+  }
+
+  void DirectoryLabelEx_Frame::addChildItem(DirectoryLabelContent_Frame* item) {
+    mSubItems[item->productName()] = item;
+    if (!mVisibleChild) {
+      item->hide();
+    }
+  }
+
+  Label* DirectoryLabelEx_Frame::expand() const {
+    return mExpand;
+  }
+
+  QHash<const QString, Frame*> DirectoryLabelEx_Frame::subItems() const {
+    return mSubItems;
   }
 
   // protected
@@ -1106,6 +1154,31 @@ namespace Jinhui {
     mMainLayout->addWidget(mExpand);
   }
 
+  void DirectoryLabelEx_Frame::mouseReleaseEvent(QMouseEvent *event) {
+    if (Qt::LeftButton == event->button()) {
+      event->accept();
+      if (mVisibleChild) {
+        auto it = mSubItems.begin();
+        auto end = mSubItems.end();
+        for (; it != end; ++it) {
+          it.value()->hide();
+        }
+        mVisibleChild = false;
+      } else {
+        auto it = mSubItems.begin();
+        auto end = mSubItems.end();
+        for (; it != end; ++it) {
+          it.value()->show();
+        }
+        mVisibleChild = true;
+      }
+      return;
+    } else {
+      event->ignore();
+      return;
+    }
+  }
+
   /*
    * DirectoryLabelContent_Frame
    */
@@ -1119,6 +1192,10 @@ namespace Jinhui {
     initWindow();
     initLayout();
     init();
+  }
+
+  Label* DirectoryLabelContent_Frame::content() const {
+    return mContent;
   }
 
   // protected
