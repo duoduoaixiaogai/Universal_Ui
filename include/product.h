@@ -33,6 +33,7 @@
 #include <QComboBox>
 #include <QProgressBar>
 #include <QLineEdit>
+#include <QCheckBox>
 
 // database
 #include <QSqlQuery>
@@ -338,6 +339,16 @@ namespace Jinhui {
   public:
     ComboBox(QWidget* parent = nullptr);
     ~ComboBox();
+  };
+
+  /*
+   * 基类 选择框类
+   */
+  class EXPORT CheckBox : public QCheckBox, public Product {
+    Q_OBJECT
+  public:
+    CheckBox(QWidget* parent = nullptr);
+    ~CheckBox();
   };
 
   /*
@@ -2009,6 +2020,22 @@ namespace Jinhui {
   };
 
   /*
+   * 子类 只包含一个标签的框架
+   */
+  class EXPORT Label_Frame : public UniversalLabel_Frame {
+    Q_OBJECT
+  public:
+    Label_Frame(QWidget* parent = nullptr);
+    ~Label_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* label() const;
+  protected:
+    void init();
+  protected:
+    Label* mLabel;
+  };
+
+  /*
    * 子类 单一标签类(IVMS4200主预览窗口左边小部件标题栏中显示的单一标签类)
    */
   class EXPORT SingleLabel_Frame : public UniversalLabel_Frame {
@@ -2099,7 +2126,7 @@ namespace Jinhui {
    * 子类 树控件顶级项目标签类(树控件顶级项目标签类把顶级项目的展示抽象为标签表达)
    */
   class EXPORT TreeTopLevelItem_Label : public UniversalLabel_Frame {
-   Q_OBJECT
+    Q_OBJECT
   public:
     TreeTopLevelItem_Label(QWidget* parent = nullptr);
     ~TreeTopLevelItem_Label();
@@ -2145,9 +2172,19 @@ namespace Jinhui {
     IVMS4200ContentAreaStyleModel_Frame(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaStyleModel_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
-    QStackedWidget* leftWgt() const;
+    void leftAddWgt(Frame* wgt);
+    void rightAddWgt(Frame* wgt);
+    Frame* leftContentAreaWgt(const QString proName) const;
     IVMS4200MainPreviewMidWgt_Frame* midWgt() const;
-    QStackedWidget* rightWgt() const;
+    Frame* rightContentAreaWgt(const QString proName) const;
+    void setLeftContentAreaCurrentWgt(const QString proName);
+    void setRightContentAreaCurrentWgt(const QString proName);
+    void hideLeftContentArea();
+    void hideMidContentArea();
+    void hideRightContentArea();
+    void showLeftContentArea();
+    void showMidContentArea();
+    void showRightContentArea();
   protected:
     void initWindow();
     void initLayout();
@@ -2157,8 +2194,8 @@ namespace Jinhui {
     QStackedWidget* mLeftWgt;
     Frame* mMidWgt;
     QStackedWidget* mRightWgt;
-    QHash<const QString, Frame*> mLeftwgts();
-    QHash<const QString, Frame*> mRightwgts();
+    QHash<const QString, Frame*> mLeftwgts;
+    QHash<const QString, Frame*> mRightwgts;
   };
 
   /*
@@ -2477,7 +2514,7 @@ namespace Jinhui {
    * 子类 模板样式2(带有目录的模板样式1)
    */
   class EXPORT IVMS4200ContentAreaStyleModel1_Frame : public Frame {
-   Q_OBJECT
+    Q_OBJECT
   public:
     IVMS4200ContentAreaStyleModel1_Frame(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaStyleModel1_Frame();
@@ -2535,10 +2572,393 @@ namespace Jinhui {
     Label* mLabel;
     Frame* mSearch;
   };
+
+  /*
+   * 子类 水平菜单栏类(模仿IVMS4200维护与管理设备管理中设备展示内容区的标题栏类)
+   */
+  class EXPORT HMenuBar_Frame : public Frame {
+  public:
+    HMenuBar_Frame(QWidget* parent = nullptr);
+    ~HMenuBar_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addMenu(const QString text, const QString frameObjName, const QString iconObjName);
+    void addDirectoryLabelMenu(const QString text, const QString frameObjName
+                               ,const QString iconObjName, const QString contentObjName);
+    void delMenu(const QString objName);
+    void addStretch();
+    Label_Frame* menu(const QString objName) const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QHash<const QString, Frame*> mMenus;
+  };
+
+  /*
+   * 子类 过滤框类
+   */
+  class EXPORT Filter_Frame : public Search_Frame {
+  public:
+    Filter_Frame(QWidget* parent = nullptr);
+    ~Filter_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+  protected:
+    void init();
+  };
+
+  /*
+   * 子类 带过滤框的菜单栏类(模仿IVMS4200维护与管理设备内容区的标题栏类)
+   */
+  class EXPORT FilterMenuBar_Frame : public Frame {
+  public:
+    FilterMenuBar_Frame(QWidget* parent = nullptr);
+    ~FilterMenuBar_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void leftAddMenu(const QString text, const QString frameObjName
+                     ,const QString iconObjName, const QString contentObjName);
+    void rightAddMenu(const QString text, const QString frameObjName, const QString contentObjName);
+    DirectoryLabel_Frame* leftMenu(const QString frameObjName) const;
+    DirectoryLabel_Frame* rightMenu(const QString frameObjName) const;
+    Filter_Frame* filter() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mLeftLayout;
+    QBoxLayout* mRightLayout;
+    QBoxLayout* mFilterLayout;
+    Frame* mFilter;
+    QHash<const QString, Frame*> mWgts;
+  };
+
+  /*
+   * 子类 设备界面子类(包含过滤菜单栏和表控件)
+   */
+  class EXPORT FilterMenuBarTable_Frame : public Frame {
+  public:
+    FilterMenuBarTable_Frame(QWidget* parent = nullptr);
+    ~FilterMenuBarTable_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    FilterMenuBar_Frame* filterMenuBar() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mFilterMenuBar;
+  };
+
+  /*
+   * 子类 设备界面类(IVMS4200维护与管理=>设备管理=>设备界面)
+   */
+  class EXPORT IVMS4200Device_Frame : public Frame {
+  public:
+    IVMS4200Device_Frame(QWidget* parent = nullptr);
+    ~IVMS4200Device_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    HMenuBar_Frame* menuBar() const;
+    void addWidget(Frame* wgt);
+    void setCurrentWgt(const QString proName);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mMenuBar;
+    QStackedWidget* mStackedWgt;
+    QHash<const QString, Frame*> mWgts;
+  };
+
+  /*
+   * 子类 带有前后拉伸空白的展示行(IVMS4200维护与管理存储计划内容区每一行展示)
+   */
+  class EXPORT StretchDisplay_Frame : public Frame {
+  public:
+    StretchDisplay_Frame(QWidget* parent = nullptr);
+    ~StretchDisplay_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addIcon(Label* icon);
+    void addWidget(Widget* widget);
+    void addWidget(CheckBox* widget);
+    void addWidget(ComboBox* widget);
+    void addWidget(Frame* widget);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mIconLayout;
+    QBoxLayout* mWidgetLayout;
+  };
+
+
+  /*
+   *  子类 上边一个标题下边多行内容(IVMS4200维护与管理存储计划内容区)
+   */
+  class EXPORT TitleMultiContent_Frame : public Frame {
+  public:
+    TitleMultiContent_Frame(QWidget* parent = nullptr);
+    ~TitleMultiContent_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void setTitle(const QString title);
+    void addRow(Label* icon, Widget* widget);
+    void addRow(Label* icon, CheckBox* widget);
+    void addRow(Label* icon, ComboBox* widget);
+    void addRow(Label* icon, Frame* widget);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mTitle;
+  };
+
+
+  /*
+   * 子类 存储计划界面类(IVMS4200维护与管理=>存储计划)
+   */
+  // 左边功能区类
+  class EXPORT StorePlanFeature_Frame : public Frame {
+  public:
+    StorePlanFeature_Frame(QWidget* parent = nullptr);
+    ~StorePlanFeature_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* title() const;
+    Search_Frame* search() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mTitleLayout;
+    QBoxLayout* mSearchLayout;
+    QBoxLayout* mTreeLayout;
+    Label* mTitle;
+    Frame* mSearch;
+  };
+
+  // 右边内容区内容类
+  class EXPORT StorePlanContentAreaContent_Frame : public Frame {
+  public:
+    StorePlanContentAreaContent_Frame(QWidget* parent = nullptr);
+    ~StorePlanContentAreaContent_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addContent(Frame* content);
+    void addStretch();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+  };
+
+  // 右边内容区类
+  class EXPORT StorePlanContentArea_Frame : public Frame {
+  public:
+    StorePlanContentArea_Frame(QWidget* parent = nullptr);
+    ~StorePlanContentArea_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* titleLeft() const;
+    Label* titleRight() const;
+    StorePlanContentAreaContent_Frame* content() const;
+    Frame* seprator() const;
+    StretchDisplay_Frame* bottom() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mTitleLayout;
+    QBoxLayout* mTitleLeftLayout;
+    QBoxLayout* mTitleRightLayout;
+    QBoxLayout* mContentLayout;
+    QBoxLayout* mSepratorLayout;
+    QBoxLayout* mBottomLayout;
+    Label* mTitle;
+    Label* mDisplay;
+    Frame* mContent;
+    Frame* mSeprator;
+    Frame* mBottom;
+  };
+
+  /*
+   * 子类 带有一个选择框的框架
+   */
+  class EXPORT CheckBox_Frame : public UniversalLabel_Frame {
+  public:
+    CheckBox_Frame(QWidget* parent = nullptr);
+    ~CheckBox_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    CheckBox* checkBox() const;
+  protected:
+    void init();
+  protected:
+    CheckBox* mCheckBox;
+  };
+
+  /*
+   * 子类 包含多行选择框的小部件类
+   */
+  class EXPORT MultiRowCheckBox_Frame : public Frame {
+  public:
+    MultiRowCheckBox_Frame(QWidget* parent = nullptr);
+    ~MultiRowCheckBox_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addCheckBox(Frame* checkBox);
+    CheckBox_Frame* checkBox(const QString proName) const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QHash<const QString, Frame*> mWgts;
+  };
+
+  /*
+   * 子类 带有滚动条的多行选择框小部件类
+   */
+  class EXPORT ScrollBarMultiRowCheckBox_Frame : public Frame {
+  public:
+    ScrollBarMultiRowCheckBox_Frame(QWidget* parent = nullptr);
+    ~ScrollBarMultiRowCheckBox_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    QScrollArea* scrollArea() const;
+    MultiRowCheckBox_Frame* multiRowCheckBoxFrame() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QScrollArea* mScrollArea;
+    Frame* mFrame;
+  };
+
+  /*
+   * 子类 上边带有标题栏下边可以添加小部件类
+   */
+  class EXPORT TitleWidget_Frame : public Frame {
+  public:
+    TitleWidget_Frame(QWidget* parent = nullptr);
+    ~TitleWidget_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* title() const;
+    void addWidget(Frame* widget);
+    void addStretch();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mTitleLayout;
+    QBoxLayout* mWidgetLayout;
+    Label* mTitle;
+  };
+
+  /*
+   * 子类 用户管理(维护与管理=>用户管理)
+   */
+  // 功能区
+  class EXPORT UserManageFeature_Frame : public Frame {
+  public:
+    UserManageFeature_Frame(QWidget* parent = nullptr);
+    ~UserManageFeature_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    HMenuBar_Frame* menuBar() const;
+    Search_Frame* search() const;
+    DirectoryControl_Frame* directory() const;
+    void addStretch();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mMenuLayout;
+    QBoxLayout* mSearchLayout;
+    QBoxLayout* mDirectoryLayout;
+    Frame* mMenu;
+    Frame* mSearch;
+    Frame* mDirectory;
+  };
+  // 内容区
+  class EXPORT UserManageContentArea_Frame : public Frame {
+  public:
+    UserManageContentArea_Frame(QWidget* parent = nullptr);
+    ~UserManageContentArea_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* userType() const;
+    Label* userName() const;
+    Label* password() const;
+    Label* userPriority() const;
+    ComboBox* userTypeWgt() const;
+    LineEdit* userNameWgt() const;
+    Label_Frame* passwordWgt() const;
+    TitleWidget_Frame* userPriorityWgt() const;
+    HMenuBar_Frame* bottom() const;
+    TitleWidget_Frame* resourcePriorityWgt() const;
+    void leftAreaAddStretch();
+    void midAreaAddStretch();
+    void rightAreaAddStretch();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mLeftLayout;
+    QBoxLayout* mMidLayout;
+    QBoxLayout* mRightLayout;
+    Label* mUserType;
+    Label* mUserName;
+    Label* mPassword;
+    Label* mUserPriority;
+    ComboBox* mUserTypeWgt;
+    LineEdit* mUserNameWgt;
+    Frame* mPasswordWgt;
+    Frame* mUserPriorityWgt;
+    Frame* mResPriortyWgt;
+    Frame* mBottom;
+  };
+
+  /*
+   * 子类 系统配置界面
+   */
+  // 功能区
+  class EXPORT SystemConfigureFeature_Frame : public Frame {
+  public:
+    SystemConfigureFeature_Frame(QWidget* parent = nullptr);
+    ~SystemConfigureFeature_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    DirectoryControl_Frame* directory() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Frame* mDirectory;
+  };
+
+  // 内容区
+
 }
 
 
 
-  Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)
+Q_DECLARE_METATYPE(QVector<Jinhui::Channel_Frame*>)
 
 #endif // PARSER_H

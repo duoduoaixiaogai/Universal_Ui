@@ -100,7 +100,8 @@ SOURCES += \
     sources/widget.cpp \
     sources/worker.cpp \
     sources/file.cpp \
-    sources/lineedit.cpp
+    sources/lineedit.cpp \
+    sources/checkbox.cpp
 
 HEADERS += \
         #mainwindow.h \

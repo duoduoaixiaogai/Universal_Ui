@@ -11,6 +11,7 @@
 #include <QMouseEvent>
 #include <QStackedWidget>
 #include <QDateTimeEdit>
+#include <QScrollArea>
 
 namespace Jinhui {
   /*
@@ -238,8 +239,8 @@ namespace Jinhui {
 
   void UniversalLabel_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
-    mMainLayout->setContentsMargins(0, 0, 0, 0);
-    mMainLayout->setSpacing(0);
+    //mMainLayout->setContentsMargins(0, 0, 0, 0);
+    //mMainLayout->setSpacing(0);
   }
 
   void UniversalLabel_Frame::init() {
@@ -553,16 +554,68 @@ namespace Jinhui {
     init();
   }
 
-  QStackedWidget* IVMS4200ContentAreaStyleModel_Frame::leftWgt() const {
-    return mLeftWgt;
+  void IVMS4200ContentAreaStyleModel_Frame::leftAddWgt(Frame* wgt) {
+    mLeftWgt->addWidget(wgt);
+    mLeftwgts[wgt->productName()] = wgt;
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::rightAddWgt(Frame* wgt) {
+    mRightWgt->addWidget(wgt);
+    mRightwgts[wgt->productName()] = wgt;
+  }
+
+  Frame* IVMS4200ContentAreaStyleModel_Frame::leftContentAreaWgt(const QString proName) const {
+    if (mLeftwgts.contains(proName)) {
+      return mLeftwgts.value(proName);
+    }
+    return nullptr;
   }
 
   IVMS4200MainPreviewMidWgt_Frame* IVMS4200ContentAreaStyleModel_Frame::midWgt() const {
     return dynamic_cast<IVMS4200MainPreviewMidWgt_Frame*>(mMidWgt);
   }
 
-  QStackedWidget* IVMS4200ContentAreaStyleModel_Frame::rightWgt() const {
-    return mRightWgt;
+  Frame* IVMS4200ContentAreaStyleModel_Frame::rightContentAreaWgt(const QString proName) const {
+    if (mRightwgts.contains(proName)) {
+      return mRightwgts.value(proName);
+    }
+    return nullptr;
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::setLeftContentAreaCurrentWgt(const QString proName) {
+    if (mLeftwgts.contains(proName)) {
+      mLeftWgt->setCurrentWidget(mLeftwgts.value(proName));
+    }
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::setRightContentAreaCurrentWgt(const QString proName) {
+    if (mRightwgts.contains(proName)) {
+      mRightWgt->setCurrentWidget(mRightwgts.value(proName));
+    }
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::hideLeftContentArea() {
+    mLeftWgt->hide();
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::hideMidContentArea() {
+    mMidWgt->hide();
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::hideRightContentArea() {
+    mRightWgt->hide();
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::showLeftContentArea() {
+    mLeftWgt->show();
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::showMidContentArea() {
+    mMidWgt->show();
+  }
+
+  void IVMS4200ContentAreaStyleModel_Frame::showRightContentArea() {
+    mRightWgt->show();
   }
 
   // protected
@@ -1391,4 +1444,885 @@ namespace Jinhui {
     mMainLayout->addWidget(mStyleModel1);
   }
 
+  /*
+   * HMenuBar_Frame
+   */
+  // cotr
+  HMenuBar_Frame::HMenuBar_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  HMenuBar_Frame::~HMenuBar_Frame() {}
+
+  void HMenuBar_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void HMenuBar_Frame::addMenu(const QString text, const QString frameObjName, const QString iconObjName) {
+    Label_Frame* menu = new Label_Frame;
+    menu->setupUi(QSharedPointer<const Protocol>());
+    menu->setObjectName(frameObjName);
+    menu->label()->setObjectName(iconObjName);
+    menu->label()->setText(text);
+    mMenus[frameObjName] = menu;
+    mMainLayout->addWidget(menu);
+  }
+
+  void HMenuBar_Frame::addDirectoryLabelMenu(const QString text, const QString frameObjName
+                                             ,const QString iconObjName, const QString contentObjName) {
+    DirectoryLabel_Frame* menu = new DirectoryLabel_Frame;
+    menu->setupUi(QSharedPointer<const Protocol>());
+    menu->setObjectName(frameObjName);
+    menu->icon()->setObjectName(iconObjName);
+    menu->content()->setText(text);
+    menu->content()->setObjectName(contentObjName);
+    mMenus[frameObjName] = menu;
+    mMainLayout->addWidget(menu);
+  }
+
+  void HMenuBar_Frame::delMenu(const QString objName) {
+    if (mMenus.contains(objName)) {
+      Frame* menu = mMenus.value(objName);
+      mMainLayout->removeWidget(menu);
+      mMenus.remove(objName);
+    }
+  }
+
+  void HMenuBar_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  Label_Frame *HMenuBar_Frame::menu(const QString objName) const {
+    if (mMenus.contains(objName)) {
+      return dynamic_cast<Label_Frame*>(mMenus.value(objName));
+    }
+    return nullptr;
+  }
+  // protected
+  void HMenuBar_Frame::initWindow() {}
+
+  void HMenuBar_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+  }
+
+  void HMenuBar_Frame::init() {}
+
+  /*
+   * Filter_Frame
+   */
+  // cotr
+  Filter_Frame::Filter_Frame(QWidget* parent)
+    :Search_Frame(parent) {}
+
+  Filter_Frame::~Filter_Frame() {}
+
+  void Filter_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    Search_Frame::setupUi(protocol);
+    init();
+  }
+  // protected
+  void Filter_Frame::init() {
+    mSearch->hide();
+  }
+
+  /*
+   * FilterTitleBar_Frame
+   */
+  // cotr
+  FilterMenuBar_Frame::FilterMenuBar_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  FilterMenuBar_Frame::~FilterMenuBar_Frame() {}
+
+  void FilterMenuBar_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void FilterMenuBar_Frame::leftAddMenu(const QString text, const QString frameObjName
+                                        ,const QString iconObjName, const QString contentObjName) {
+    DirectoryLabel_Frame* label = new DirectoryLabel_Frame;
+    label->setupUi(QSharedPointer<const Protocol>());
+    label->setObjectName(frameObjName);
+    label->icon()->setObjectName(iconObjName);
+    label->content()->setObjectName(contentObjName);
+    label->content()->setText(text);
+    mWgts[label->objectName()] = label;
+    mLeftLayout->addWidget(label);
+  }
+
+  void FilterMenuBar_Frame::rightAddMenu(const QString text, const QString frameObjName, const QString contentObjName) {
+    DirectoryLabelContent_Frame* label = new DirectoryLabelContent_Frame;
+    label->setupUi(QSharedPointer<const Protocol>());
+    label->setObjectName(frameObjName);
+    label->content()->setObjectName(contentObjName);
+    label->content()->setText(text);
+    mRightLayout->addWidget(label);
+  }
+
+  DirectoryLabel_Frame* FilterMenuBar_Frame::leftMenu(const QString frameObjName) const {
+    if (mWgts.contains(frameObjName)) {
+      return dynamic_cast<DirectoryLabel_Frame*>(mWgts.value(frameObjName));
+    }
+    return nullptr;
+  }
+
+  DirectoryLabel_Frame* FilterMenuBar_Frame::rightMenu(const QString frameObjName) const {
+    return leftMenu(frameObjName);
+  }
+
+  Filter_Frame* FilterMenuBar_Frame::filter() const {
+    return dynamic_cast<Filter_Frame*>(mFilter);
+  }
+
+  // protected
+  void FilterMenuBar_Frame::initWindow() {
+  }
+
+  void FilterMenuBar_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mLeftLayout = new QHBoxLayout;
+    mRightLayout = new QHBoxLayout;
+    mFilterLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mLeftLayout);
+    mMainLayout->addStretch(1);
+    mMainLayout->addLayout(mRightLayout);
+    mMainLayout->addLayout(mFilterLayout);
+  }
+
+  void FilterMenuBar_Frame::init() {
+    mFilter = new Filter_Frame;
+    mFilter->setupUi(QSharedPointer<const Protocol>());
+    mFilterLayout->addWidget(mFilter);
+  }
+
+  /*
+   * FilterMenuBarTable_Frame
+   */
+  // cotr
+  FilterMenuBarTable_Frame::FilterMenuBarTable_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  FilterMenuBarTable_Frame::~FilterMenuBarTable_Frame() {}
+
+  void FilterMenuBarTable_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  FilterMenuBar_Frame* FilterMenuBarTable_Frame::filterMenuBar() const {
+    return dynamic_cast<FilterMenuBar_Frame*>(mFilterMenuBar);
+  }
+  // protected
+  void FilterMenuBarTable_Frame::initWindow() {
+  }
+
+  void FilterMenuBarTable_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void FilterMenuBarTable_Frame::init() {
+    mFilterMenuBar = new FilterMenuBar_Frame;
+    mFilterMenuBar->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addWidget(mFilterMenuBar, 0, Qt::AlignTop);
+  }
+
+  /*
+   * IVMS4200Device_Frame
+   */
+  // cotr
+  IVMS4200Device_Frame::IVMS4200Device_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  IVMS4200Device_Frame::~IVMS4200Device_Frame() {}
+
+  void IVMS4200Device_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  HMenuBar_Frame* IVMS4200Device_Frame::menuBar() const {
+    return dynamic_cast<HMenuBar_Frame*>(mMenuBar);
+  }
+
+  void IVMS4200Device_Frame::addWidget(Frame* wgt) {
+    mStackedWgt->addWidget(wgt);
+    mWgts[wgt->productName()] = wgt;
+  }
+
+  void IVMS4200Device_Frame::setCurrentWgt(const QString proName) {
+    if (mWgts.contains(proName)) {
+      mStackedWgt->setCurrentWidget(mWgts.value(proName));
+    }
+  }
+
+  // protected
+  void IVMS4200Device_Frame::initWindow() {
+  }
+
+  void IVMS4200Device_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void IVMS4200Device_Frame::init() {
+    mMenuBar = new HMenuBar_Frame;
+    mMenuBar->setupUi(QSharedPointer<const Protocol>());
+    mStackedWgt = new QStackedWidget;
+    mMainLayout->addWidget(mMenuBar, 0, Qt::AlignTop);
+    mMainLayout->addWidget(mStackedWgt);
+  }
+
+  /*
+   * Label_Frame
+   */
+  // cotr
+  Label_Frame::Label_Frame(QWidget* parent)
+    :UniversalLabel_Frame(parent) {}
+
+  Label_Frame::~Label_Frame() {}
+
+  void Label_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    UniversalLabel_Frame::setupUi(protocol);
+    init();
+  }
+
+  Label* Label_Frame::label() const {
+    return mLabel;
+  }
+  // protected
+  void Label_Frame::init() {
+    mLabel = new Label;
+    mMainLayout->addWidget(mLabel);
+  }
+
+  /*
+   * StorePlanFeature_Frame
+   */
+  // cotr
+  StorePlanFeature_Frame::StorePlanFeature_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  StorePlanFeature_Frame::~StorePlanFeature_Frame() {}
+
+  void StorePlanFeature_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* StorePlanFeature_Frame::title() const {
+    return mTitle;
+  }
+
+  Search_Frame* StorePlanFeature_Frame::search() const {
+    return dynamic_cast<Search_Frame*>(mSearch);
+  }
+  // protected
+  void StorePlanFeature_Frame::initWindow() {
+  }
+
+  void StorePlanFeature_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mTitleLayout = new QHBoxLayout;
+    mSearchLayout = new QHBoxLayout;
+    mTreeLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mTitleLayout);
+    mMainLayout->addLayout(mSearchLayout);
+    mMainLayout->addLayout(mTreeLayout);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void StorePlanFeature_Frame::init() {
+    mTitle = new Label;
+    mSearch = new Search_Frame;
+    mSearch->setupUi(QSharedPointer<const Protocol>());
+    mTitleLayout->addWidget(mTitle);
+    mSearchLayout->addWidget(mSearch);
+  }
+
+  /*
+   * StretchDisplay_Frame
+   */
+  // cotr
+  StretchDisplay_Frame::StretchDisplay_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  StretchDisplay_Frame::~StretchDisplay_Frame() {}
+
+  void StretchDisplay_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+  void StretchDisplay_Frame::addIcon(Label* icon) {
+    mIconLayout->addWidget(icon);
+  }
+
+  void StretchDisplay_Frame::addWidget(Widget* widget) {
+    mWidgetLayout->addWidget(widget);
+  }
+
+  void StretchDisplay_Frame::addWidget(CheckBox* widget) {
+    mWidgetLayout->addWidget(widget);
+  }
+
+  void StretchDisplay_Frame::addWidget(ComboBox* widget) {
+    mWidgetLayout->addWidget(widget);
+  }
+
+  void StretchDisplay_Frame::addWidget(Frame* widget) {
+    mWidgetLayout->addWidget(widget);
+  }
+
+  //protected
+  void StretchDisplay_Frame::initWindow() {
+  }
+
+  void StretchDisplay_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mIconLayout = new QHBoxLayout;
+    mWidgetLayout = new QHBoxLayout;
+    mMainLayout->addStretch(1);
+    mMainLayout->addLayout(mIconLayout);
+    mMainLayout->addLayout(mWidgetLayout);
+    mMainLayout->addStretch(5);
+  }
+
+  void StretchDisplay_Frame::init() {
+
+  }
+
+  /*
+   * TitleMultiContent_Frame
+   */
+  // cotr
+  TitleMultiContent_Frame::TitleMultiContent_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  TitleMultiContent_Frame::~TitleMultiContent_Frame() {}
+
+  void TitleMultiContent_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void TitleMultiContent_Frame::setTitle(const QString title) {
+    mTitle->setText(title);
+  }
+
+  void TitleMultiContent_Frame::addRow(Label* icon, Widget* widget) {
+    StretchDisplay_Frame* row = new StretchDisplay_Frame;
+    row->setupUi(QSharedPointer<const Protocol>());
+    if (icon) {
+      row->addIcon(icon);
+    }
+    if (widget) {
+      row->addWidget(widget);
+    }
+    mMainLayout->addWidget(row);
+  }
+
+  void TitleMultiContent_Frame::addRow(Label* icon, CheckBox* widget) {
+    StretchDisplay_Frame* row = new StretchDisplay_Frame;
+    row->setupUi(QSharedPointer<const Protocol>());
+    if (icon) {
+      row->addIcon(icon);
+    }
+    if (widget) {
+      row->addWidget(widget);
+    }
+    mMainLayout->addWidget(row);
+  }
+
+  void TitleMultiContent_Frame::addRow(Label* icon, ComboBox* widget) {
+    StretchDisplay_Frame* row = new StretchDisplay_Frame;
+    row->setupUi(QSharedPointer<const Protocol>());
+    if (icon) {
+      row->addIcon(icon);
+    }
+    if (widget) {
+      row->addWidget(widget);
+    }
+    mMainLayout->addWidget(row);
+  }
+
+  void TitleMultiContent_Frame::addRow(Label* icon, Frame* widget) {
+    StretchDisplay_Frame* row = new StretchDisplay_Frame;
+    row->setupUi(QSharedPointer<const Protocol>());
+    if (icon) {
+      row->addIcon(icon);
+    }
+    if (widget) {
+      row->addWidget(widget);
+    }
+    mMainLayout->addWidget(row);
+  }
+
+  // protected
+  void TitleMultiContent_Frame::initWindow() {
+  }
+
+  void TitleMultiContent_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void TitleMultiContent_Frame::init() {
+    mTitle = new Label;
+    mMainLayout->addWidget(mTitle);
+  }
+
+  /*
+   * StorePlanContentAreaContent_Frame
+   */
+  // cotr
+  StorePlanContentAreaContent_Frame::StorePlanContentAreaContent_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  StorePlanContentAreaContent_Frame::~StorePlanContentAreaContent_Frame() {}
+
+  void StorePlanContentAreaContent_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void StorePlanContentAreaContent_Frame::addContent(Frame* content) {
+    mMainLayout->addWidget(content);
+  }
+
+  void StorePlanContentAreaContent_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  // protected
+  void StorePlanContentAreaContent_Frame::initWindow() {
+  }
+
+  void StorePlanContentAreaContent_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void StorePlanContentAreaContent_Frame::init() {
+
+  }
+
+  /*
+   * StorePlanContentArea_Frame
+   */
+  // cotr
+  StorePlanContentArea_Frame::StorePlanContentArea_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  StorePlanContentArea_Frame::~StorePlanContentArea_Frame() {}
+
+  void StorePlanContentArea_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* StorePlanContentArea_Frame::titleLeft() const {
+    return mTitle;
+  }
+
+  Label* StorePlanContentArea_Frame::titleRight() const {
+    return mDisplay;
+  }
+
+  StorePlanContentAreaContent_Frame* StorePlanContentArea_Frame::content() const {
+    return dynamic_cast<StorePlanContentAreaContent_Frame*>(mContent);
+  }
+
+  Frame* StorePlanContentArea_Frame::seprator() const {
+    return mSeprator;
+  }
+
+  StretchDisplay_Frame* StorePlanContentArea_Frame::bottom() const {
+    return dynamic_cast<StretchDisplay_Frame*>(mBottom);
+  }
+
+  // protected
+  void StorePlanContentArea_Frame::initWindow() {
+  }
+
+  void StorePlanContentArea_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mTitleLayout = new QHBoxLayout;
+    mTitleLeftLayout = new QHBoxLayout;
+    mTitleRightLayout = new QHBoxLayout;
+    mContentLayout = new QHBoxLayout;
+    mSepratorLayout = new QHBoxLayout;
+    mBottomLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mTitleLayout);
+    mMainLayout->addLayout(mContentLayout);
+    mMainLayout->addLayout(mSepratorLayout);
+    mMainLayout->addLayout(mBottomLayout);
+    mTitleLayout->addLayout(mTitleLeftLayout);
+    mTitleLayout->addStretch();
+    mTitleLayout->addLayout(mTitleRightLayout);
+  }
+
+  void StorePlanContentArea_Frame::init() {
+    mTitle = new Label;
+    mDisplay = new Label;
+    mContent = new StorePlanContentAreaContent_Frame;
+    mContent->setupUi(QSharedPointer<const Protocol>());
+    mSeprator = new Frame;
+    mSeprator->setupUi(QSharedPointer<const Protocol>());
+    mBottom = new StretchDisplay_Frame;
+    mBottom->setupUi(QSharedPointer<const Protocol>());
+    mTitleLeftLayout->addWidget(mTitle);
+    mTitleRightLayout->addWidget(mDisplay);
+    mContentLayout->addWidget(mContent);
+    mSepratorLayout->addWidget(mSeprator);
+    mBottomLayout->addWidget(mBottom);
+    mSeprator->setFrameStyle(QFrame::HLine | QFrame::Plain);
+  }
+
+  /*
+   * UserManageFeature_Frame
+   */
+  // cotr
+  UserManageFeature_Frame::UserManageFeature_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  UserManageFeature_Frame::~UserManageFeature_Frame() {}
+
+  void UserManageFeature_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  HMenuBar_Frame* UserManageFeature_Frame::menuBar() const {
+    return dynamic_cast<HMenuBar_Frame*>(mMenu);
+  }
+
+  Search_Frame* UserManageFeature_Frame::search() const {
+    return dynamic_cast<Search_Frame*>(mSearch);
+  }
+
+  DirectoryControl_Frame* UserManageFeature_Frame::directory() const {
+    return dynamic_cast<DirectoryControl_Frame*>(mDirectory);
+  }
+
+  void UserManageFeature_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  // protected
+  void UserManageFeature_Frame::initWindow() {
+  }
+
+  void UserManageFeature_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMenuLayout = new QHBoxLayout;
+    mSearchLayout = new QHBoxLayout;
+    mDirectoryLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mMenuLayout);
+    mMainLayout->addLayout(mSearchLayout);
+    mMainLayout->addLayout(mDirectoryLayout);
+  }
+
+  void UserManageFeature_Frame::init() {
+    mMenu = new HMenuBar_Frame;
+    mMenu->setupUi(QSharedPointer<const Protocol>());
+    mSearch = new Search_Frame;
+    mSearch->setupUi(QSharedPointer<const Protocol>());
+    mDirectory = new DirectoryControl_Frame;
+    mDirectory->setupUi(QSharedPointer<const Protocol>());
+    mMenuLayout->addWidget(mMenu);
+    mSearchLayout->addWidget(mSearch);
+    mDirectoryLayout->addWidget(mDirectory);
+  }
+
+  /*
+   * CheckBox_Frame
+   */
+  // cotr
+  CheckBox_Frame::CheckBox_Frame(QWidget* parent)
+    :UniversalLabel_Frame(parent) {}
+
+  CheckBox_Frame::~CheckBox_Frame() {}
+
+  void CheckBox_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    UniversalLabel_Frame::setupUi(protocol);
+    init();
+  }
+
+  CheckBox* CheckBox_Frame::checkBox() const {
+    return mCheckBox;
+  }
+  // protected
+  void CheckBox_Frame::init() {
+    mCheckBox = new CheckBox;
+    mMainLayout->addWidget(mCheckBox);
+  }
+
+  /*
+   * MultiRowCheckBox_Frame
+   */
+  // cotr
+  MultiRowCheckBox_Frame::MultiRowCheckBox_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  MultiRowCheckBox_Frame::~MultiRowCheckBox_Frame() {}
+
+  void MultiRowCheckBox_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void MultiRowCheckBox_Frame::addCheckBox(Frame* checkBox) {
+    mMainLayout->addWidget(checkBox);
+    mWgts[checkBox->productName()] = checkBox;
+  }
+
+  CheckBox_Frame* MultiRowCheckBox_Frame::checkBox(const QString proName) const {
+    if (mWgts.contains(proName)) {
+      return dynamic_cast<CheckBox_Frame*>(mWgts.value(proName));
+    }
+    return nullptr;
+  }
+  // protected
+  void MultiRowCheckBox_Frame::initWindow() {
+  }
+
+  void MultiRowCheckBox_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void MultiRowCheckBox_Frame::init() {
+
+  }
+
+  /*
+   * ScrollBarMultiRowCheckBox_Frame
+   */
+  // cotr
+  ScrollBarMultiRowCheckBox_Frame::ScrollBarMultiRowCheckBox_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  ScrollBarMultiRowCheckBox_Frame::~ScrollBarMultiRowCheckBox_Frame() {}
+
+  void ScrollBarMultiRowCheckBox_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  QScrollArea* ScrollBarMultiRowCheckBox_Frame::scrollArea() const {
+    return mScrollArea;
+  }
+
+  MultiRowCheckBox_Frame* ScrollBarMultiRowCheckBox_Frame::multiRowCheckBoxFrame() const {
+    return dynamic_cast<MultiRowCheckBox_Frame*>(mFrame);
+  }
+  // protected
+  void ScrollBarMultiRowCheckBox_Frame::initWindow() {
+  }
+
+  void ScrollBarMultiRowCheckBox_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void ScrollBarMultiRowCheckBox_Frame::init() {
+    mScrollArea = new QScrollArea;
+    mFrame = new MultiRowCheckBox_Frame;
+    mFrame->setupUi(QSharedPointer<const Protocol>());
+    mScrollArea->setWidget(mFrame);
+    mMainLayout->addWidget(mScrollArea);
+  }
+
+  /*
+   * TitleWidget_Frame
+   */
+  // cotr
+  TitleWidget_Frame::TitleWidget_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  TitleWidget_Frame::~TitleWidget_Frame() {}
+
+  void TitleWidget_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* TitleWidget_Frame::title() const {
+    return mTitle;
+  }
+
+  void TitleWidget_Frame::addWidget(Frame* widget) {
+    mWidgetLayout->addWidget(widget);
+  }
+
+  void TitleWidget_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  // protected
+  void TitleWidget_Frame::initWindow() {
+  }
+
+  void TitleWidget_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mTitleLayout = new QHBoxLayout;
+    mWidgetLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mTitleLayout);
+    mMainLayout->addLayout(mWidgetLayout);
+  }
+
+  void TitleWidget_Frame::init() {
+    mTitle = new Label;
+    mTitleLayout->addWidget(mTitle);
+  }
+
+  /*
+   * UserManageContentArea_Frame
+   */
+  // cotr
+  UserManageContentArea_Frame::UserManageContentArea_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  UserManageContentArea_Frame::~UserManageContentArea_Frame() {}
+
+  void UserManageContentArea_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* UserManageContentArea_Frame::userType() const {
+    return mUserType;
+  }
+
+  Label* UserManageContentArea_Frame::userName() const {
+    return mUserName;
+  }
+
+  Label* UserManageContentArea_Frame::password() const {
+    return mPassword;
+  }
+
+  Label* UserManageContentArea_Frame::userPriority() const {
+    return mUserPriority;
+  }
+
+  ComboBox* UserManageContentArea_Frame::userTypeWgt() const {
+    return mUserTypeWgt;
+  }
+
+  LineEdit* UserManageContentArea_Frame::userNameWgt() const {
+    return mUserNameWgt;
+  }
+
+  Label_Frame* UserManageContentArea_Frame::passwordWgt() const {
+    return dynamic_cast<Label_Frame*>(mPasswordWgt);
+  }
+
+  TitleWidget_Frame* UserManageContentArea_Frame::userPriorityWgt() const {
+    return dynamic_cast<TitleWidget_Frame*>(mUserPriorityWgt);
+  }
+
+  HMenuBar_Frame* UserManageContentArea_Frame::bottom() const {
+    return dynamic_cast<HMenuBar_Frame*>(mBottom);
+  }
+
+  TitleWidget_Frame* UserManageContentArea_Frame::resourcePriorityWgt() const {
+    return dynamic_cast<TitleWidget_Frame*>(mResPriortyWgt);
+  }
+
+  void UserManageContentArea_Frame::leftAreaAddStretch() {
+    mLeftLayout->addStretch();
+  }
+
+  void UserManageContentArea_Frame::midAreaAddStretch() {
+    mMidLayout->addStretch();
+  }
+
+  void UserManageContentArea_Frame::rightAreaAddStretch() {
+    mRightLayout->addStretch();
+  }
+
+  // protected
+  void UserManageContentArea_Frame::initWindow() {
+  }
+
+  void UserManageContentArea_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mLeftLayout = new QVBoxLayout;
+    mMidLayout = new QVBoxLayout;
+    mRightLayout = new QVBoxLayout;
+    mMainLayout->addLayout(mLeftLayout);
+    mMainLayout->addLayout(mMidLayout);
+    mMainLayout->addLayout(mRightLayout);
+  }
+
+  void UserManageContentArea_Frame::init() {
+    mUserType = new Label;
+    mUserName = new Label;
+    mPassword = new Label;
+    mUserPriority = new Label;
+    mUserTypeWgt = new ComboBox;
+    mUserNameWgt = new LineEdit;
+    mPasswordWgt = new Label_Frame;
+    mPasswordWgt->setupUi(QSharedPointer<const Protocol>());
+    mUserPriorityWgt = new TitleWidget_Frame;
+    mUserPriorityWgt->setupUi(QSharedPointer<const Protocol>());
+    mResPriortyWgt = new TitleWidget_Frame;
+    mResPriortyWgt->setupUi(QSharedPointer<const Protocol>());
+    mBottom = new HMenuBar_Frame;
+    mBottom->setupUi(QSharedPointer<const Protocol>());
+    mLeftLayout->addWidget(mUserType);
+    mLeftLayout->addWidget(mUserName);
+    mLeftLayout->addWidget(mPassword);
+    mLeftLayout->addWidget(mUserPriority);
+    mMidLayout->addWidget(mUserTypeWgt);
+    mMidLayout->addWidget(mUserNameWgt);
+    mMidLayout->addWidget(mPasswordWgt);
+    mMidLayout->addWidget(mUserPriorityWgt);
+    mMidLayout->addWidget(mBottom);
+    mRightLayout->addStretch();
+    mRightLayout->addWidget(mResPriortyWgt);
+    mRightLayout->addStretch();
+  }
+
+  /*
+   * SystemConfigureFeature_Frame
+   */
+  // cotr
+  SystemConfigureFeature_Frame::SystemConfigureFeature_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  SystemConfigureFeature_Frame::~SystemConfigureFeature_Frame() {}
+
+  void SystemConfigureFeature_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  DirectoryControl_Frame* SystemConfigureFeature_Frame::directory() const {
+    return dynamic_cast<DirectoryControl_Frame*>(mDirectory);
+  }
+  // protected
+  void SystemConfigureFeature_Frame::initWindow() {
+  }
+
+  void SystemConfigureFeature_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void SystemConfigureFeature_Frame::init() {
+    mDirectory = new DirectoryControl_Frame;
+    mDirectory->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addWidget(mDirectory);
+  }
 }
