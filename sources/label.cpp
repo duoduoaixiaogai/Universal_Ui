@@ -761,6 +761,14 @@ namespace Jinhui {
 
   DealWithMouseEventEx_Label::~DealWithMouseEventEx_Label() {}
 
+  void DealWithMouseEventEx_Label::setUserData(Product* data) {
+    mData = data;
+  }
+
+  Product* DealWithMouseEventEx_Label::data() const {
+    return mData;
+  }
+
   // protected
   //void DealWithMouseEventEx_Label::leaveEvent(QEvent *event) {
   //}
@@ -816,16 +824,16 @@ namespace Jinhui {
   // cotr
   ClearContentWidget_Label::ClearContentWidget_Label(Product *widget, QWidget* parent)
     :DealWithMouseEvent_Label(parent)
-  ,mWidget(widget) {}
+    ,mWidget(widget) {}
 
   ClearContentWidget_Label::~ClearContentWidget_Label() {}
 
   //protected
   void ClearContentWidget_Label::mousePressEvent(QMouseEvent *event) {
     try {
-    if (mWidget) {
-      throw PointerIsNull_Exception();
-    }
+      if (!mWidget) {
+        throw PointerIsNull_Exception();
+      }
     } catch (ParameterException& ex) {
       const QString msg = ex.what();
       ex.writeLogWarn(msg);
@@ -839,6 +847,7 @@ namespace Jinhui {
         throw Dynamic_cast_Down_Exception();
       }
       wgt->clear();
+      emit clearCompleted();
     } catch (Dynamic_cast_Exception& ex) {
       const QString msg = ex.what();
       ex.writeLogWarn(msg);

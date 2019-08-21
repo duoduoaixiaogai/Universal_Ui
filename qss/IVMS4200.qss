@@ -381,12 +381,6 @@ Jinhui--IVMS4200ContentAreaHome_Frame {
 }
 
 /*
-Jinhui--IVMS4200MainPreviewLeftWgt_Frame {
-  max-width: 300;
-  background: dark;
-}
-*/
-/*
   视频应用
 */
 Jinhui--Label#VideoApplication {
@@ -733,12 +727,22 @@ Jinhui--Label#Search {
 Jinhui--LineEdit#SearchContent {
   background-image: url(:/icon/searchbackground.png);
   border-style: none;
+  color: white;
+}
+
+Jinhui--Label#SearchClose {
+  background-image: url(:/icon/menu1close.png);
+  min-width: 28;
+  min-height: 24;
+  max-width: 28;
+  max-height: 24;
 }
 
 Jinhui--Frame#SearchFrame {
   border-style: solid;
   border-width: 1px;
   border-color: dark;
+  background: black;
 }
 
 Jinhui--Frame#SearchFrame:hover {
@@ -1764,6 +1768,332 @@ Jinhui--Frame#UserManageDefaultValueFrame {
   max-width: 115;
 }
 
+Jinhui--Frame#MaintainAndManageSystemConfigureFeatureFrame {
+  min-width: 260;
+  max-width: 260;
+}
+
+Jinhui--Label#SystemConfigCommonlyUsedContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigPreviewPlaybackContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigPictureContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigEventPictureStoreContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigAlramSoundContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigAccessContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigFileContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigToolBarContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigMailContent {
+  color: white;
+}
+
+Jinhui--Label#SystemConfigCerificationContent {
+  color: white;
+}
+
+Jinhui--Frame#SystemConfigCommonlyUsedFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigPreviewPlaybackFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigPictureFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigEventPictureStoreFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigAlramSoundFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigAccessFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigFileFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigToolBarFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#SystemConfigCerificationFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+Jinhui--Frame#SystemConfigMailFrame:hover {
+  background: gray;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Label#MainPreviewTreeParentItem1Icon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewTreeParentItem1Content {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewTreeParentItem1Widget {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewTreeSubItem1Icon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewTreeSubItem2Icon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewTreeSubItem3Icon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewChildItem1Icon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewChildItem1Content {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewListItem1WgtIcon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewListItem2WgtIcon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewListItem3WgtIcon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewListItem1Icon {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#MainPreviewListItem1Content {
+  background-image: url(:/icon/deletedevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+
+Jinhui--Frame#MainPreviewLeftTitle1Frame:hover {
+  background: black;
+  border-style: solid;
+  border-radius: 18px;
+}
+
+Jinhui--Frame#MainPreviewLeftTitle2Frame:hover {
+  background: black;
+  border-style: solid;
+  border-radius: 18px;
+}
+
+Jinhui--Label#MainPreviewLeftTitle1Icon{
+  color: white;
+}
+
+Jinhui--Label#MainPreviewLeftTitle2Icon{
+  color: white;
+}
+
+Jinhui--QStackedWidget#MainPreviewLeftWgt {
+  min-width: 300;
+  max-width: 300;
+}
+
+Jinhui--Frame#MainPreviewFeatureFrame {
+  max-width: 300;
+}
+
+Jinhui--Label#CustomViewCollapse {
+  background-image: url(:/icon/collapsedown.png);
+  min-width: 22;
+  min-height: 24;
+  max-width: 22;
+  max-height: 24;
+}
+
+Jinhui--Label#CustomViewIcon {
+  background-image: url(:/icon/customview.png);
+  min-width: 22;
+  min-height: 24;
+  max-width: 22;
+  max-height: 24;
+}
+
+Jinhui--Frame#CustomViewFrame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#CustomViewContent {
+  color: white;
+}
+
+Jinhui--Label#CustomViewSub1Icon {
+  background-image: url(:/icon/customview.png);
+  min-width: 22;
+  min-height: 24;
+  max-width: 22;
+  max-height: 24;
+}
+
+Jinhui--Frame#CustomViewSub1Frame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#CustomViewSub1Content {
+  color: white;
+}
+
+Jinhui--Label#CustomViewAdd {
+  background-image: url(:/icon/adddevice.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#CustomViewPlayback {
+  background-image: url(:/icon/playback.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
+
+Jinhui--Label#CustomViewRename {
+  background-image: url(:/icon/rename.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+
+}
+
+Jinhui--Label#CustomViewDel {
+  background-image: url(:/icon/delete.png);
+  min-width: 26;
+  min-height: 21;
+  max-width: 26;
+  max-height: 21;
+}
 Jinhui--VideoShow_Frame {
   border-width: 1px;
   border-color: black;

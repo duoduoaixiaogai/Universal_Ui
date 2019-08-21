@@ -101,7 +101,9 @@ SOURCES += \
     sources/worker.cpp \
     sources/file.cpp \
     sources/lineedit.cpp \
-    sources/checkbox.cpp
+    sources/checkbox.cpp \
+    sources/radiobutton.cpp \
+    sources/doublespinbox.cpp
 
 HEADERS += \
         #mainwindow.h \

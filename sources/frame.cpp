@@ -12,6 +12,7 @@
 #include <QStackedWidget>
 #include <QDateTimeEdit>
 #include <QScrollArea>
+#include <QHeaderView>
 
 namespace Jinhui {
   /*
@@ -321,9 +322,15 @@ namespace Jinhui {
   void Search_Frame::contentEdited(const QString& text) {
     if (mContent->text().isEmpty()) {
       mClose->hide();
+      mContent->setStyleSheet("background-image: url(:/icon/searchbackground.png)");
     } else {
       mClose->show();
+      mContent->setStyleSheet("background: red");
     }
+  }
+
+  void Search_Frame::contentCleared() {
+    contentEdited("");
   }
 
   // protected
@@ -332,8 +339,8 @@ namespace Jinhui {
 
   void Search_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
-    mMainLayout->setContentsMargins(0, 0, 0, 0);
-    mMainLayout->setSpacing(0);
+    //mMainLayout->setContentsMargins(0, 0, 0, 0);
+    //mMainLayout->setSpacing(0);
   }
 
   void Search_Frame::init() {
@@ -348,56 +355,94 @@ namespace Jinhui {
     mClose->hide();
 
     connect(mContent, SIGNAL(textEdited(const QString&)), this, SLOT(contentEdited(const QString&)));
+    connect(mClose, SIGNAL(clearCompleted()), this, SLOT(contentCleared()));
   }
 
   /*
    * TreeTopLevelItem_Label
    */
   // cotr
-  TreeTopLevelItem_Label::TreeTopLevelItem_Label(QWidget* parent)
-    :UniversalLabel_Frame(parent) {}
+  TreeItem_Label::TreeItem_Label(QWidget* parent)
+    :UniversalLabel_Frame(parent) {
+    setMouseTracking(true);
+  }
 
-  TreeTopLevelItem_Label::~TreeTopLevelItem_Label() {}
+  TreeItem_Label::~TreeItem_Label() {}
 
-  void TreeTopLevelItem_Label::setupUi(QSharedPointer<const Protocol> protocol) {
+  void TreeItem_Label::setupUi(QSharedPointer<const Protocol> protocol) {
     initWindow();
     initLayout();
     init();
   }
 
-  DealWithMouseEvent_Label* TreeTopLevelItem_Label::collapseExpand() const {
-    return dynamic_cast<DealWithMouseEvent_Label*>(mCollapseExpand);
+  DealWithMouseEventEx_Label *TreeItem_Label::collapseExpand() const {
+    return dynamic_cast<DealWithMouseEventEx_Label*>(mCollapseExpand);
   }
 
-  Label* TreeTopLevelItem_Label::icon() const {
+  Label* TreeItem_Label::icon() const {
     return mIcon;
   }
 
-  Label* TreeTopLevelItem_Label::content() const {
+  Label* TreeItem_Label::content() const {
     return mContent;
   }
 
-  OperatorsHorizontal_Frame* TreeTopLevelItem_Label::operating() const {
+  OperatorsHorizontal_Frame* TreeItem_Label::operating() const {
     return dynamic_cast<OperatorsHorizontal_Frame*>(mOperating);
   }
 
-  QHBoxLayout* TreeTopLevelItem_Label::mainLayout() const {
+  QHBoxLayout* TreeItem_Label::mainLayout() const {
     return dynamic_cast<QHBoxLayout*>(mMainLayout);
   }
 
-  // protected
-  void TreeTopLevelItem_Label::initWindow() {
+  void TreeItem_Label::insertStretch(int index) {
+    mMainLayout->insertStretch(index);
   }
 
-  void TreeTopLevelItem_Label::initLayout() {
+  bool TreeItem_Label::hasChild() const {
+    return !mChilds.isEmpty();
+  }
+
+  bool TreeItem_Label::isExpand() const {
+    return mExpand;
+  }
+
+  void TreeItem_Label::collapse() {
+    if (!mChilds.isEmpty()) {
+      auto it = mChilds.begin();
+      auto end = mChilds.end();
+      for (; it != end; ++it) {
+        (*it)->hide();
+      }
+      mExpand = false;
+    }
+  }
+
+  void TreeItem_Label::expand(){
+    if (!mChilds.isEmpty()) {
+      auto it = mChilds.begin();
+      auto end = mChilds.end();
+      for (; it != end; ++it) {
+        (*it)->show();
+      }
+      mExpand = true;
+    }
+  }
+
+  // protected
+  void TreeItem_Label::initWindow() {
+  }
+
+  void TreeItem_Label::initLayout() {
     mMainLayout = new QHBoxLayout(this);
   }
 
-  void TreeTopLevelItem_Label::init() {
-    mCollapseExpand = new DealWithMouseEvent_Label;
+  void TreeItem_Label::init() {
+    mCollapseExpand = new DealWithMouseEventEx_Label;
     mIcon = new Label;
     mContent = new Label;
     mOperating = new OperatorsHorizontal_Frame;
+    mOperating->setupUi(QSharedPointer<const Protocol>());
     mMainLayout->addWidget(mCollapseExpand);
     mMainLayout->addWidget(mIcon);
     mMainLayout->addWidget(mContent);
@@ -405,31 +450,12 @@ namespace Jinhui {
     mMainLayout->addWidget(mOperating);
   }
 
-  /*
-   * TreeChildLevelItem_Label
-   */
-  // cotr
-  TreeChildLevelItem_Label::TreeChildLevelItem_Label(QWidget* parent)
-    :TreeTopLevelItem_Label(parent) {}
-
-  TreeChildLevelItem_Label::~TreeChildLevelItem_Label() {}
-
-  void TreeChildLevelItem_Label::setupUi(QSharedPointer<const Protocol> protocol) {
-    initWindow();
-    initLayout();
-    init();
+  void TreeItem_Label::leaveEvent(QEvent *event) {
+      mOperating->hide();
   }
 
-  // protected
-  void TreeChildLevelItem_Label::initWindow() {
-  }
-
-  void TreeChildLevelItem_Label::initLayout() {
-  }
-
-  void TreeChildLevelItem_Label::init() {
-    TreeTopLevelItem_Label::setupUi(QSharedPointer<const Protocol>());
-    mCollapseExpand->hide();
+  void TreeItem_Label::mouseMoveEvent(QMouseEvent *event) {
+      mOperating->show();
   }
 
   /*
@@ -478,33 +504,68 @@ namespace Jinhui {
     init();
   }
 
-  void Tree::addTopLevelItem(Frame* topLevelItem) {
-    mTopLevelItems[topLevelItem->objectName()];
-    emit addTopLevelItem_Signal(topLevelItem->objectName());
+  void Tree::addTopLevelItem(TreeItem_Label* topLevelItem, bool collapseShow
+                             ,bool iconShow, bool contentShow, bool operatFrameShow) {
+    mItems[topLevelItem->objectName()] = topLevelItem;
+
+    topLevelItem->collapseExpand()->setVisible(collapseShow);
+    topLevelItem->icon()->setVisible(iconShow);
+    topLevelItem->content()->setVisible(contentShow);
+    topLevelItem->operating()->setVisible(operatFrameShow);
+    topLevelItem->mParent = nullptr;
+    mMainLayout->addWidget(topLevelItem);
+    //emit addTopLevelItem_Signal(topLevelItem->objectName());
   }
 
-  void Tree::addChildLevelItem(const QString topLevelItem, Frame* childLevelItem) {
-    if (mTopLevelItems.contains(topLevelItem)) {
-      ChildItems childItems = mTopLevelItems.value(topLevelItem);
-      //childItems[childLevelItem->objectName()] = childLevelItem;
-      emit addChildLevelItem_Signal(topLevelItem, childLevelItem->objectName());
+  void Tree::addChildLevelItem(const QString topLevelItem, Jinhui::TreeItem_Label *childLevelItem
+                               ,bool collapseShow, bool iconShow
+                               ,bool contentShow, bool operatFrameShow) {
+    if (mItems.contains(topLevelItem)) {
+      mItems[childLevelItem->objectName()] = childLevelItem;
+
+      TreeItem_Label* topItem = dynamic_cast<TreeItem_Label*>(mItems.value(topLevelItem));
+      topItem->mChilds.append(childLevelItem);
+      childLevelItem->mParent = topItem;
+      childLevelItem->collapseExpand()->setVisible(collapseShow);
+      childLevelItem->icon()->setVisible(iconShow);
+      childLevelItem->content()->setVisible(contentShow);
+      childLevelItem->operating()->setVisible(operatFrameShow);
+      childLevelItem->insertStretch(0);
+      mMainLayout->insertWidget(mMainLayout->indexOf(topItem) + 1, childLevelItem);
+      if (!topItem->mChilds.isEmpty()) {
+        topItem->collapseExpand()->setVisible(true);
+      }
+      //emit addChildLevelItem_Signal(topLevelItem, childLevelItem->objectName());
     }
   }
 
   void Tree::delTopLevelItem(const QString topLevelItem) {
-    if (mTopLevelItems.contains(topLevelItem)) {
-      mTopLevelItems.remove(topLevelItem);
-      emit delTopLevelItem_Signal(topLevelItem);
+    if (mItems.contains(topLevelItem)) {
+      TreeItem_Label* topItem = dynamic_cast<TreeItem_Label*>(mItems.value(topLevelItem));
+      auto it = topItem->mChilds.begin();
+      auto end = topItem->mChilds.end();
+      for (; it != end; ++it) {
+        mMainLayout->removeWidget(*it);
+        mItems.remove((*it)->objectName());
+      }
+      topItem->mChilds.clear();
+      mMainLayout->removeWidget(topItem);
+      mItems.remove(topLevelItem);
+      //emit delTopLevelItem_Signal(topLevelItem);
     }
   }
 
-  void Tree::delChildLevelItem(const QString topLevelItem, const QString childLevelItem) {
-    if (mTopLevelItems.contains(topLevelItem)) {
-      ChildItems childItems = mTopLevelItems.value(topLevelItem);
-      if (childItems.contains(childLevelItem)) {
-        childItems.remove(childLevelItem);
-        emit delChildLevelItem_Signal(topLevelItem, childLevelItem);
+  void Tree::delChildLevelItem(const QString childLevelItem) {
+    if (mItems.contains(childLevelItem)) {
+      TreeItem_Label* childItem = dynamic_cast<TreeItem_Label*>(mItems.value(childLevelItem));
+      childItem->mParent->mChilds.remove(childItem->mParent->mChilds.indexOf(childItem));
+      mMainLayout->removeWidget(mItems.value(childLevelItem));
+      mItems.value(childLevelItem)->hide();
+      mItems.remove(childLevelItem);
+      if (childItem->mParent->mChilds.isEmpty()) {
+        childItem->mParent->collapseExpand()->setVisible(false);
       }
+        //emit delChildLevelItem_Signal(topLevelItem, childLevelItem);
     }
   }
 
@@ -560,6 +621,9 @@ namespace Jinhui {
   }
 
   void IVMS4200ContentAreaStyleModel_Frame::rightAddWgt(Frame* wgt) {
+    if (!wgt) {
+      return;
+    }
     mRightWgt->addWidget(wgt);
     mRightwgts[wgt->productName()] = wgt;
   }
@@ -624,6 +688,12 @@ namespace Jinhui {
 
   void IVMS4200ContentAreaStyleModel_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
+    mLeftLayout = new QHBoxLayout;
+    mMidLayout = new QHBoxLayout;
+    mRightLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mLeftLayout);
+    mMainLayout->addLayout(mMidLayout);
+    mMainLayout->addLayout(mRightLayout);
     mMainLayout->setContentsMargins(0, 0, 0, 0);
     mMainLayout->setSpacing(0);
   }
@@ -633,9 +703,60 @@ namespace Jinhui {
     mMidWgt = new IVMS4200MainPreviewMidWgt_Frame;
     mMidWgt->setupUi(QSharedPointer<const Protocol>());
     mRightWgt = new QStackedWidget;
-    mMainLayout->addWidget(mLeftWgt);
-    mMainLayout->addWidget(mMidWgt);
-    mMainLayout->addWidget(mRightWgt);
+    mLeftLayout->addWidget(mLeftWgt);
+    mMidLayout->addWidget(mMidWgt);
+    mRightLayout->addWidget(mRightWgt);
+  }
+
+  /*
+   * IVMS4200MainPreviewLeftResWgt_Frame
+   */
+  // cotr
+  IVMS4200MainPreviewLeftResWgt_Frame::IVMS4200MainPreviewLeftResWgt_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  IVMS4200MainPreviewLeftResWgt_Frame::~IVMS4200MainPreviewLeftResWgt_Frame() {}
+
+  void IVMS4200MainPreviewLeftResWgt_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  TitleWidget_Frame* IVMS4200MainPreviewLeftResWgt_Frame::view() const {
+    return dynamic_cast<TitleWidget_Frame*>(mView);
+  }
+
+  TitleWidget_Frame* IVMS4200MainPreviewLeftResWgt_Frame::monitor() const {
+    return dynamic_cast<TitleWidget_Frame*>(mMonitor);
+  }
+
+  void IVMS4200MainPreviewLeftResWgt_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+  // protected
+  void IVMS4200MainPreviewLeftResWgt_Frame::initWindow() {
+  }
+
+  void IVMS4200MainPreviewLeftResWgt_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setSpacing(0);
+  }
+
+  void IVMS4200MainPreviewLeftResWgt_Frame::init() {
+    mView = new TitleWidget_Frame;
+    mView->setupUi(QSharedPointer<const Protocol>());
+    Frame* searchTree = new SearchTree_Frame;
+    searchTree->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<TitleWidget_Frame*>(mView)->addWidget(searchTree);
+    mMonitor = new TitleWidget_Frame;
+    mMonitor->setupUi(QSharedPointer<const Protocol>());
+    Frame* searchList = new SearchList_Frame;
+    searchList->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<TitleWidget_Frame*>(mMonitor)->addWidget(searchList);
+    mMainLayout->addWidget(mView);
+    mMainLayout->addWidget(mMonitor);
   }
 
   /*
@@ -657,6 +778,14 @@ namespace Jinhui {
     return dynamic_cast<IVMS4200TitleWgt_Frame*>(mTitle);
   }
 
+  IVMS4200MainPreviewLeftResWgt_Frame* IVMS4200MainPreviewLeftWgt_Frame::res() const {
+    return dynamic_cast<IVMS4200MainPreviewLeftResWgt_Frame*>(mRes);
+  }
+
+  void IVMS4200MainPreviewLeftWgt_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
   // protected
   void IVMS4200MainPreviewLeftWgt_Frame::initWindow() {
   }
@@ -664,6 +793,7 @@ namespace Jinhui {
   void IVMS4200MainPreviewLeftWgt_Frame::initLayout() {
     mMainLayout = new QVBoxLayout(this);
     mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setSpacing(0);
   }
 
   void IVMS4200MainPreviewLeftWgt_Frame::init() {
@@ -672,6 +802,9 @@ namespace Jinhui {
     mContentArea = new QStackedWidget;
     mMainLayout->addWidget(mTitle);
     mMainLayout->addWidget(mContentArea);
+    mRes = new IVMS4200MainPreviewLeftResWgt_Frame;
+    mRes->setupUi(QSharedPointer<const Protocol>());
+    mContentArea->addWidget(mRes);
   }
 
   /*
@@ -1616,6 +1749,19 @@ namespace Jinhui {
   FilterMenuBar_Frame* FilterMenuBarTable_Frame::filterMenuBar() const {
     return dynamic_cast<FilterMenuBar_Frame*>(mFilterMenuBar);
   }
+
+  void FilterMenuBarTable_Frame::setModel(TableModel* model) {
+    mTable->setModel(model);
+  }
+
+  void FilterMenuBarTable_Frame::showHorHeader() {
+    mTable->horizontalHeader()->show();
+    int loginIndex = mTable->horizontalHeader()->logicalIndex(1);
+    mTable->horizontalHeader()->setSortIndicatorShown(true);
+    mTable->horizontalHeader()->setSortIndicator(loginIndex, Qt::DescendingOrder);
+    bool b = mTable->horizontalHeader()->isSortIndicatorShown();
+  }
+
   // protected
   void FilterMenuBarTable_Frame::initWindow() {
   }
@@ -1627,7 +1773,9 @@ namespace Jinhui {
   void FilterMenuBarTable_Frame::init() {
     mFilterMenuBar = new FilterMenuBar_Frame;
     mFilterMenuBar->setupUi(QSharedPointer<const Protocol>());
+    mTable = new QTableView;
     mMainLayout->addWidget(mFilterMenuBar, 0, Qt::AlignTop);
+    mMainLayout->addWidget(mTable);
   }
 
   /*
@@ -1748,8 +1896,10 @@ namespace Jinhui {
    * StretchDisplay_Frame
    */
   // cotr
-  StretchDisplay_Frame::StretchDisplay_Frame(QWidget* parent)
-    :Frame(parent) {}
+  StretchDisplay_Frame::StretchDisplay_Frame(int frontStretch, int backStretch, QWidget* parent)
+    :Frame(parent)
+    ,mFrontStretch(frontStretch)
+    ,mBackStretch(backStretch) {}
 
   StretchDisplay_Frame::~StretchDisplay_Frame() {}
 
@@ -1760,22 +1910,42 @@ namespace Jinhui {
   }
   void StretchDisplay_Frame::addIcon(Label* icon) {
     mIconLayout->addWidget(icon);
+    mIcon = icon;
   }
 
   void StretchDisplay_Frame::addWidget(Widget* widget) {
     mWidgetLayout->addWidget(widget);
+    mWidget = widget;
   }
 
   void StretchDisplay_Frame::addWidget(CheckBox* widget) {
     mWidgetLayout->addWidget(widget);
+    mCheckBox = widget;
   }
 
   void StretchDisplay_Frame::addWidget(ComboBox* widget) {
     mWidgetLayout->addWidget(widget);
+    mComboBox = widget;
   }
 
   void StretchDisplay_Frame::addWidget(Frame* widget) {
     mWidgetLayout->addWidget(widget);
+    mFrame = widget;
+  }
+
+  void StretchDisplay_Frame::addWidget(Label* widget) {
+    mWidgetLayout->addWidget(widget);
+    mLabel = widget;
+  }
+
+  void StretchDisplay_Frame::addWidget(RadioButton* widget) {
+    mWidgetLayout->addWidget(widget);
+    mRadioBtn = widget;
+  }
+
+  void StretchDisplay_Frame::addWidget(DoubleSpinBox* widget) {
+    mWidgetLayout->addWidget(widget);
+    mDoubleSpinBtn = widget;
   }
 
   //protected
@@ -1786,10 +1956,10 @@ namespace Jinhui {
     mMainLayout = new QHBoxLayout(this);
     mIconLayout = new QHBoxLayout;
     mWidgetLayout = new QHBoxLayout;
-    mMainLayout->addStretch(1);
+    mMainLayout->addStretch(mFrontStretch);
     mMainLayout->addLayout(mIconLayout);
     mMainLayout->addLayout(mWidgetLayout);
-    mMainLayout->addStretch(5);
+    mMainLayout->addStretch(mBackStretch);
   }
 
   void StretchDisplay_Frame::init() {
@@ -2160,7 +2330,12 @@ namespace Jinhui {
   }
 
   void TitleWidget_Frame::addWidget(Frame* widget) {
+    mWidget = widget;
     mWidgetLayout->addWidget(widget);
+  }
+
+  Frame* TitleWidget_Frame::widget() const {
+    return mWidget;
   }
 
   void TitleWidget_Frame::addStretch() {
@@ -2177,6 +2352,8 @@ namespace Jinhui {
     mWidgetLayout = new QHBoxLayout;
     mMainLayout->addLayout(mTitleLayout);
     mMainLayout->addLayout(mWidgetLayout);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mWidgetLayout->setContentsMargins(0, 0, 0, 0);
   }
 
   void TitleWidget_Frame::init() {
@@ -2324,5 +2501,611 @@ namespace Jinhui {
     mDirectory = new DirectoryControl_Frame;
     mDirectory->setupUi(QSharedPointer<const Protocol>());
     mMainLayout->addWidget(mDirectory);
+  }
+
+  /*
+   * SystemConfigureCommonlyUsed_Frame
+   */
+  // cotr
+  SystemConfigureCommonlyUsed_Frame::SystemConfigureCommonlyUsed_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  SystemConfigureCommonlyUsed_Frame::~SystemConfigureCommonlyUsed_Frame() {}
+
+  void SystemConfigureCommonlyUsed_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  StretchDisplay_Frame* SystemConfigureCommonlyUsed_Frame::title() const {
+    return dynamic_cast<StretchDisplay_Frame*>(mTitle);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigureCommonlyUsed_Frame::log() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mLog);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigureCommonlyUsed_Frame::appMax() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mAppMax);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigureCommonlyUsed_Frame::network() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mNetwork);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigureCommonlyUsed_Frame::keybord() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mKeybord);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigureCommonlyUsed_Frame::autoTime() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mAutoTime);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigureCommonlyUsed_Frame::beginTime() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mBeginTime);
+  }
+
+  HMenuBar_Frame* SystemConfigureCommonlyUsed_Frame::bottom() const {
+    return dynamic_cast<HMenuBar_Frame*>(dynamic_cast<TwoLabelWidget_Frame*>(mBottom)->mFrame);
+  }
+
+  void SystemConfigureCommonlyUsed_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  // protected
+  void SystemConfigureCommonlyUsed_Frame::initWindow() {
+
+  }
+
+  void SystemConfigureCommonlyUsed_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void SystemConfigureCommonlyUsed_Frame::init() {
+    mTitle = new StretchDisplay_Frame;
+    mTitle->setupUi(QSharedPointer<const Protocol>());
+    Label* icon = new Label;
+    Label* text = new Label;
+    dynamic_cast<StretchDisplay_Frame*>(mTitle)->addIcon(icon);
+    dynamic_cast<StretchDisplay_Frame*>(mTitle)->addWidget(text);
+    mLog = new TwoLabelWidget_Frame;
+    mLog->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* logComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mLog)->addWidget(logComboBox);;
+    mAppMax = new TwoLabelWidget_Frame;
+    mAppMax->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* appMaxComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mAppMax)->addWidget(appMaxComboBox);
+    mNetwork = new TwoLabelWidget_Frame;
+    mNetwork->setupUi(QSharedPointer<const Protocol>());
+    Frame* multiRadio = new MultiRadioButton_Frame;
+    multiRadio->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<MultiRadioButton_Frame*>(multiRadio)->addRadioButton();
+    dynamic_cast<MultiRadioButton_Frame*>(multiRadio)->addRadioButton();
+    dynamic_cast<MultiRadioButton_Frame*>(multiRadio)->addRadioButton();
+    dynamic_cast<TwoLabelWidget_Frame*>(mNetwork)->addWidget(multiRadio);
+    mKeybord = new TwoLabelWidget_Frame;
+    mKeybord->setupUi(QSharedPointer<const Protocol>());
+    mAutoTime = new TwoLabelWidget_Frame;
+    mAutoTime->setupUi(QSharedPointer<const Protocol>());
+    CheckBox* autoTimeCheckBox = new CheckBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mAutoTime)->addWidget(autoTimeCheckBox);
+    mBeginTime = new TwoLabelWidget_Frame;
+    mBeginTime->setupUi(QSharedPointer<const Protocol>());
+    DoubleSpinBox* beginTimeDouSpinBox = new DoubleSpinBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mBeginTime)->addWidget(beginTimeDouSpinBox);
+    mBottom = new TwoLabelWidget_Frame;
+    mBottom->setupUi(QSharedPointer<const Protocol>());
+    Frame* mBottomMenu = new HMenuBar_Frame;
+    mBottomMenu->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<TwoLabelWidget_Frame*>(mBottom)->addWidget(mBottomMenu);
+    mMainLayout->addWidget(mTitle);
+    mMainLayout->addWidget(mLog);
+    mMainLayout->addWidget(mAppMax);
+    mMainLayout->addWidget(mNetwork);
+    mMainLayout->addWidget(mKeybord);
+    mMainLayout->addWidget(mAutoTime);
+    mMainLayout->addWidget(mBeginTime);
+    mMainLayout->addWidget(mBottom);
+  }
+
+  /*
+   * MultiRadioButton_Frame
+   */
+  // cotr
+  MultiRadioButton_Frame::MultiRadioButton_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  MultiRadioButton_Frame::~MultiRadioButton_Frame() {}
+
+  void MultiRadioButton_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void MultiRadioButton_Frame::addRadioButton() {
+    RadioButton* radioBtn = new RadioButton;
+    mMainLayout->addWidget(radioBtn);
+    mBtns.append(radioBtn);
+  }
+
+  RadioButton* MultiRadioButton_Frame::button(int index) const {
+    if ((-1 < index) && (mBtns.size() > index)) {
+      return mBtns.at(index);
+    }
+    return nullptr;
+  }
+
+  // protected
+  void MultiRadioButton_Frame::initWindow() {
+  }
+
+  void MultiRadioButton_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+  }
+
+  void MultiRadioButton_Frame::init() {
+
+  }
+
+  /*
+   * TwoLabelWidget_Frame
+   */
+  // cotr
+  TwoLabelWidget_Frame::TwoLabelWidget_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  TwoLabelWidget_Frame::~TwoLabelWidget_Frame() {}
+
+  void TwoLabelWidget_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* TwoLabelWidget_Frame::leftLabel() const {
+    return mLeftLabel;
+  }
+
+  Label* TwoLabelWidget_Frame::rightLabel() const {
+    return mRightLabel;
+  }
+
+  void TwoLabelWidget_Frame::addWidget(Widget* wgt) {
+  }
+
+  void TwoLabelWidget_Frame::addWidget(ComboBox* wgt) {
+    mMainlayout->addWidget(wgt, 0, Qt::AlignLeft);
+    mComboBox = wgt;
+  }
+
+  void TwoLabelWidget_Frame::addWidget(RadioButton* wgt) {
+    mMainlayout->addWidget(wgt, 0, Qt::AlignLeft);
+    mRadioBtn = wgt;
+  }
+
+  void TwoLabelWidget_Frame::addWidget(CheckBox* wgt) {
+    mMainlayout->addWidget(wgt, 0, Qt::AlignLeft);
+    mCheckBox = wgt;
+  }
+
+  void TwoLabelWidget_Frame::addWidget(DoubleSpinBox* wgt) {
+    mMainlayout->addWidget(wgt, 0, Qt::AlignLeft);
+    mDoubleSpinBox = wgt;
+  }
+
+  void TwoLabelWidget_Frame::addWidget(Frame* wgt) {
+    mMainlayout->addWidget(wgt, 0, Qt::AlignLeft);
+    mFrame = wgt;
+  }
+
+  // protected
+  void TwoLabelWidget_Frame::initWindow() {
+  }
+
+  void TwoLabelWidget_Frame::initLayout() {
+    mMainlayout = new QHBoxLayout(this);
+  }
+
+  void TwoLabelWidget_Frame::init() {
+    mLeftLabel = new Label;
+    mRightLabel = new Label;
+    mMainlayout->addWidget(mLeftLabel, 0, Qt::AlignRight);
+    mMainlayout->addWidget(mRightLabel, 0, Qt::AlignRight);
+  }
+
+  /*
+   * SystemConfigurePreviewPlayback
+   */
+  // cotr
+  SystemConfigurePreviewPlayback::SystemConfigurePreviewPlayback(QWidget* parent)
+    :Frame(parent) {}
+
+  SystemConfigurePreviewPlayback::~SystemConfigurePreviewPlayback() {}
+
+  void SystemConfigurePreviewPlayback::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  StretchDisplay_Frame* SystemConfigurePreviewPlayback::title() const {
+    return dynamic_cast<StretchDisplay_Frame*>(mTitle);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::pictureType() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mPictureType);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::downFile() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mDownFile);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::search() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mSearch);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::eventPlayback() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mEventPlayback);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::playback() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mPlayback);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::start() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mStart);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::close() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mClose);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::enable() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mEnable);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePreviewPlayback::automatic() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mAutomatic);
+  }
+
+  HMenuBar_Frame* SystemConfigurePreviewPlayback::bottom() const {
+    return dynamic_cast<HMenuBar_Frame*>(dynamic_cast<TwoLabelWidget_Frame*>(mBottom)->mFrame);
+  }
+
+  void SystemConfigurePreviewPlayback::addStretch() {
+    mMainLayout->addStretch();
+  }
+  // protected
+  void SystemConfigurePreviewPlayback::initWindow() {
+  }
+
+  void SystemConfigurePreviewPlayback::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void SystemConfigurePreviewPlayback::init() {
+    mTitle = new StretchDisplay_Frame;
+    mTitle->setupUi(QSharedPointer<const Protocol>());
+    Label* icon = new Label;
+    Label* text = new Label;
+    dynamic_cast<StretchDisplay_Frame*>(mTitle)->addIcon(icon);
+    dynamic_cast<StretchDisplay_Frame*>(mTitle)->addWidget(text);
+    mPictureType = new TwoLabelWidget_Frame;
+    mPictureType->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* logComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mPictureType)->addWidget(logComboBox);;
+    mDownFile = new TwoLabelWidget_Frame;
+    mDownFile->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* appMaxComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mDownFile)->addWidget(appMaxComboBox);
+    mSearch = new TwoLabelWidget_Frame;
+    mSearch->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* searchComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mSearch)->addWidget(searchComboBox);
+    mEventPlayback = new TwoLabelWidget_Frame;
+    mEventPlayback->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* eventComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mEventPlayback)->addWidget(eventComboBox);
+    mPlayback = new TwoLabelWidget_Frame;
+    mPlayback->setupUi(QSharedPointer<const Protocol>());
+    mStart = new TwoLabelWidget_Frame;
+    mStart->setupUi(QSharedPointer<const Protocol>());
+    mClose = new TwoLabelWidget_Frame;
+    mClose->setupUi(QSharedPointer<const Protocol>());
+    mEnable = new TwoLabelWidget_Frame;
+    mEnable->setupUi(QSharedPointer<const Protocol>());
+    mAutomatic = new TwoLabelWidget_Frame;
+    mAutomatic->setupUi(QSharedPointer<const Protocol>());
+    mBottom = new TwoLabelWidget_Frame;
+    mBottom->setupUi(QSharedPointer<const Protocol>());
+    Frame* mBottomMenu = new HMenuBar_Frame;
+    mBottomMenu->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<TwoLabelWidget_Frame*>(mBottom)->addWidget(mBottomMenu);
+    mMainLayout->addWidget(mTitle);
+    mMainLayout->addWidget(mPictureType);
+    mMainLayout->addWidget(mDownFile);
+    mMainLayout->addWidget(mSearch);
+    mMainLayout->addWidget(mEventPlayback);
+    mMainLayout->addWidget(mPlayback);
+    mMainLayout->addWidget(mStart);
+    mMainLayout->addWidget(mClose);
+    mMainLayout->addWidget(mEnable);
+    mMainLayout->addWidget(mAutomatic);
+    mMainLayout->addWidget(mBottom);
+  };
+
+  /*
+   * SystemConfigurePicture_Frame
+   */
+  // cotr
+  SystemConfigurePicture_Frame::SystemConfigurePicture_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  SystemConfigurePicture_Frame::~SystemConfigurePicture_Frame() {}
+
+  void SystemConfigurePicture_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  StretchDisplay_Frame* SystemConfigurePicture_Frame::title() const {
+    return dynamic_cast<StretchDisplay_Frame*>(mTitle);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::zoom() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mZoom);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::performance() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mPerformance);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::streamType() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mStreamType);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::decoding() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mDecoding);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::highLight() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mHighLight);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::osd() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mOsd);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::rule() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mRule);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::doubleSpeed() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mDoubleSpeed);
+  }
+
+  TwoLabelWidget_Frame* SystemConfigurePicture_Frame::temperature() const {
+    return dynamic_cast<TwoLabelWidget_Frame*>(mTemperature);
+  }
+
+  HMenuBar_Frame* SystemConfigurePicture_Frame::bottom() const {
+    return dynamic_cast<HMenuBar_Frame*>(dynamic_cast<TwoLabelWidget_Frame*>(mBottom)->mFrame);
+  }
+
+  void SystemConfigurePicture_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+  // protected
+  void SystemConfigurePicture_Frame::initWindow() {
+  }
+
+  void SystemConfigurePicture_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+  }
+
+  void SystemConfigurePicture_Frame::init() {
+    mTitle = new StretchDisplay_Frame;
+    mTitle->setupUi(QSharedPointer<const Protocol>());
+    Label* icon = new Label;
+    Label* text = new Label;
+    dynamic_cast<StretchDisplay_Frame*>(mTitle)->addIcon(icon);
+    dynamic_cast<StretchDisplay_Frame*>(mTitle)->addWidget(text);
+    mZoom = new TwoLabelWidget_Frame;
+    mZoom->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* logComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mZoom)->addWidget(logComboBox);;
+    mPerformance = new TwoLabelWidget_Frame;
+    mPerformance->setupUi(QSharedPointer<const Protocol>());
+    ComboBox* appMaxComboBox = new ComboBox;
+    dynamic_cast<TwoLabelWidget_Frame*>(mPerformance)->addWidget(appMaxComboBox);
+    mStreamType = new TwoLabelWidget_Frame;
+    mStreamType->setupUi(QSharedPointer<const Protocol>());
+    mDecoding = new TwoLabelWidget_Frame;
+    mDecoding->setupUi(QSharedPointer<const Protocol>());
+    mHighLight = new TwoLabelWidget_Frame;
+    mHighLight->setupUi(QSharedPointer<const Protocol>());
+    mOsd = new TwoLabelWidget_Frame;
+    mOsd->setupUi(QSharedPointer<const Protocol>());
+    mRule = new TwoLabelWidget_Frame;
+    mRule->setupUi(QSharedPointer<const Protocol>());
+    mDoubleSpeed = new TwoLabelWidget_Frame;
+    mDoubleSpeed->setupUi(QSharedPointer<const Protocol>());
+    mTemperature = new TwoLabelWidget_Frame;
+    mTemperature->setupUi(QSharedPointer<const Protocol>());
+    mBottom = new TwoLabelWidget_Frame;
+    mBottom->setupUi(QSharedPointer<const Protocol>());
+    Frame* mBottomMenu = new HMenuBar_Frame;
+    mBottomMenu->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<TwoLabelWidget_Frame*>(mBottom)->addWidget(mBottomMenu);
+    mMainLayout->addWidget(mTitle);
+    mMainLayout->addWidget(mZoom);
+    mMainLayout->addWidget(mPerformance);
+    mMainLayout->addWidget(mStreamType);
+    mMainLayout->addWidget(mDecoding);
+    mMainLayout->addWidget(mHighLight);
+    mMainLayout->addWidget(mOsd);
+    mMainLayout->addWidget(mRule);
+    mMainLayout->addWidget(mDoubleSpeed);
+    mMainLayout->addWidget(mTemperature);
+    mMainLayout->addWidget(mBottom);
+  }
+
+  /*
+   * SystemConfigureAccessContorl_Frame
+   */
+  // cotr
+  SystemConfigureAccessContorl_Frame::SystemConfigureAccessContorl_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  SystemConfigureAccessContorl_Frame::~SystemConfigureAccessContorl_Frame() {}
+
+  void SystemConfigureAccessContorl_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+
+  }
+
+  /*
+    * TwoLabelStretchWidget_Frame
+    */
+  // cotr
+  TwoLabelStretchWidget_Frame::TwoLabelStretchWidget_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  TwoLabelStretchWidget_Frame::~TwoLabelStretchWidget_Frame() {}
+
+  void TwoLabelStretchWidget_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Label* TwoLabelStretchWidget_Frame::icon() const {
+    return mIcon;
+  }
+
+  Label* TwoLabelStretchWidget_Frame::content() const {
+    return mText;
+  }
+
+  Frame* TwoLabelStretchWidget_Frame::widget() const {
+    return mWidget;
+  }
+
+  void TwoLabelStretchWidget_Frame::addWidget(Frame* widget) {
+    mWidget = widget;
+    mWgtLayout->addWidget(mWidget);
+  }
+
+  // protected
+  void TwoLabelStretchWidget_Frame::initWindow() {
+  }
+
+  void TwoLabelStretchWidget_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mIconLayout = new QHBoxLayout;
+    mTextLayout = new QHBoxLayout;
+    mWgtLayout = new QHBoxLayout;
+    mMainLayout->addLayout(mIconLayout);
+    mMainLayout->addLayout(mTextLayout);
+    mMainLayout->addStretch();
+    mMainLayout->addLayout(mWgtLayout);
+  }
+
+  void TwoLabelStretchWidget_Frame::init() {
+    mIcon = new Label;
+    mText = new Label;
+    mIconLayout->addWidget(mIcon);
+    mTextLayout->addWidget(mText);
+  }
+
+  /*
+    * SearchTree_Frame
+    */
+  // cotr
+  SearchTree_Frame::SearchTree_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  SearchTree_Frame::~SearchTree_Frame() {}
+
+  void SearchTree_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Search_Frame* SearchTree_Frame::search() const {
+    return dynamic_cast<Search_Frame*>(mSearch);
+  }
+
+  Tree *SearchTree_Frame::tree() const {
+    return dynamic_cast<Tree*>(mTree);
+  }
+
+  // protected
+  void SearchTree_Frame::initWindow() {
+  }
+
+  void SearchTree_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(2, 0, 0, 0);
+  }
+
+  void SearchTree_Frame::init() {
+    mSearch = new Search_Frame;
+    mSearch->setupUi(QSharedPointer<const Protocol>());
+    mTree = new Tree;
+    mTree->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addWidget(mSearch);
+    mMainLayout->addWidget(mTree);
+  }
+
+  /*
+    * SearchList_Frame
+    */
+  // cotr
+  SearchList_Frame::SearchList_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  SearchList_Frame::~SearchList_Frame() {}
+
+  void SearchList_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Search_Frame* SearchList_Frame::search() const {
+    return dynamic_cast<Search_Frame*>(mSearch);
+  }
+
+  QListWidget* SearchList_Frame::list() const {
+    return mList;
+  }
+
+  void SearchList_Frame::addItem(Frame* widget) {
+    QListWidgetItem* item = new QListWidgetItem;
+    mList->addItem(item);
+    mList->setItemWidget(item, widget);
+  }
+
+  // protected
+  void SearchList_Frame::initWindow() {
+  }
+
+  void SearchList_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(2, 0, 0, 0);
+  }
+
+  void SearchList_Frame::init() {
+    mSearch = new Search_Frame;
+    mSearch->setupUi(QSharedPointer<const Protocol>());
+    mList = new QListWidget;
+    mMainLayout->addWidget(mSearch);
+    mMainLayout->addWidget(mList);
   }
 }

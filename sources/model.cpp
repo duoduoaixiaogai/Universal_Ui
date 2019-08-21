@@ -120,4 +120,52 @@ namespace Jinhui {
     mRecords.swap(records);
     insertRows(0, mRecords.count());
   }
+
+  /*
+   * TableModel
+   */
+  // cotr
+  TableModel::TableModel(QObject* parent)
+    :QAbstractTableModel(parent) {}
+
+  TableModel::~TableModel() {}
+
+  /*
+   * DeviceManage_Model
+   */
+  // cotr
+  DeviceManage_Model::DeviceManage_Model(QStringList header, QObject* parent)
+    :TableModel(parent)
+  ,mHeader(header) {}
+
+  DeviceManage_Model::~DeviceManage_Model() {}
+
+  int DeviceManage_Model::rowCount(const QModelIndex& parent) const {
+    return 0;
+  }
+
+  int DeviceManage_Model::columnCount(const QModelIndex& parent) const {
+    return mHeader.count();
+  }
+
+  QVariant DeviceManage_Model::data(const QModelIndex& index, int role) const {
+    return QVariant();
+  }
+
+  QVariant DeviceManage_Model::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (0 == section) {
+      if (Qt::Horizontal == orientation) {
+        if (Qt::UserRole == role) {
+          return QVariant();
+        }
+      }
+    } else {
+      if (Qt::Horizontal == orientation) {
+        if (Qt::DisplayRole == role) {
+          return mHeader[section];
+        }
+      }
+    }
+    return QVariant();
+  }
 }
