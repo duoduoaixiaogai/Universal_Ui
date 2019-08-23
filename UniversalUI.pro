@@ -103,7 +103,8 @@ SOURCES += \
     sources/lineedit.cpp \
     sources/checkbox.cpp \
     sources/radiobutton.cpp \
-    sources/doublespinbox.cpp
+    sources/doublespinbox.cpp \
+    sources/slider.cpp
 
 HEADERS += \
         #mainwindow.h \

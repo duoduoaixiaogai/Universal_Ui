@@ -325,6 +325,42 @@ Jinhui--Label#EventCenterMenuClose {
   min-width: 28;
   min-height: 20;
 }
+/*
+  电子地图
+*/
+Jinhui--Frame#DigitalMapMenu {
+  min-width: 170;
+  max-width: 170;
+  background: black;
+  border-bottom: 3px;
+  border-style: solid;
+  border-bottom-color: red;
+}
+
+Jinhui--Frame#DigitalMapMenu:hover {
+  background: gray;
+}
+
+Jinhui--Label#DigitalMapMenuIcon {
+  background-image: url(:/icon/digitalmap.png);
+  min-width: 38;
+  min-height: 20;
+  max-width: 38;
+  max-height: 20;
+}
+
+Jinhui--Label#DigitalMapMenuText {
+  min-height: 20;
+  color: white;
+}
+
+Jinhui--Label#DigitalMapMenuClose {
+  background-image: url(:/icon/menu1close.png);
+  max-width: 28;
+  max-height: 20;
+  min-width: 28;
+  min-height: 20;
+}
 
 
 Jinhui--Frame#MainPreviewStatusBar {
@@ -2013,6 +2049,7 @@ Jinhui--QStackedWidget#MainPreviewLeftWgt {
 }
 
 Jinhui--Frame#MainPreviewFeatureFrame {
+  min-width: 300;
   max-width: 300;
 }
 
@@ -2094,6 +2131,439 @@ Jinhui--Label#CustomViewDel {
   max-width: 26;
   max-height: 21;
 }
+
+Jinhui--Label#MonitorItem1Icon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  min-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+Jinhui--Label#MonitorItem1Content {
+  color: white;
+}
+
+Jinhui--Frame#MonitorItem1Frame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#MonitorPreview {
+  background-image: url(:/icon/monitorpreview.png);
+  min-width: 23;
+  min-height: 24;
+  max-width: 23;
+  max-height: 24;
+}
+
+Jinhui--Label#MonitorMore {
+  background-image: url(:/icon/monitormore.png);
+  min-width: 26;
+  min-height: 14;
+  max-width: 26;
+  max-height: 14;
+}
+
+Jinhui--Label#CustomViewTitleContent {
+  color: white;
+  background: black;
+  min-height: 50;
+  max-height: 50;
+}
+
+Jinhui--Label#MonitorTitleContent {
+  color: white;
+  background: black;
+  min-height: 50;
+  max-height: 50;
+}
+
+Jinhui--Frame#CustomViewWidget {
+}
+
+Jinhui--Frame#PollingMultiFrame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#PollingCollapse {
+  background-image: url(:/icon/collapseup.png);
+  min-width: 16;
+  min-height: 24;
+  max-width: 16;
+  max-height: 24;
+}
+
+Jinhui--Label#PollingContent {
+  color: white;
+}
+
+Jinhui--Label#PollingAdd {
+  background-image: url(:/icon/add.png);
+  min-width: 24;
+  min-height: 25;
+  max-width: 24;
+  max-height: 25;
+}
+
+Jinhui--Frame#PollingAllFrame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#PollingAllContent {
+  color: white;
+}
+
+Jinhui--Label#PollingBegin {
+  background-image: url(:/icon/pollingbegin.png);
+  min-width: 25;
+  min-height: 24;
+  max-width: 25;
+  max-height: 24;
+}
+
+Jinhui--Frame#PollingAllViewFrame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#PollingAllViewCollapse {
+  background-image: url(:/icon/collapseup.png);
+  min-width: 16;
+  min-height: 24;
+  max-width: 16;
+  max-height: 24;
+}
+
+Jinhui--Label#PollingAllViewContent {
+  color: white;
+}
+
+Jinhui--Label#PollingAllViewBegin {
+  background-image: url(:/icon/pollingbegin.png);
+  min-width: 25;
+  min-height: 24;
+  max-width: 25;
+  max-height: 24;
+}
+
+Jinhui--Frame#SinglePollingFrame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#SinglePollingContent {
+  color: white;
+}
+
+Jinhui--Frame#NewViewFrame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#NewViewIcon {
+  background-image: url(:/icon/customview.png);
+  min-width: 22;
+  min-height: 24;
+  max-width: 22;
+  max-height: 24;
+}
+
+Jinhui--Label#NewViewContent{
+  color: white;
+}
+
+Jinhui--Frame#MonitorNewItem1Frame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#MonitorNewItem1Icon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  min-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+Jinhui--Label#MonitorNewItem1Content {
+  color: white;
+}
+
+Jinhui--Label#MonitorNewItem1Play {
+  background-image: url(:/icon/monitorpreview.png);
+  min-width: 23;
+  min-height: 24;
+  max-width: 23;
+  max-height: 24;
+}
+
+Jinhui--Label#EventPlaybackSearch {
+  color: white;
+  background: red;
+  min-height: 30;
+  max-height: 30;
+}
+
+Jinhui--Frame#EventList {
+  min-height: 600;
+}
+
+Jinhui--Frame#EventNewItem1Frame:hover {
+  background: black;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: red;
+}
+
+Jinhui--Label#EventNewItem1Icon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  min-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+Jinhui--Label#EventNewItem1Content {
+  color: white;
+}
+
+Jinhui--Frame#DataRetrievalFaceFrame {
+  min-height:500;
+}
+
+Jinhui--Label#DataRetrievalFaceSearch {
+  background: red;
+  min-height: 30;
+  max-height: 30;
+}
+
+Jinhui--Label#DataRetrievalItem1Icon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  max-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+Jinhui--Frame#DataRetrievalItem1Frame:hover {
+  background: black;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Label#DataRetrievalItem1Content {
+  color: white;
+}
+
+Jinhui--Frame#DataRetrievalHumanList {
+  min-height: 600;
+}
+
+Jinhui--Label#DataRetrievalHumanPicture {
+  min-height: 100;
+  max-height: 100;
+  background-image: url(:/icon/humansearchbackimage.png);
+  /*
+  border-width: 2px;
+  border-style: solid;
+  border-color: red;
+  */
+}
+
+Jinhui--Label#DataRetrievalHumanComboBoxLabel {
+  border-width: 2px;
+  border-style: solid;
+  border-color: white;
+}
+
+Jinhui--Label#DataRetrievalHumanLabel {
+  background: red;
+  min-height: 30;
+  max-height: 30;
+}
+
+Jinhui--Label#DataRetrievalHumanNewItemIcon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  max-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+Jinhui--Label#DataRetrievalHumanNewItemContent {
+  color: white;
+}
+
+Jinhui--Frame#DataRetrievalHumanNewItemFrame:hover {
+  background: black;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Frame#DataRetrievalBehaviorList {
+  min-height: 800;
+}
+
+Jinhui--Label#DataRetrievalBehaviorLabel {
+  background: red;
+  min-height: 30;
+  max-height: 30;
+}
+
+Jinhui--Label#DataRetrievalBehavoirNewItemIcon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  max-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+Jinhui--Label#DataRetrievalBehaviorNewItemContent {
+  color: white;
+}
+
+Jinhui--Frame#DataRetrievalBehaviorNewItemFrame:hover {
+  background: black;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Label#DataRetrievalCarLabel {
+  background: red;
+  min-height: 30;
+  max-height: 30;
+}
+
+Jinhui--Frame#DataRetrievalCarList {
+  min-height: 800;
+}
+
+Jinhui--Label#DataRetrievalCarNewItemIcon {
+  background-image: url(:/icon/listitem.png);
+  min-width: 29;
+  max-height: 26;
+  max-width: 29;
+  max-height: 26;
+}
+
+
+Jinhui--Label#DataRetrievalCarNewItemContent {
+  color: white;
+}
+
+Jinhui--Frame#DataRetrievalCarNewItemFrame:hover {
+  background: black;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: red;
+}
+
+Jinhui--Label#DataRetrievalContentCount {
+  color: white;
+}
+
+Jinhui--Label#DataRetrievalContentType {
+  color: white;
+}
+
+Jinhui--Label#DataRetrievalContentCountPage {
+  color: white;
+}
+
+Jinhui--Frame#DataRetrievalContentBottomBar {
+  min-height: 40;
+  max-height: 40;
+}
+
+Jinhui--Label#DataRetrievalContentLeft {
+  background-image: url(:/icon/left.png);
+  min-width: 25;
+  min-height: 34;
+  max-width: 25;
+  max-height: 34;
+}
+
+Jinhui--Label#DataRetrievalContentLeftmost {
+  background-image: url(:/icon/leftmost.png);
+  min-width: 25;
+  min-height: 34;
+  max-width: 25;
+  max-height: 34;
+}
+
+Jinhui--Label#DataRetrievalContentRight {
+  background-image: url(:/icon/right.png);
+  min-width: 25;
+  min-height: 34;
+  max-width: 25;
+  max-height: 34;
+}
+
+Jinhui--Label#DataRetrievalContentRightmost {
+  background-image: url(:/icon/rightmost.png);
+  min-width: 25;
+  min-height: 34;
+  max-width: 25;
+  max-height: 34;
+}
+
+Jinhui--Label#DataRetrievalContentBarSeparator {
+  background-image: url(:/icon/separator.png);
+  min-width: 15;
+  max-height: 26;
+  max-width: 15;
+  max-height: 26;
+}
+
+Jinhui--Label#DataRetrievalContentPicture {
+  min-height: 1000;
+  background-image: url(:/icon/databackimage.png);
+}
+
+Jinhui--Frame#DigitalMapFeatureFrame {
+  min-width: 300;
+  max-width: 300;
+}
+
+Jinhui--Label#DigitalMapPicture {
+  background-image: url(:/icon/query.png);
+  min-width: 132;
+  min-height: 113;
+  max-width: 132;
+  max-height: 113;
+}
+
+Jinhui--Label#DigitalMapLabel {
+  border-width: 2px;
+  border-style: solid;
+  border-color: white;
+  color: white;
+  min-width: 100;
+  min-height: 40;
+  max-width: 100;
+  max-height: 40;
+}
+
 Jinhui--VideoShow_Frame {
   border-width: 1px;
   border-color: black;

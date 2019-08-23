@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 * Description: 拥有框架的小部件的基类
 * Author: Niu yi qun
 * Creation date: 2019/6/27
@@ -339,7 +339,7 @@ namespace Jinhui {
 
   void Search_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
-    //mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
     //mMainLayout->setSpacing(0);
   }
 
@@ -429,6 +429,19 @@ namespace Jinhui {
     }
   }
 
+  // public slots
+  void TreeItem_Label::collapseChildItems() {
+    if (hasChild()) {
+      if (isExpand()) {
+        collapse();
+        mCollapseExpand->setStyleSheet("background-image: url(:/icon/collapseup.png)");
+      } else {
+        expand();
+        mCollapseExpand->setStyleSheet("background-image: url(:/icon/collapsedown.png)");
+      }
+    }
+  }
+
   // protected
   void TreeItem_Label::initWindow() {
   }
@@ -448,14 +461,16 @@ namespace Jinhui {
     mMainLayout->addWidget(mContent);
     mMainLayout->addStretch();
     mMainLayout->addWidget(mOperating);
+    connect(mCollapseExpand, SIGNAL(leftButtonReleased())
+            ,this, SLOT(collapseChildItems()));
   }
 
   void TreeItem_Label::leaveEvent(QEvent *event) {
-      mOperating->hide();
+    mOperating->hide();
   }
 
   void TreeItem_Label::mouseMoveEvent(QMouseEvent *event) {
-      mOperating->show();
+    mOperating->show();
   }
 
   /*
@@ -524,14 +539,20 @@ namespace Jinhui {
       mItems[childLevelItem->objectName()] = childLevelItem;
 
       TreeItem_Label* topItem = dynamic_cast<TreeItem_Label*>(mItems.value(topLevelItem));
-      topItem->mChilds.append(childLevelItem);
       childLevelItem->mParent = topItem;
       childLevelItem->collapseExpand()->setVisible(collapseShow);
       childLevelItem->icon()->setVisible(iconShow);
       childLevelItem->content()->setVisible(contentShow);
       childLevelItem->operating()->setVisible(operatFrameShow);
       childLevelItem->insertStretch(0);
-      mMainLayout->insertWidget(mMainLayout->indexOf(topItem) + 1, childLevelItem);
+      if (topItem->mChilds.isEmpty()) {
+        mMainLayout->insertWidget(mMainLayout->indexOf(topItem) + 1, childLevelItem);
+      } else {
+        TreeItem_Label* lastItem = topItem->mChilds.last();
+        int index = mMainLayout->indexOf(lastItem);
+        mMainLayout->insertWidget(index + 1, childLevelItem);
+      }
+      topItem->mChilds.append(childLevelItem);
       if (!topItem->mChilds.isEmpty()) {
         topItem->collapseExpand()->setVisible(true);
       }
@@ -565,7 +586,7 @@ namespace Jinhui {
       if (childItem->mParent->mChilds.isEmpty()) {
         childItem->mParent->collapseExpand()->setVisible(false);
       }
-        //emit delChildLevelItem_Signal(topLevelItem, childLevelItem);
+      //emit delChildLevelItem_Signal(topLevelItem, childLevelItem);
     }
   }
 
@@ -594,10 +615,132 @@ namespace Jinhui {
 
   void Tree::initLayout() {
     mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
   }
 
   void Tree::init() {
 
+  }
+
+  /*
+   * List
+   */
+  // cotr
+  List::List(QWidget* parent)
+    :Frame(parent) {}
+
+  List::~List() {}
+
+  void List::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  void List::addItem(ListItem_Label* item, bool checkBoxShow, bool iconShow
+                     ,bool contentShow, bool operatShow) {
+    mItems[item->objectName()] = item;
+
+    item->checkBox()->setVisible(checkBoxShow);
+    item->icon()->setVisible(iconShow);
+    item->content()->setVisible(contentShow);
+    item->operating()->setVisible(operatShow);
+    mMainLayout->addWidget(item);
+  }
+
+  void List::delItem(const QString itemObjName) {
+    if (mItems.contains(itemObjName)) {
+      ListItem_Label* item = mItems.value(itemObjName);
+      mMainLayout->removeWidget(item);
+      item->hide();
+      mItems.remove(itemObjName);
+    }
+  }
+
+  void List::addStretch() {
+    mMainLayout->addStretch();
+  }
+
+  // protected
+  void List::initWindow() {
+
+  }
+
+  void List::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void List::init() {
+
+  }
+
+  /*
+   * TwoComboBoxLineEditLabel_Frame
+   */
+  // cotr
+  TwoComboBoxLineEditLabel_Frame::TwoComboBoxLineEditLabel_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  TwoComboBoxLineEditLabel_Frame::~TwoComboBoxLineEditLabel_Frame() {}
+
+  void TwoComboBoxLineEditLabel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  ComboBox* TwoComboBoxLineEditLabel_Frame::comboBox1() const {
+    return mComboBox1;
+  }
+
+  ComboBox* TwoComboBoxLineEditLabel_Frame::comboBox2() const {
+    return mComboBox2;
+  }
+
+  LineEdit* TwoComboBoxLineEditLabel_Frame::lineEdit() const {
+    return mLineEdit;
+  }
+
+  DealWithMouseEventEx_Label* TwoComboBoxLineEditLabel_Frame::label() const {
+    return mLabel;
+  }
+
+  Label* TwoComboBoxLineEditLabel_Frame::title1() const {
+    return mTitle1;
+  }
+
+  Label* TwoComboBoxLineEditLabel_Frame::title2() const {
+    return mTitle2;
+  }
+
+  Label* TwoComboBoxLineEditLabel_Frame::title3() const {
+    return mTitle3;
+  }
+  // protected
+  void TwoComboBoxLineEditLabel_Frame::initWindow() {
+  }
+
+  void TwoComboBoxLineEditLabel_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void TwoComboBoxLineEditLabel_Frame::init() {
+    mTitle1 = new Label;
+    mTitle2 = new Label;
+    mTitle3 = new Label;
+    mComboBox1 = new ComboBox;
+    mComboBox2 = new ComboBox;
+    mLineEdit = new LineEdit;
+    mLabel = new DealWithMouseEventEx_Label;
+    mMainLayout->addWidget(mTitle1);
+    mMainLayout->addWidget(mComboBox1);
+    mMainLayout->addWidget(mTitle2);
+    mMainLayout->addWidget(mComboBox2);
+    mMainLayout->addWidget(mTitle3);
+    mMainLayout->addWidget(mLineEdit);
+    mMainLayout->addWidget(mLabel);
   }
 
   /*
@@ -615,72 +758,90 @@ namespace Jinhui {
     init();
   }
 
-  void IVMS4200ContentAreaStyleModel_Frame::leftAddWgt(Frame* wgt) {
-    mLeftWgt->addWidget(wgt);
-    mLeftwgts[wgt->productName()] = wgt;
+  void IVMS4200ContentAreaStyleModel_Frame::addWgt(Frame* wgt) {
+    mWgts->addWidget(wgt);
+    mHashWgts[wgt->productName()] = wgt;
   }
 
-  void IVMS4200ContentAreaStyleModel_Frame::rightAddWgt(Frame* wgt) {
-    if (!wgt) {
-      return;
-    }
-    mRightWgt->addWidget(wgt);
-    mRightwgts[wgt->productName()] = wgt;
-  }
-
-  Frame* IVMS4200ContentAreaStyleModel_Frame::leftContentAreaWgt(const QString proName) const {
-    if (mLeftwgts.contains(proName)) {
-      return mLeftwgts.value(proName);
+  Frame* IVMS4200ContentAreaStyleModel_Frame::wgt(const QString proName) const {
+    if (mHashWgts.contains(proName)) {
+      return mHashWgts.value(proName);
     }
     return nullptr;
   }
 
-  IVMS4200MainPreviewMidWgt_Frame* IVMS4200ContentAreaStyleModel_Frame::midWgt() const {
-    return dynamic_cast<IVMS4200MainPreviewMidWgt_Frame*>(mMidWgt);
-  }
-
-  Frame* IVMS4200ContentAreaStyleModel_Frame::rightContentAreaWgt(const QString proName) const {
-    if (mRightwgts.contains(proName)) {
-      return mRightwgts.value(proName);
-    }
-    return nullptr;
-  }
-
-  void IVMS4200ContentAreaStyleModel_Frame::setLeftContentAreaCurrentWgt(const QString proName) {
-    if (mLeftwgts.contains(proName)) {
-      mLeftWgt->setCurrentWidget(mLeftwgts.value(proName));
+  void IVMS4200ContentAreaStyleModel_Frame::setContentAreaCurrentWgt(const QString proName) {
+    if (mHashWgts.contains(proName)) {
+      mWgts->setCurrentWidget(mHashWgts.value(proName));
     }
   }
 
-  void IVMS4200ContentAreaStyleModel_Frame::setRightContentAreaCurrentWgt(const QString proName) {
-    if (mRightwgts.contains(proName)) {
-      mRightWgt->setCurrentWidget(mRightwgts.value(proName));
-    }
-  }
+  //void IVMS4200ContentAreaStyleModel_Frame::leftAddWgt(Frame* wgt) {
+  //  mLeftWgt->addWidget(wgt);
+  //  mLeftwgts[wgt->productName()] = wgt;
+  //}
 
-  void IVMS4200ContentAreaStyleModel_Frame::hideLeftContentArea() {
-    mLeftWgt->hide();
-  }
+  //void IVMS4200ContentAreaStyleModel_Frame::rightAddWgt(Frame* wgt) {
+  //  if (!wgt) {
+  //    return;
+  //  }
+  //  mRightWgt->addWidget(wgt);
+  //  mRightwgts[wgt->productName()] = wgt;
+  //}
 
-  void IVMS4200ContentAreaStyleModel_Frame::hideMidContentArea() {
-    mMidWgt->hide();
-  }
+  //Frame* IVMS4200ContentAreaStyleModel_Frame::leftContentAreaWgt(const QString proName) const {
+  //  if (mLeftwgts.contains(proName)) {
+  //    return mLeftwgts.value(proName);
+  //  }
+  //  return nullptr;
+  //}
 
-  void IVMS4200ContentAreaStyleModel_Frame::hideRightContentArea() {
-    mRightWgt->hide();
-  }
+  //IVMS4200MainPreviewMidWgt_Frame* IVMS4200ContentAreaStyleModel_Frame::midWgt() const {
+  //  return dynamic_cast<IVMS4200MainPreviewMidWgt_Frame*>(mMidWgt);
+  //}
 
-  void IVMS4200ContentAreaStyleModel_Frame::showLeftContentArea() {
-    mLeftWgt->show();
-  }
+  //Frame* IVMS4200ContentAreaStyleModel_Frame::rightContentAreaWgt(const QString proName) const {
+  //  if (mRightwgts.contains(proName)) {
+  //    return mRightwgts.value(proName);
+  //  }
+  //  return nullptr;
+  //}
 
-  void IVMS4200ContentAreaStyleModel_Frame::showMidContentArea() {
-    mMidWgt->show();
-  }
+  //void IVMS4200ContentAreaStyleModel_Frame::setLeftContentAreaCurrentWgt(const QString proName) {
+  //  if (mLeftwgts.contains(proName)) {
+  //    mLeftWgt->setCurrentWidget(mLeftwgts.value(proName));
+  //  }
+  //}
 
-  void IVMS4200ContentAreaStyleModel_Frame::showRightContentArea() {
-    mRightWgt->show();
-  }
+  //void IVMS4200ContentAreaStyleModel_Frame::setRightContentAreaCurrentWgt(const QString proName) {
+  //  if (mRightwgts.contains(proName)) {
+  //    mRightWgt->setCurrentWidget(mRightwgts.value(proName));
+  //  }
+  //}
+
+  //void IVMS4200ContentAreaStyleModel_Frame::hideLeftContentArea() {
+  //  mLeftWgt->hide();
+  //}
+
+  //void IVMS4200ContentAreaStyleModel_Frame::hideMidContentArea() {
+  //  mMidWgt->hide();
+  //}
+
+  //void IVMS4200ContentAreaStyleModel_Frame::hideRightContentArea() {
+  //  mRightWgt->hide();
+  //}
+
+  //void IVMS4200ContentAreaStyleModel_Frame::showLeftContentArea() {
+  //  mLeftWgt->show();
+  //}
+
+  //void IVMS4200ContentAreaStyleModel_Frame::showMidContentArea() {
+  //  mMidWgt->show();
+  //}
+
+  //void IVMS4200ContentAreaStyleModel_Frame::showRightContentArea() {
+  //  mRightWgt->show();
+  //}
 
   // protected
   void IVMS4200ContentAreaStyleModel_Frame::initWindow() {
@@ -688,24 +849,93 @@ namespace Jinhui {
 
   void IVMS4200ContentAreaStyleModel_Frame::initLayout() {
     mMainLayout = new QHBoxLayout(this);
-    mLeftLayout = new QHBoxLayout;
-    mMidLayout = new QHBoxLayout;
-    mRightLayout = new QHBoxLayout;
-    mMainLayout->addLayout(mLeftLayout);
-    mMainLayout->addLayout(mMidLayout);
-    mMainLayout->addLayout(mRightLayout);
+    //mLeftLayout = new QHBoxLayout;
+    //mMidLayout = new QHBoxLayout;
+    //mRightLayout = new QHBoxLayout;
+    //mMainLayout->addLayout(mLeftLayout);
+    //mMainLayout->addLayout(mMidLayout);
+    //mMainLayout->addLayout(mRightLayout);
     mMainLayout->setContentsMargins(0, 0, 0, 0);
     mMainLayout->setSpacing(0);
   }
 
   void IVMS4200ContentAreaStyleModel_Frame::init() {
-    mLeftWgt = new QStackedWidget;
-    mMidWgt = new IVMS4200MainPreviewMidWgt_Frame;
-    mMidWgt->setupUi(QSharedPointer<const Protocol>());
-    mRightWgt = new QStackedWidget;
-    mLeftLayout->addWidget(mLeftWgt);
-    mMidLayout->addWidget(mMidWgt);
-    mRightLayout->addWidget(mRightWgt);
+    //mLeftWgt = new QStackedWidget;
+    //mMidWgt = new IVMS4200MainPreviewMidWgt_Frame;
+    //mMidWgt->setupUi(QSharedPointer<const Protocol>());
+    //mRightWgt = new QStackedWidget;
+    //mLeftLayout->addWidget(mLeftWgt);
+    //mMidLayout->addWidget(mMidWgt);
+    //mRightLayout->addWidget(mRightWgt);
+    mWgts = new QStackedWidget;
+    mMainLayout->addWidget(mWgts);
+  }
+
+  /*
+   * HModel_Frame
+   */
+  // cotr
+  HModel_Frame::HModel_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  HModel_Frame::~HModel_Frame() {}
+
+  void HModel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  Frame* HModel_Frame::left() const {
+    return mLeft;
+  }
+
+  Frame* HModel_Frame::mid() const {
+    return mMid;
+  }
+
+  Frame* HModel_Frame::right() const {
+    return mRight;
+  }
+
+  void HModel_Frame::leftAdd(Frame *wgt) {
+    mLeftLayout->addWidget(wgt);
+    mLeft = wgt;
+  }
+
+  void HModel_Frame::midAdd(Frame *wgt) {
+    mMidLayout->addWidget(wgt);
+    mMid = wgt;
+  }
+
+  void HModel_Frame::rightAdd(Frame *wgt) {
+    mRightLayout->addWidget(wgt);
+    mRight = wgt;
+  }
+
+  // protected
+  void HModel_Frame::initWindow() {
+  }
+
+  void HModel_Frame::initLayout() {
+    mMainLayout = new QHBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+    mLeftLayout = new QVBoxLayout;
+    mLeftLayout->setContentsMargins(0, 0, 0, 0);
+    mMidLayout = new QVBoxLayout;
+    mMidLayout->setContentsMargins(0, 0, 0, 0);
+    mRightLayout = new QVBoxLayout;
+    mRightLayout->setContentsMargins(0, 0, 0, 0);
+    mMainLayout->addLayout(mLeftLayout);
+    mMainLayout->addLayout(mMidLayout);
+    mMainLayout->addLayout(mRightLayout);
+    mMainLayout->setSpacing(0);
+  }
+
+  void HModel_Frame::init() {
+    mMid = new IVMS4200MainPreviewMidWgt_Frame;
+    mMid->setupUi(QSharedPointer<const Protocol>());
+    mMidLayout->addWidget(mMid);
   }
 
   /*
@@ -782,8 +1012,20 @@ namespace Jinhui {
     return dynamic_cast<IVMS4200MainPreviewLeftResWgt_Frame*>(mRes);
   }
 
+  SearchTree_Frame* IVMS4200MainPreviewLeftWgt_Frame::polling() const {
+    return dynamic_cast<SearchTree_Frame*>(mPolling);
+  }
+
   void IVMS4200MainPreviewLeftWgt_Frame::addStretch() {
     mMainLayout->addStretch();
+  }
+
+  void IVMS4200MainPreviewLeftWgt_Frame::changeWidget(const QString proName) {
+    if (proName == mRes->productName()) {
+      mContentArea->setCurrentWidget(mRes);
+    } else if (proName == mPolling->productName()) {
+      mContentArea->setCurrentWidget(mPolling);
+    }
   }
 
   // protected
@@ -804,7 +1046,10 @@ namespace Jinhui {
     mMainLayout->addWidget(mContentArea);
     mRes = new IVMS4200MainPreviewLeftResWgt_Frame;
     mRes->setupUi(QSharedPointer<const Protocol>());
+    mPolling = new SearchTree_Frame;
+    mPolling->setupUi(QSharedPointer<const Protocol>());
     mContentArea->addWidget(mRes);
+    mContentArea->addWidget(mPolling);
   }
 
   /*
@@ -962,7 +1207,8 @@ namespace Jinhui {
    */
   // cotr
   IVMS4200MainPreviewMidWgt_Frame::IVMS4200MainPreviewMidWgt_Frame(QWidget* parent)
-    :Frame(parent) {}
+    :Frame(parent)
+  ,mLeftWgt(nullptr) {}
 
   IVMS4200MainPreviewMidWgt_Frame::~IVMS4200MainPreviewMidWgt_Frame() {}
 
@@ -972,8 +1218,25 @@ namespace Jinhui {
     init();
   }
 
-  Label* IVMS4200MainPreviewMidWgt_Frame::label() const {
+  DealWithMouseEventEx_Label* IVMS4200MainPreviewMidWgt_Frame::label() const {
     return mLabel;
+  }
+
+  void IVMS4200MainPreviewMidWgt_Frame::setLeftWidget(Frame* leftWidget) {
+    mLeftWgt = leftWidget;
+  }
+
+  // public slots
+  void IVMS4200MainPreviewMidWgt_Frame::hideLeftWidget() {
+    if (mLeftWgt) {
+      if (mLeftWgt->isVisible()) {
+        mLeftWgt->hide();
+        mLabel->setStyleSheet("background-image: url(:/icon/midhide.png)");
+      } else {
+        mLeftWgt->show();
+        mLabel->setStyleSheet("background-image: url(:/icon/mid.png)");
+      }
+    }
   }
 
   // protected
@@ -986,10 +1249,12 @@ namespace Jinhui {
   }
 
   void IVMS4200MainPreviewMidWgt_Frame::init() {
-    mLabel = new DealWithMouseEvent_Label;
+    mLabel = new DealWithMouseEventEx_Label;
     mMainLayout->addStretch();
     mMainLayout->addWidget(mLabel);
     mMainLayout->addStretch();
+    connect(mLabel, SIGNAL(leftButtonReleased())
+            ,this, SLOT(hideLeftWidget()));
   }
 
   /*
@@ -1476,6 +1741,14 @@ namespace Jinhui {
     return mTime;
   }
 
+  Label* RemotePlaybackFeaturesStyleModel_Frame::title1() const {
+    return mTitle1;
+  }
+
+  ComboBox* RemotePlaybackFeaturesStyleModel_Frame::comboBox() const {
+    return mComboBox;
+  }
+
   void RemotePlaybackFeaturesStyleModel_Frame::addStretch() {
     mMainLayout->addStretch();
   }
@@ -1492,8 +1765,14 @@ namespace Jinhui {
   void RemotePlaybackFeaturesStyleModel_Frame::init() {
     mTitle = new Label;
     mTime = new QDateTimeEdit;
+    mTitle1 = new Label;
+    mComboBox = new ComboBox;
     mMainLayout->addWidget(mTitle);
     mMainLayout->addWidget(mTime);
+    mMainLayout->addWidget(mTitle1);
+    mMainLayout->addWidget(mComboBox);
+    mTitle1->hide();
+    mComboBox->hide();
   }
 
   /*
@@ -1520,6 +1799,10 @@ namespace Jinhui {
     return dynamic_cast<Search_Frame*>(mSearch);
   }
 
+  List* RemotePlaybackMonitorFeature_Frame::list() const {
+    return dynamic_cast<List*>(mList);
+  }
+
   // protected
   void RemotePlaybackMonitorFeature_Frame::initWindow() {
   }
@@ -1531,8 +1814,11 @@ namespace Jinhui {
     mLabel = new Label;
     mSearch = new Search_Frame;
     mSearch->setupUi(QSharedPointer<const Protocol>());
+    mList = new List;
+    mList->setupUi(QSharedPointer<const Protocol>());
     mMainLayout->addWidget(mLabel);
     mMainLayout->addWidget(mSearch);
+    mMainLayout->addWidget(mList);
   }
 
   /*
@@ -3045,6 +3331,10 @@ namespace Jinhui {
     return dynamic_cast<Tree*>(mTree);
   }
 
+  void SearchTree_Frame::addStretch() {
+    mMainLayout->addStretch();
+  }
+
   // protected
   void SearchTree_Frame::initWindow() {
   }
@@ -3082,14 +3372,8 @@ namespace Jinhui {
     return dynamic_cast<Search_Frame*>(mSearch);
   }
 
-  QListWidget* SearchList_Frame::list() const {
-    return mList;
-  }
-
-  void SearchList_Frame::addItem(Frame* widget) {
-    QListWidgetItem* item = new QListWidgetItem;
-    mList->addItem(item);
-    mList->setItemWidget(item, widget);
+  List *SearchList_Frame::list() const {
+    return dynamic_cast<List*>(mList);
   }
 
   // protected
@@ -3104,8 +3388,468 @@ namespace Jinhui {
   void SearchList_Frame::init() {
     mSearch = new Search_Frame;
     mSearch->setupUi(QSharedPointer<const Protocol>());
-    mList = new QListWidget;
+    mList = new List;
+    mList->setupUi(QSharedPointer<const Protocol>());
     mMainLayout->addWidget(mSearch);
     mMainLayout->addWidget(mList);
   }
+
+  /*
+   * ListItem_Label
+   */
+  // cotr
+  ListItem_Label::ListItem_Label(QWidget* parent)
+    :UniversalLabel_Frame(parent) {
+    setMouseTracking(true);
+  }
+
+  ListItem_Label::~ListItem_Label() {}
+
+  void ListItem_Label::setupUi(QSharedPointer<const Protocol> protocol) {
+    UniversalLabel_Frame::setupUi(protocol);
+    init();
+  }
+
+  CheckBox* ListItem_Label::checkBox() const {
+    return mCheckBox;
+  }
+
+  Label* ListItem_Label::icon() const {
+    return mIcon;
+  }
+
+  Label* ListItem_Label::content() const {
+    return mContent;
+  }
+
+  OperatorsHorizontal_Frame* ListItem_Label::operating() const {
+    return dynamic_cast<OperatorsHorizontal_Frame*>(mOperating);
+  }
+  // protected
+  void ListItem_Label::initWindow() {
+  }
+
+  void ListItem_Label::initLayout() {
+  }
+
+  void ListItem_Label::init() {
+    mCheckBox = new CheckBox;
+    mIcon = new Label;
+    mContent = new Label;
+    mOperating = new OperatorsHorizontal_Frame;
+    mOperating->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addStretch();
+    mMainLayout->addWidget(mCheckBox);
+    mMainLayout->addWidget(mIcon);
+    mMainLayout->addWidget(mContent);
+    mMainLayout->addStretch(1);
+    mMainLayout->addWidget(mOperating);
+  }
+
+  void ListItem_Label::leaveEvent(QEvent *event) {
+    mOperating->hide();
+  }
+
+  void ListItem_Label::mouseMoveEvent(QMouseEvent *event) {
+    mOperating->show();
+  }
+
+  /*
+   * ComboBoxLabel_Frame
+   */
+  // cotr
+  ComboBoxLabel_Frame::ComboBoxLabel_Frame(QWidget* parent)
+    :Frame(parent) {}
+
+  ComboBoxLabel_Frame::~ComboBoxLabel_Frame() {}
+
+  void ComboBoxLabel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    initWindow();
+    initLayout();
+    init();
+  }
+
+  ComboBox* ComboBoxLabel_Frame::comboBox() const {
+    return mComboBox;
+  }
+
+  DealWithMouseEventEx_Label* ComboBoxLabel_Frame::label() const {
+    return mLabel;
+  }
+  // protected
+  void ComboBoxLabel_Frame::initWindow() {
+  }
+
+  void ComboBoxLabel_Frame::initLayout() {
+    mMainLayout = new QVBoxLayout(this);
+    mMainLayout->setContentsMargins(0, 0, 0, 0);
+  }
+
+  void ComboBoxLabel_Frame::init() {
+    mComboBox = new ComboBox;
+    mLabel = new DealWithMouseEventEx_Label;
+    mMainLayout->addWidget(mComboBox);
+    mMainLayout->addWidget(mLabel);
+  }
+
+  /*
+   * RemotePlaybackEventFeature_Frame
+   */
+  // cotr
+  RemotePlaybackEventFeature_Frame::RemotePlaybackEventFeature_Frame(QWidget* parent)
+    :RemotePlaybackMonitorFeature_Frame(parent) {}
+
+  RemotePlaybackEventFeature_Frame::~RemotePlaybackEventFeature_Frame() {}
+
+  void RemotePlaybackEventFeature_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    RemotePlaybackMonitorFeature_Frame::setupUi(protocol);
+    init();
+  }
+
+  TitleWidget_Frame* RemotePlaybackEventFeature_Frame::widget() const {
+    return dynamic_cast<TitleWidget_Frame*>(mWidget);
+  }
+  // protected
+  void RemotePlaybackEventFeature_Frame::initWindow() {
+  }
+
+  void RemotePlaybackEventFeature_Frame::initLayout() {
+  }
+
+  void RemotePlaybackEventFeature_Frame::init() {
+    ComboBoxLabel_Frame* wgt = new ComboBoxLabel_Frame;
+    wgt->setupUi(QSharedPointer<const Protocol>());
+    mWidget = new TitleWidget_Frame;
+    mWidget->setupUi(QSharedPointer<const Protocol>());
+    dynamic_cast<TitleWidget_Frame*>(mWidget)->addWidget(wgt);
+    mMainLayout->addWidget(mWidget);
+  }
+
+  /*
+   * DataSearchFaceSearchFeature_Frame
+   */
+  // cotr
+  DataSearchFaceSearchFeature_Frame::DataSearchFaceSearchFeature_Frame(QWidget* parent)
+    :RemotePlaybackMonitorFeature_Frame(parent) {}
+
+  DataSearchFaceSearchFeature_Frame::~DataSearchFaceSearchFeature_Frame() {}
+
+  void DataSearchFaceSearchFeature_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+    RemotePlaybackMonitorFeature_Frame::setupUi(protocol);
+    init();
+  }
+
+  TwoComboBoxLineEditLabel_Frame* DataSearchFaceSearchFeature_Frame::widget() const {
+    return dynamic_cast<TwoComboBoxLineEditLabel_Frame*>(mWidget);
+  }
+  // protected
+  void DataSearchFaceSearchFeature_Frame::initWindow() {
+  }
+
+  void DataSearchFaceSearchFeature_Frame::initLayout() {
+  }
+
+  void DataSearchFaceSearchFeature_Frame::init() {
+    mWidget = new TwoComboBoxLineEditLabel_Frame;
+    mWidget->setupUi(QSharedPointer<const Protocol>());
+    mMainLayout->addWidget(mWidget);
+  }
+
+  /*
+   * ComboboxLabelProgressBarLineEdit_Frame
+   */
+  // cotr
+    ComboboxLabelSliderLineEdit_Frame::ComboboxLabelSliderLineEdit_Frame(Qt::Orientation ori, QWidget* parent) :
+      Frame(parent)
+    ,mOri(ori) {}
+
+    ComboboxLabelSliderLineEdit_Frame::~ComboboxLabelSliderLineEdit_Frame() {}
+
+    void ComboboxLabelSliderLineEdit_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+      initWindow();
+      initLayout();
+      init();
+    }
+
+    Label* ComboboxLabelSliderLineEdit_Frame::title1() const {
+      return mTitle1;
+    }
+
+    ComboBox* ComboboxLabelSliderLineEdit_Frame::comboBox() const {
+      return mComboBox;
+    }
+
+    DealWithMouseEventEx_Label* ComboboxLabelSliderLineEdit_Frame::comboBoxLabel() const {
+      return mComboBoxLabel;
+    }
+
+    Label* ComboboxLabelSliderLineEdit_Frame::pictureLabel() const {
+      return mPictureLabel;
+    }
+
+    Label* ComboboxLabelSliderLineEdit_Frame::title2() const {
+      return mTitle2;
+    }
+
+    Slider* ComboboxLabelSliderLineEdit_Frame::slider() const {
+      return mSlider;
+    }
+
+    LineEdit* ComboboxLabelSliderLineEdit_Frame::progressLineEdit() const {
+      return mProgressLineEdit;
+    }
+
+    Label* ComboboxLabelSliderLineEdit_Frame::title3() const {
+      return mTitle3;
+    }
+
+    LineEdit* ComboboxLabelSliderLineEdit_Frame::lineEdit() const {
+      return mLineEdit;
+    }
+
+    Label* ComboboxLabelSliderLineEdit_Frame::label() const {
+      return mLabel;
+    }
+    // protected
+    void ComboboxLabelSliderLineEdit_Frame::initWindow() {
+
+    }
+
+    void ComboboxLabelSliderLineEdit_Frame::initLayout() {
+      mMainLayout = new QVBoxLayout(this);
+      mMainLayout->setContentsMargins(0, 0, 0, 0);
+      mComboBoxLayout = new QHBoxLayout;
+      mComboBoxLayout->setContentsMargins(0, 0, 0, 0);
+      mProgressLayout = new QHBoxLayout;
+      mProgressLayout->setContentsMargins(0, 0, 0, 0);
+    }
+
+    void ComboboxLabelSliderLineEdit_Frame::init() {
+      mTitle1 = new Label;
+      mComboBox = new ComboBox;
+      mComboBoxLabel = new DealWithMouseEventEx_Label;
+      mPictureLabel = new Label;
+      mTitle2 = new Label;
+      mSlider = new Slider(mOri);
+      mProgressLineEdit = new LineEdit;
+      mTitle3 = new Label;
+      mLineEdit = new LineEdit;
+      mLabel = new Label;
+      mMainLayout->addWidget(mTitle1);
+      mComboBoxLayout->addWidget(mComboBox);
+      mComboBoxLayout->addWidget(mComboBoxLabel);
+      mMainLayout->addLayout(mComboBoxLayout);
+      mMainLayout->addWidget(mPictureLabel);
+      mMainLayout->addWidget(mTitle2);
+      mProgressLayout->addWidget(mSlider);
+      mProgressLayout->addWidget(mProgressLineEdit);
+      mMainLayout->addLayout(mProgressLayout);
+      mMainLayout->addWidget(mTitle3);
+      mMainLayout->addWidget(mLineEdit);
+      mMainLayout->addWidget(mLabel);
+    }
+
+    /*
+     * DataSearchHumanSearch_Frame
+     */
+    // cotr
+    DataSearchHumanSearch_Frame::DataSearchHumanSearch_Frame(QWidget* parent)
+      :RemotePlaybackMonitorFeature_Frame(parent) {}
+
+    DataSearchHumanSearch_Frame::~DataSearchHumanSearch_Frame() {}
+
+    void DataSearchHumanSearch_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+      RemotePlaybackMonitorFeature_Frame::setupUi(protocol);
+      init();
+    }
+
+    ComboboxLabelSliderLineEdit_Frame* DataSearchHumanSearch_Frame::widget() const {
+      return dynamic_cast<ComboboxLabelSliderLineEdit_Frame*>(mWidget);
+    }
+    // protected
+    void DataSearchHumanSearch_Frame::initWindow() {
+
+    }
+
+    void DataSearchHumanSearch_Frame::initLayout() {
+
+    }
+
+    void DataSearchHumanSearch_Frame::init() {
+      mWidget = new ComboboxLabelSliderLineEdit_Frame(Qt::Horizontal);
+      mWidget->setupUi(QSharedPointer<const Protocol>());
+      mMainLayout->addWidget(mWidget);
+    }
+
+    /*
+     * PageTurning_Frame
+     */
+    // cotr
+    PageTurning_Frame::PageTurning_Frame(QWidget* parent)
+      :Frame(parent) {}
+
+    PageTurning_Frame::~PageTurning_Frame() {}
+
+    void PageTurning_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+      initWindow();
+      initLayout();
+      init();
+    }
+
+    Label* PageTurning_Frame::count() const {
+      return mCount;
+    }
+    DealWithMouseEventEx_Label* PageTurning_Frame::left() const {
+      return mLeft;
+    }
+
+    DealWithMouseEventEx_Label* PageTurning_Frame::leftmost() const {
+      return mLeftmost;
+    }
+
+    DealWithMouseEventEx_Label* PageTurning_Frame::right() const {
+      return mRight;
+    }
+
+    DealWithMouseEventEx_Label* PageTurning_Frame::rightmost() const {
+      return mRightmost;
+    }
+
+    LineEdit* PageTurning_Frame::lineEdit() const {
+      return mLineEdit;
+    }
+
+    Label* PageTurning_Frame::separator() const {
+      return mSeparator;
+    }
+
+    Label* PageTurning_Frame::countPage() const {
+      return mCountPage;
+    }
+
+    Label* PageTurning_Frame::type() const {
+      return mType;
+    }
+    // protected
+    void PageTurning_Frame::initWindow() {
+
+    }
+
+    void PageTurning_Frame::initLayout() {
+      mMainLayout = new QHBoxLayout(this);
+      mMainLayout->setContentsMargins(0, 0, 0, 0);
+    }
+
+    void PageTurning_Frame::init() {
+      mCount = new Label;
+      mLeft = new DealWithMouseEventEx_Label;
+      mLeftmost = new DealWithMouseEventEx_Label;
+      mRight = new DealWithMouseEventEx_Label;
+      mRightmost = new DealWithMouseEventEx_Label;
+      mLineEdit = new LineEdit;
+      mSeparator = new Label;
+      mCountPage = new Label;
+      mType = new Label;
+      mMainLayout->addStretch();
+      mMainLayout->addWidget(mCount);
+      mMainLayout->addStretch(2);
+      mMainLayout->addWidget(mLeftmost);
+      mMainLayout->addWidget(mLeft);
+      mMainLayout->addWidget(mRight);
+      mMainLayout->addWidget(mRightmost);
+      mMainLayout->addWidget(mLineEdit);
+      mMainLayout->addWidget(mSeparator);
+      mMainLayout->addWidget(mCountPage);
+      mMainLayout->addWidget(mType);
+    }
+
+    /*
+     * IVMS4200DataRetrievalContentArea_Frame
+     */
+    // cotr
+    IVMS4200DataRetrievalContentArea_Frame::IVMS4200DataRetrievalContentArea_Frame(QWidget* parent)
+      :Frame(parent) {}
+
+    IVMS4200DataRetrievalContentArea_Frame::~IVMS4200DataRetrievalContentArea_Frame() {}
+
+    void IVMS4200DataRetrievalContentArea_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+      initWindow();
+      initLayout();
+      init();
+    }
+
+    Label* IVMS4200DataRetrievalContentArea_Frame::picture() const {
+      return mPicture;
+    }
+
+    Label* IVMS4200DataRetrievalContentArea_Frame::separator() const {
+      return mSeparator;
+    }
+
+    PageTurning_Frame* IVMS4200DataRetrievalContentArea_Frame::bottomBar() const {
+      return dynamic_cast<PageTurning_Frame*>(mBottomBar);
+    }
+    // protected
+    void IVMS4200DataRetrievalContentArea_Frame::initWindow() {
+
+    }
+
+    void IVMS4200DataRetrievalContentArea_Frame::initLayout() {
+      mMainLayout = new QVBoxLayout(this);
+      mMainLayout->setContentsMargins(0, 0, 0, 0);
+      mSeparatorLayout = new QHBoxLayout;
+    }
+
+    void IVMS4200DataRetrievalContentArea_Frame::init() {
+      mPicture = new Label;
+      mSeparator = new Label;
+      mSeparator->setFrameStyle(QFrame::HLine | QFrame::Plain);
+      mBottomBar = new PageTurning_Frame;
+      mBottomBar->setupUi(QSharedPointer<const Protocol>());
+      mSeparatorLayout->addWidget(mSeparator);
+      mMainLayout->addWidget(mPicture);
+      mMainLayout->addLayout(mSeparatorLayout);
+      mMainLayout->addWidget(mBottomBar);
+    }
+
+    /*
+     * FrameMidTwoLabel_Frame
+     */
+    // cotr
+    FrameMidTwoLabel_Frame::FrameMidTwoLabel_Frame(QWidget* parent)
+      :Frame(parent) {}
+
+    FrameMidTwoLabel_Frame::~FrameMidTwoLabel_Frame() {}
+
+    void FrameMidTwoLabel_Frame::setupUi(QSharedPointer<const Protocol> protocol) {
+      initWindow();
+      initLayout();
+      init();
+    }
+
+    Label* FrameMidTwoLabel_Frame::picture() const {
+      return mPicture;
+    }
+
+    DealWithMouseEventEx_Label* FrameMidTwoLabel_Frame::label() const {
+      return mLabel;
+    }
+    // protected
+    void FrameMidTwoLabel_Frame::initWindow() {
+
+    }
+
+    void FrameMidTwoLabel_Frame::initLayout() {
+      mMainLayout = new QVBoxLayout(this);
+      mMainLayout->setContentsMargins(0, 0, 0, 0);
+      mMainLayout->setSpacing(0);
+    }
+
+    void FrameMidTwoLabel_Frame::init() {
+      mPicture = new Label;
+      mLabel = new DealWithMouseEventEx_Label;
+      mMainLayout->addWidget(mPicture);
+      mMainLayout->addWidget(mLabel);
+    }
+
 }

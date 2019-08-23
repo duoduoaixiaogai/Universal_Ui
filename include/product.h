@@ -38,6 +38,7 @@
 #include <QDoubleSpinBox>
 #include <QTreeWidget>
 #include <QListWidget>
+#include <QSlider>
 
 // database
 #include <QSqlQuery>
@@ -103,6 +104,7 @@ namespace Jinhui {
   class SearchList_Frame;
   class TitleWidget_Frame;
   class TreeItem_Label;
+  class ListItem_Label;
 
   /*******************************************************************************
    * 基类
@@ -389,6 +391,15 @@ namespace Jinhui {
   };
 
   /*
+   * 基类 滑动条
+   */
+  class EXPORT Slider : public QSlider, public Product {
+  public:
+    Slider(Qt::Orientation ori, QWidget* parent = nullptr);
+    ~Slider();
+  };
+
+  /*
    * 基类 编译框类
    */
   class LineEdit : public QLineEdit, public Product {
@@ -578,6 +589,27 @@ namespace Jinhui {
   protected:
     QBoxLayout* mMainLayout;
     QHash<const QString, Frame*> mItems;
+  };
+
+  /*
+   * 基类 列表控件类
+   */
+  class EXPORT List : public Frame {
+  public:
+    List(QWidget* parent = nullptr);
+    ~List();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    void addItem(ListItem_Label* item, bool checkBoxShow, bool iconShow
+                 ,bool contentShow, bool operatShow);
+    void delItem(const QString itemObjName);
+    void addStretch();
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QHash<const QString, ListItem_Label*> mItems;
+    QBoxLayout* mMainLayout;
   };
 
   /*******************************************************************************
@@ -2173,7 +2205,7 @@ namespace Jinhui {
   public:
     TreeItem_Label(QWidget* parent = nullptr);
     ~TreeItem_Label();
-    virtual void setupUi(QSharedPointer<const Protocol> protocol);
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     DealWithMouseEventEx_Label* collapseExpand() const;
     Label* icon() const;
     Label* content() const;
@@ -2187,6 +2219,8 @@ namespace Jinhui {
   public:
     TreeItem_Label* mParent;
     QVector<TreeItem_Label*> mChilds;
+  public Q_SLOTS:
+    void collapseChildItems();
   protected:
     void initWindow();
     void initLayout();
@@ -2203,6 +2237,31 @@ namespace Jinhui {
   };
 
   /*
+   * 子类 列表控件项目类
+   */
+  class EXPORT ListItem_Label : public UniversalLabel_Frame {
+  public:
+    ListItem_Label(QWidget* parent = nullptr);
+    ~ListItem_Label();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    CheckBox* checkBox() const;
+    Label* icon() const;
+    Label* content() const;
+    OperatorsHorizontal_Frame* operating() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+  protected:
+    CheckBox* mCheckBox;
+    Label* mIcon;
+    Label* mContent;
+    Frame* mOperating;
+  };
+
+  /*
    * 子类 内容区样式模板1
    */
   class EXPORT IVMS4200ContentAreaStyleModel_Frame : public Frame {
@@ -2211,19 +2270,54 @@ namespace Jinhui {
     IVMS4200ContentAreaStyleModel_Frame(QWidget* parent = nullptr);
     ~IVMS4200ContentAreaStyleModel_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
-    void leftAddWgt(Frame* wgt);
-    void rightAddWgt(Frame* wgt);
-    Frame* leftContentAreaWgt(const QString proName) const;
-    IVMS4200MainPreviewMidWgt_Frame* midWgt() const;
-    Frame* rightContentAreaWgt(const QString proName) const;
-    void setLeftContentAreaCurrentWgt(const QString proName);
-    void setRightContentAreaCurrentWgt(const QString proName);
-    void hideLeftContentArea();
-    void hideMidContentArea();
-    void hideRightContentArea();
-    void showLeftContentArea();
-    void showMidContentArea();
-    void showRightContentArea();
+    //void leftAddWgt(Frame* wgt);
+    //void rightAddWgt(Frame* wgt);
+    //Frame* leftContentAreaWgt(const QString proName) const;
+    //IVMS4200MainPreviewMidWgt_Frame* midWgt() const;
+    //Frame* rightContentAreaWgt(const QString proName) const;
+    //void setLeftContentAreaCurrentWgt(const QString proName);
+    //void setRightContentAreaCurrentWgt(const QString proName);
+    //void hideLeftContentArea();
+    //void hideMidContentArea();
+    //void hideRightContentArea();
+    //void showLeftContentArea();
+    //void showMidContentArea();
+    //void showRightContentArea();
+    void addWgt(Frame* wgt);
+    Frame* wgt(const QString proName) const;
+    void setContentAreaCurrentWgt(const QString proName);
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    //QBoxLayout* mLeftLayout;
+    //QBoxLayout* mMidLayout;
+    //QBoxLayout* mRightLayout;
+    //QStackedWidget* mLeftWgt;
+    //Frame* mMidWgt;
+    //QStackedWidget* mRightWgt;
+    //QHash<const QString, Frame*> mLeftwgts;
+    //QHash<const QString, Frame*> mRightwgts;
+    QHash<const QString, Frame*> mHashWgts;
+    QStackedWidget* mWgts;
+  };
+
+  /*
+   * 子类 模板类可以横向添加3个小部件类
+   */
+  class EXPORT HModel_Frame : public Frame {
+  public:
+    HModel_Frame(QWidget* parent = nullptr);
+    ~HModel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Frame* left() const;
+    Frame* mid() const;
+    Frame* right() const;
+    void leftAdd(Frame* wgt);
+    void midAdd(Frame* wgt);
+    void rightAdd(Frame* wgt);
   protected:
     void initWindow();
     void initLayout();
@@ -2233,11 +2327,9 @@ namespace Jinhui {
     QBoxLayout* mLeftLayout;
     QBoxLayout* mMidLayout;
     QBoxLayout* mRightLayout;
-    QStackedWidget* mLeftWgt;
-    Frame* mMidWgt;
-    QStackedWidget* mRightWgt;
-    QHash<const QString, Frame*> mLeftwgts;
-    QHash<const QString, Frame*> mRightwgts;
+    Frame* mLeft;
+    Frame* mMid;
+    Frame* mRight;
   };
 
   /*
@@ -2272,7 +2364,9 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     IVMS4200TitleWgt_Frame* title() const;
     IVMS4200MainPreviewLeftResWgt_Frame* res() const;
+    SearchTree_Frame* polling() const;
     void addStretch();
+    void changeWidget(const QString proName);
   protected:
     void initWindow();
     void initLayout();
@@ -2282,6 +2376,7 @@ namespace Jinhui {
     Frame* mTitle;
     QStackedWidget* mContentArea;
     Frame* mRes;
+    Frame* mPolling;
   };
 
   /*
@@ -2365,14 +2460,18 @@ namespace Jinhui {
     IVMS4200MainPreviewMidWgt_Frame(QWidget* parent = nullptr);
     ~IVMS4200MainPreviewMidWgt_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
-    Label* label() const;
+    DealWithMouseEventEx_Label* label() const;
+    void setLeftWidget(Frame* leftWidget);
+  public Q_SLOTS:
+    void hideLeftWidget();
   protected:
     void initWindow();
     void initLayout();
     void init();
   protected:
     QBoxLayout* mMainLayout;
-    Label* mLabel;
+    DealWithMouseEventEx_Label* mLabel;
+    Frame* mLeftWgt;
   };
 
   /*
@@ -2608,6 +2707,8 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     Label* title() const;
     QDateTimeEdit* time() const;
+    Label* title1() const;
+    ComboBox* comboBox() const;
     void addStretch();
   protected:
     void initWindow();
@@ -2617,6 +2718,8 @@ namespace Jinhui {
     QBoxLayout* mMainLayout;
     Label* mTitle;
     QDateTimeEdit* mTime;
+    Label* mTitle1;
+    ComboBox* mComboBox;
   };
 
   /*
@@ -2630,6 +2733,7 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     Label* label() const;
     Search_Frame* search() const;
+    List* list() const;
   protected:
     void initWindow();
     void initLayout();
@@ -2637,6 +2741,204 @@ namespace Jinhui {
   protected:
     Label* mLabel;
     Frame* mSearch;
+    Frame* mList;
+  };
+
+  /*
+   * 子类 带有combobox和底层label的小部件类
+   */
+  class EXPORT ComboBoxLabel_Frame : public Frame {
+  public:
+    ComboBoxLabel_Frame(QWidget* parent = nullptr);
+    ~ComboBoxLabel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    ComboBox* comboBox() const;
+    DealWithMouseEventEx_Label* label() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    ComboBox* mComboBox;
+    DealWithMouseEventEx_Label* mLabel;
+  };
+
+  /*
+   * 子类 带有两个combobox和一个lineedit和label的控件类
+   */
+  class EXPORT TwoComboBoxLineEditLabel_Frame : public Frame {
+  public:
+    TwoComboBoxLineEditLabel_Frame(QWidget* parent = nullptr);
+    ~TwoComboBoxLineEditLabel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    ComboBox* comboBox1() const;
+    ComboBox* comboBox2() const;
+    LineEdit* lineEdit() const;
+    DealWithMouseEventEx_Label* label() const;
+    Label* title1() const;
+    Label* title2() const;
+    Label* title3() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mTitle1;
+    Label* mTitle2;
+    Label* mTitle3;
+    ComboBox* mComboBox1;
+    ComboBox* mComboBox2;
+    LineEdit* mLineEdit;
+    DealWithMouseEventEx_Label* mLabel;
+  };
+
+  /*
+   * 子类 远程回放中的事件回放类
+   */
+  class EXPORT RemotePlaybackEventFeature_Frame : public RemotePlaybackMonitorFeature_Frame {
+  public:
+    RemotePlaybackEventFeature_Frame(QWidget* parent = nullptr);
+    ~RemotePlaybackEventFeature_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    TitleWidget_Frame* widget() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Frame* mWidget;
+  };
+
+  /*
+   * 子类 数据检索中的人脸检索类
+   */
+  class EXPORT DataSearchFaceSearchFeature_Frame : public RemotePlaybackMonitorFeature_Frame {
+  public:
+    DataSearchFaceSearchFeature_Frame(QWidget* parent = nullptr);
+    ~DataSearchFaceSearchFeature_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    TwoComboBoxLineEditLabel_Frame* widget() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Frame* mWidget;
+  };
+
+  /*
+   * 子类 包含一个combobox一个label一个滑动条一个lineedit一个底层Label的小部件类(参见IVMS4200客户端数据检索人体检索功能区下边小部件)
+   */
+  class EXPORT ComboboxLabelSliderLineEdit_Frame : public Frame {
+  public:
+    ComboboxLabelSliderLineEdit_Frame(Qt::Orientation ori, QWidget* parent = nullptr);
+    ~ComboboxLabelSliderLineEdit_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* title1() const;
+    ComboBox* comboBox() const;
+    DealWithMouseEventEx_Label* comboBoxLabel() const;
+    Label* pictureLabel() const;
+    Label* title2() const;
+    Slider* slider() const;
+    LineEdit* progressLineEdit() const;
+    Label* title3() const;
+    LineEdit* lineEdit() const;
+    Label* label() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mComboBoxLayout;
+    QBoxLayout* mProgressLayout;
+    Label* mTitle1;
+    ComboBox* mComboBox;
+    DealWithMouseEventEx_Label* mComboBoxLabel;
+    Label* mPictureLabel;
+    Label* mTitle2;
+    Slider* mSlider;
+    LineEdit* mProgressLineEdit;
+    Label* mTitle3;
+    LineEdit* mLineEdit;
+    Label* mLabel;
+    Qt::Orientation mOri;
+  };
+
+  /*
+   * 子类 数据检索人体检索功能区类
+   */
+  class EXPORT DataSearchHumanSearch_Frame : public RemotePlaybackMonitorFeature_Frame {
+  public:
+    DataSearchHumanSearch_Frame(QWidget* parent = nullptr);
+    ~DataSearchHumanSearch_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    ComboboxLabelSliderLineEdit_Frame* widget() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    Frame* mWidget;
+  };
+
+  /*
+   * 子类 翻页栏控件类
+   */
+  class EXPORT PageTurning_Frame : public Frame {
+  public:
+    PageTurning_Frame(QWidget* parent = nullptr);
+    ~PageTurning_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* count() const;
+    DealWithMouseEventEx_Label* left() const;
+    DealWithMouseEventEx_Label* leftmost() const;
+    DealWithMouseEventEx_Label* right() const;
+    DealWithMouseEventEx_Label* rightmost() const;
+    LineEdit* lineEdit() const;
+    Label* separator() const;
+    Label* countPage() const;
+    Label* type() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mCount;
+    DealWithMouseEventEx_Label* mLeft;
+    DealWithMouseEventEx_Label* mLeftmost;
+    DealWithMouseEventEx_Label* mRight;
+    DealWithMouseEventEx_Label* mRightmost;
+    LineEdit* mLineEdit;
+    Label* mSeparator;
+    Label* mCountPage;
+    Label* mType;
+  };
+
+  /*
+   * 子类 数据检索内容区类
+   */
+  class EXPORT IVMS4200DataRetrievalContentArea_Frame : public Frame {
+  public:
+    IVMS4200DataRetrievalContentArea_Frame(QWidget* parent = nullptr);
+    ~IVMS4200DataRetrievalContentArea_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* picture() const;
+    Label* separator() const;
+    PageTurning_Frame* bottomBar() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    QBoxLayout* mSeparatorLayout;
+    Label* mPicture;
+    Label* mSeparator;
+    Frame* mBottomBar;
   };
 
   /*
@@ -3258,6 +3560,7 @@ namespace Jinhui {
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     Search_Frame* search() const;
     Tree* tree() const;
+    void addStretch();
   protected:
     void initWindow();
     void initLayout();
@@ -3277,8 +3580,7 @@ namespace Jinhui {
     ~SearchList_Frame();
     void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
     Search_Frame* search() const;
-    QListWidget* list() const;
-    void addItem(Frame* widget);
+    List* list() const;
   protected:
     void initWindow();
     void initLayout();
@@ -3286,7 +3588,7 @@ namespace Jinhui {
   protected:
     QBoxLayout* mMainLayout;
     Frame* mSearch;
-    QListWidget* mList;
+    Frame* mList;
   };
 
   /*
@@ -3302,6 +3604,27 @@ namespace Jinhui {
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
   protected:
     QStringList mHeader;
+  };
+
+  /*
+   * 子类 一个大frame中间有两个label(参见IVMS4200客户端电子地图内容区)
+   */
+  class EXPORT FrameMidTwoLabel_Frame : public Frame {
+    Q_OBJECT
+  public:
+    FrameMidTwoLabel_Frame(QWidget* parent = nullptr);
+    ~FrameMidTwoLabel_Frame();
+    void setupUi(QSharedPointer<const Protocol> protocol) Q_DECL_OVERRIDE;
+    Label* picture() const;
+    DealWithMouseEventEx_Label* label() const;
+  protected:
+    void initWindow();
+    void initLayout();
+    void init();
+  protected:
+    QBoxLayout* mMainLayout;
+    Label* mPicture;
+    DealWithMouseEventEx_Label* mLabel;
   };
 }
 
